@@ -74,7 +74,7 @@ export default function ClinicalHistorySection({
                                             <FormControl>
                                                 <Textarea
                                                     placeholder="Details of current condition"
-                                                    className="min-h-[100px] resize-y"
+                                                    className="min-h-[100px] resize-y input"
                                                     {...field}
                                                 />
                                             </FormControl>

@@ -52,6 +52,7 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                                             </FormLabel>
                                             <FormControl>
                                                 <Input
+                                                    className="input"
                                                     placeholder="Patient name"
                                                     {...field}
                                                 />

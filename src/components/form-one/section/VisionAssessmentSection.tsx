@@ -94,14 +94,15 @@ export default function VisionAssessmentSection({
                                                         }
                                                     >
                                                         <FormControl>
-                                                            <SelectTrigger className="h-10 w-full">
+                                                            <SelectTrigger className="h-10 w-full select-trigger">
                                                                 <SelectValue placeholder="Select vision" />
                                                             </SelectTrigger>
                                                         </FormControl>
-                                                        <SelectContent>
+                                                        <SelectContent className="select-content">
                                                             {visionOptions.map(
                                                                 (option) => (
                                                                     <SelectItem
+                                                                        className="select-item"
                                                                         key={
                                                                             option
                                                                         }
