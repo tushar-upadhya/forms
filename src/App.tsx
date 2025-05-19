@@ -3,7 +3,7 @@ import { ThemeProvider } from "./theme-provider";
 
 function App() {
     return (
-        <ThemeProvider defaultTheme="light">
+        <ThemeProvider defaultTheme="dark">
             <div className="min-h-screen bg-background">
                 <FormOne />
             </div>
