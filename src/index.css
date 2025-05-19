@@ -324,7 +324,7 @@
 } */
 
 /* VIOLET THEME */
-/* :root {
+:root {
     --radius: 0.5rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.141 0.005 285.823);
@@ -391,10 +391,10 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.541 0.281 293.009);
-} */
+}
 
 /* GRAY THEME */
-:root {
+/* :root {
     --radius: 0.5rem;
     --background: oklch(1 0 0);
     --foreground: oklch(0.141 0.005 285.823);
@@ -461,129 +461,13 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.552 0.016 285.938);
-}
+} */
 
-/* Input styles */
-.input {
-    background-color: var(--input);
-    color: var(--foreground);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.5rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.input:focus {
-    outline: none;
-    border-color: var(--ring);
-    box-shadow: 0 0 0 2px var(--ring);
-}
-
-/* SelectTrigger styles */
-.select-trigger {
-    background-color: var(--input);
-    color: var(--foreground);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.5rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.select-trigger:focus {
-    outline: none;
-    border-color: var(--ring);
-    box-shadow: 0 0 0 2px var(--ring);
-}
-
-/* SelectContent styles */
-.select-content {
-    background-color: var(--popover);
-    color: var(--popover-foreground);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-/* SelectItem styles */
-.select-item {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.select-item:hover {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-}
-
-.select-item[data-state="checked"] {
-    background-color: var(--primary);
-    color: var(--primary-foreground);
-}
 @layer base {
     * {
         @apply border-border outline-ring/50;
     }
     body {
         @apply bg-background text-foreground;
-    }
-    /* Input styles */
-    .input {
-        background-color: var(--input);
-        color: var(--foreground);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 0.5rem;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .input:focus {
-        outline: none;
-        border-color: var(--ring);
-        box-shadow: 0 0 0 2px var(--ring);
-    }
-
-    /* SelectTrigger styles */
-    .select-trigger {
-        background-color: var(--input);
-        color: var(--foreground);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 0.5rem;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    .select-trigger:focus {
-        outline: none;
-        border-color: var(--ring);
-        box-shadow: 0 0 0 2px var(--ring);
-    }
-
-    /* SelectContent styles */
-    .select-content {
-        background-color: var(--popover);
-        color: var(--popover-foreground);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-
-    /* SelectItem styles */
-    .select-item {
-        padding: 0.5rem 1rem;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .select-item:hover {
-        background-color: var(--primary);
-        color: var(--primary-foreground);
-    }
-
-    .select-item[data-state="checked"] {
-        background-color: var(--primary);
-        color: var(--primary-foreground);
     }
 }
