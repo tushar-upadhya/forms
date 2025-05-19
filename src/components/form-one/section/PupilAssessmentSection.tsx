@@ -45,7 +45,7 @@ export default function PupilAssessmentSection({
             type="single"
             defaultValue="pupil-assessment"
             collapsible
-            className="border rounded-lg overflow-hidden shadow-sm bg-card"
+            className="border rounded-lg overflow-hidden bg-card"
         >
             <AccordionItem value="pupil-assessment" className="border-0">
                 <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group">

@@ -50,7 +50,7 @@ export default function AnteriorSegmentSection({
             type="single"
             defaultValue="anterior-segment"
             collapsible
-            className="border rounded-lg overflow-hidden shadow-sm bg-card"
+            className="border rounded-lg overflow-hidden bg-card"
         >
             <AccordionItem value="anterior-segment" className="border-0">
                 <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group">

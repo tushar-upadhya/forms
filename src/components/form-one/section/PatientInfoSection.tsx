@@ -29,7 +29,7 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
             type="single"
             defaultValue="patient-info"
             collapsible
-            className="border rounded-lg overflow-hidden shadow-sm bg-card"
+            className="border rounded-lg overflow-hidden bg-card"
         >
             <AccordionItem value="patient-info" className="border-0">
                 <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">

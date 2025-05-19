@@ -8,6 +8,7 @@ import { z } from "zod";
 import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
 import ClinicalHistorySection from "./section/ClinicalHistorySection";
 import PatientInfoSection from "./section/PatientInfoSection";
+import PosteriorSegmentSection from "./section/PosteriorSegmentSection";
 import PupilAssessmentSection from "./section/PupilAssessmentSection";
 import VisionAssessmentSection from "./section/VisionAssessmentSection";
 
@@ -63,17 +64,28 @@ export default function FormOne() {
             lensLeft: undefined,
             anteriorOtherRight: "",
             anteriorOtherLeft: "",
+            // Posterior Segment
+            vitreousHazeRight: undefined,
+            vitreousHazeLeft: undefined,
+            posteriorOtherRight: "",
+            posteriorOtherLeft: "",
+            retinaDiscRight: "",
+            retinaDiscLeft: "",
+            maculaRight: "",
+            maculaLeft: "",
+            midPeripheryRight: "",
+            midPeripheryLeft: "",
+            peripheryRight: "",
+            peripheryLeft: "",
         },
     });
 
     function onSubmit(data: FormValues) {
         setIsSubmitting(true);
 
-        // Simulate API submission
         setTimeout(() => {
             console.log("Form submitted:", data);
             setIsSubmitting(false);
-
             form.reset();
         }, 1500);
     }
@@ -96,8 +108,9 @@ export default function FormOne() {
                 <PatientInfoSection form={form} />
                 <ClinicalHistorySection form={form} />
                 <VisionAssessmentSection form={form} />
-                <AnteriorSegmentSection form={form} />
                 <PupilAssessmentSection form={form} />
+                <AnteriorSegmentSection form={form} />
+                <PosteriorSegmentSection form={form} />
 
                 <div className="pt-4 flex justify-end">
                     <Button
