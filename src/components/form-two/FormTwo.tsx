@@ -1,79 +1,94 @@
-import { Button } from "@/components/ui/button";
-import type { FormValues } from "@/lib/type/type";
-import { EyeIcon, MoonIcon, SunIcon } from "lucide-react";
-import { useState } from "react";
-import PatientInfoSection from "./section/PatientInfoSection";
-
+import { PatientInfoSchema } from "@/lib/schemas";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { BreadcrumbNavigation } from "../breadcrumb-navigation/BreadcrumbNavigation";
+import { SubmitButton } from "../submit-button/SubmitButton";
+import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
+import ClinicalHistorySection from "./section/ClinicalHistorySection";
+import PatientInfoSection from "./section/PatientInfoSection";
+import PosteriorSegmentSection from "./section/PosteriorSegmentSection";
+import PupilAssessmentSection from "./section/PupilAssessmentSection";
+import VisionAssessmentSection from "./section/VisionAssessmentSection";
 
-export default function FormOne() {
+type FormValues = z.infer<typeof PatientInfoSchema>;
+
+interface Section {
+    id: string;
+    label: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    component: React.ComponentType<{ form: any }>;
+}
+
+const sections: Section[] = [
+    { id: "patientInfo", label: "Patient Info", component: PatientInfoSection },
+    {
+        id: "clinicalHistory",
+        label: "Clinical History",
+        component: ClinicalHistorySection,
+    },
+    {
+        id: "visionAssessment",
+        label: "Vision Assessment",
+        component: VisionAssessmentSection,
+    },
+    {
+        id: "pupilAssessment",
+        label: "Pupil Assessment",
+        component: PupilAssessmentSection,
+    },
+    {
+        id: "anteriorSegment",
+        label: "Anterior Segment",
+        component: AnteriorSegmentSection,
+    },
+    {
+        id: "posteriorSegment",
+        label: "Posterior Segment",
+        component: PosteriorSegmentSection,
+    },
+];
+
+export default function FormTwo() {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(false);
-    const form = useForm<FormValues>();
+    const [activeSection, setActiveSection] = useState(sections[0].id);
+    const form = useForm<FormValues>({ defaultValues: {} });
 
-    function onSubmit(data: FormValues) {
-        setIsSubmitting(true);
-        setTimeout(() => {
-            console.log("Form submitted:", data);
-            setIsSubmitting(false);
-            form.reset();
-        }, 1500);
-    }
+    const onSubmit = useCallback(
+        (data: FormValues) => {
+            setIsSubmitting(true);
+            setTimeout(() => {
+                console.log("Form submitted:", data);
+                setIsSubmitting(false);
+                form.reset();
+            }, 1500);
+        },
+        [form]
+    );
 
-    function toggleTheme() {
-        setIsDarkMode(!isDarkMode);
-        document.documentElement.classList.toggle("dark");
-    }
+    const handleSectionChange = useCallback((sectionId: string) => {
+        setActiveSection(sectionId);
+    }, []);
+
+    const activeSectionData =
+        sections.find((section) => section.id === activeSection) || null;
 
     return (
         <div
-            className={`container mx-auto py-8 px-4 md:px-6 max-w-4xl animate-in fade-in duration-500 ${
-                isDarkMode ? "dark" : ""
-            }`}
+            className={`container mx-auto py-8 px-4 md:px-6 max-w-4xl animate-in fade-in duration-500`}
         >
-            <header className="mb-8 text-center">
-                <div className="flex justify-center items-center gap-2 mb-2 relative">
-                    <EyeIcon className="h-8 w-8 text-primary" />
-                    <h1 className="text-3xl font-bold tracking-tight">
-                        Patient Ophthalmic Evaluation
-                    </h1>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleTheme}
-                        className="absolute right-0 top-0"
-                        aria-label={
-                            isDarkMode
-                                ? "Switch to light mode"
-                                : "Switch to dark mode"
-                        }
-                    >
-                        {isDarkMode ? (
-                            <SunIcon className="h-5 w-5 text-primary" />
-                        ) : (
-                            <MoonIcon className="h-5 w-5 text-primary" />
-                        )}
-                    </Button>
-                </div>
-                <p className="text-muted-foreground">
-                    Comprehensive eye examination and treatment planning form.
-                </p>
-            </header>
-
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <PatientInfoSection />
-
-                <div className="pt-4 flex justify-end">
-                    <Button
-                        type="submit"
-                        size="lg"
-                        disabled={isSubmitting}
-                        className="transition-all duration-200"
-                    >
-                        {isSubmitting ? "Submitting..." : "Submit Evaluation"}
-                    </Button>
-                </div>
-            </form>
+            {" "}
+            <BreadcrumbNavigation
+                sections={sections}
+                activeSection={activeSection}
+                onSectionChange={handleSectionChange}
+            />
+            <SubmitButton
+                activeSection={activeSectionData}
+                form={form}
+                isSubmitting={isSubmitting}
+                onSubmit={onSubmit}
+            />
         </div>
     );
 }
