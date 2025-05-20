@@ -1,78 +1,15 @@
-import { PatientInfoSchema } from "@/lib/schemas";
+import { Button } from "@/components/ui/button";
 import type { FormValues } from "@/lib/type/type";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Button } from "../ui/button";
 import PatientInfoSection from "./section/PatientInfoSection";
 
-const FormTwo = () => {
+import { useForm } from "react-hook-form";
+
+export default function FormOne() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
-
-    const form = useForm<FormValues>({
-        resolver: zodResolver(PatientInfoSchema),
-        defaultValues: {
-            name: "",
-            age: "",
-            sex: undefined,
-            uhid: "",
-            chiefComplaint: "",
-            presentIllnessHistory: "",
-            pastHistory: "",
-            familyHistory: "",
-            otherHistory: "",
-            // Vision Assessment
-            ucvaRight: undefined,
-            ucvaLeft: undefined,
-            bcvaRight: undefined,
-            bcvaLeft: undefined,
-            refractionRight: "",
-            refractionLeft: "",
-            iopRight: undefined,
-            iopLeft: undefined,
-            // Pupil
-            pupilDirectRight: undefined,
-            pupilDirectLeft: undefined,
-            pupilConsensualRight: undefined,
-            pupilConsensualLeft: undefined,
-            rapdRight: undefined,
-            rapdLeft: undefined,
-            // Anterior Segment
-            lidAdnexaRight: "",
-            lidAdnexaLeft: "",
-            eyeAlignmentRight: "",
-            eyeAlignmentLeft: "",
-            corneaRight: "",
-            corneaLeft: "",
-            acCellsRight: undefined,
-            acCellsLeft: undefined,
-            acFlareRight: undefined,
-            acFlareLeft: undefined,
-            acDepthRight: undefined,
-            acDepthLeft: undefined,
-            irisRight: "",
-            irisLeft: "",
-            lensRight: undefined,
-            lensLeft: undefined,
-            anteriorOtherRight: "",
-            anteriorOtherLeft: "",
-            // Posterior Segment
-            vitreousHazeRight: undefined,
-            vitreousHazeLeft: undefined,
-            posteriorOtherRight: "",
-            posteriorOtherLeft: "",
-            retinaDiscRight: "",
-            retinaDiscLeft: "",
-            maculaRight: "",
-            maculaLeft: "",
-            midPeripheryRight: "",
-            midPeripheryLeft: "",
-            peripheryRight: "",
-            peripheryLeft: "",
-        },
-    });
+    const form = useForm<FormValues>();
 
     function onSubmit(data: FormValues) {
         setIsSubmitting(true);
@@ -87,6 +24,7 @@ const FormTwo = () => {
         setIsDarkMode(!isDarkMode);
         document.documentElement.classList.toggle("dark");
     }
+
     return (
         <div
             className={`container mx-auto py-8 px-4 md:px-6 max-w-4xl animate-in fade-in duration-500 ${
@@ -138,6 +76,4 @@ const FormTwo = () => {
             </form>
         </div>
     );
-};
-
-export default FormTwo;
+}
