@@ -76,7 +76,7 @@ export default function VisionAssessmentSection({
                             <div className="space-y-6">
                                 <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-4">
                                     <div className="space-y-4">
-                                        <h3 className="font-medium text-sm">
+                                        <h3 className="font-medium text-muted-foreground text-sm">
                                             Right Eye
                                         </h3>
                                         <FormField
@@ -224,7 +224,7 @@ export default function VisionAssessmentSection({
                                     </div>
 
                                     <div className="space-y-4">
-                                        <h3 className="font-medium text-sm">
+                                        <h3 className="font-medium text-muted-foreground text-sm">
                                             Left Eye
                                         </h3>
                                         <FormField

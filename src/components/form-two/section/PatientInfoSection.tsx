@@ -83,6 +83,23 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
 
                                 <FormField
                                     control={form.control}
+                                    name="uhid"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>UHID</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="Unique Health ID"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
                                     name="sex"
                                     render={({ field }) => (
                                         <FormItem className="space-y-3">
@@ -122,23 +139,6 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                                                         </FormLabel>
                                                     </FormItem>
                                                 </RadioGroup>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="uhid"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>UHID</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="Unique Health ID"
-                                                    {...field}
-                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
