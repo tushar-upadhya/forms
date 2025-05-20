@@ -1,18 +1,13 @@
-import { Button } from "@/components/ui/button";
 import { PatientInfoSchema } from "@/lib/schemas";
 import type { FormValues } from "@/lib/type/type";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
-import ClinicalHistorySection from "./section/ClinicalHistorySection";
+import { Button } from "../ui/button";
 import PatientInfoSection from "./section/PatientInfoSection";
-import PosteriorSegmentSection from "./section/PosteriorSegmentSection";
-import PupilAssessmentSection from "./section/PupilAssessmentSection";
-import VisionAssessmentSection from "./section/VisionAssessmentSection";
 
-export default function FormOne() {
+const FormTwo = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -92,7 +87,6 @@ export default function FormOne() {
         setIsDarkMode(!isDarkMode);
         document.documentElement.classList.toggle("dark");
     }
-
     return (
         <div
             className={`container mx-auto py-8 px-4 md:px-6 max-w-4xl animate-in fade-in duration-500 ${
@@ -129,12 +123,7 @@ export default function FormOne() {
             </header>
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <PatientInfoSection form={form} />
-                <ClinicalHistorySection form={form} />
-                <VisionAssessmentSection form={form} />
-                <PupilAssessmentSection form={form} />
-                <AnteriorSegmentSection form={form} />
-                <PosteriorSegmentSection form={form} />
+                <PatientInfoSection />
 
                 <div className="pt-4 flex justify-end">
                     <Button
@@ -149,4 +138,6 @@ export default function FormOne() {
             </form>
         </div>
     );
-}
+};
+
+export default FormTwo;
