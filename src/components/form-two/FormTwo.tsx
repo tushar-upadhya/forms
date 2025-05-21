@@ -2,14 +2,14 @@ import { PatientInfoSchema } from "@/lib/schemas";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { BreadcrumbNavigation } from "../breadcrumb-navigation/BreadcrumbNavigation";
+import AnteriorSegmentSection from "../form-one/section/AnteriorSegmentSection";
+import ClinicalHistorySection from "../form-one/section/ClinicalHistorySection";
+import PatientInfoSection from "../form-one/section/PatientInfoSection";
+import PosteriorSegmentSection from "../form-one/section/PosteriorSegmentSection";
+import PupilAssessmentSection from "../form-one/section/PupilAssessmentSection";
+import VisionAssessmentSection from "../form-one/section/VisionAssessmentSection";
 import { SubmitButton } from "../submit-button/SubmitButton";
-import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
-import ClinicalHistorySection from "./section/ClinicalHistorySection";
-import PatientInfoSection from "./section/PatientInfoSection";
-import PosteriorSegmentSection from "./section/PosteriorSegmentSection";
-import PupilAssessmentSection from "./section/PupilAssessmentSection";
-import VisionAssessmentSection from "./section/VisionAssessmentSection";
+import { BreadcrumbNavigation } from "./breadcrumb-navigation/BreadcrumbNavigation";
 
 type FormValues = z.infer<typeof PatientInfoSchema>;
 
