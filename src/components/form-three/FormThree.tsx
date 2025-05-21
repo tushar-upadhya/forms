@@ -11,52 +11,11 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { sections } from "@/lib/section";
 import type { FormValues } from "@/lib/type/type";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import AnteriorSegmentSection from "../form-one/section/AnteriorSegmentSection";
-import ClinicalHistorySection from "../form-one/section/ClinicalHistorySection";
-import PatientInfoSection from "../form-one/section/PatientInfoSection";
-import PosteriorSegmentSection from "../form-one/section/PosteriorSegmentSection";
-import PupilAssessmentSection from "../form-one/section/PupilAssessmentSection";
-import VisionAssessmentSection from "../form-one/section/VisionAssessmentSection";
 import { FormAppSidebar } from "./form-sidebar/FormSidebar";
-
-interface Section {
-    id: string;
-    label: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    component: React.ComponentType<{ form: any }>;
-}
-
-const sections: Section[] = [
-    { id: "patientInfo", label: "Patient Info", component: PatientInfoSection },
-    {
-        id: "clinicalHistory",
-        label: "Clinical History",
-        component: ClinicalHistorySection,
-    },
-    {
-        id: "visionAssessment",
-        label: "Vision Assessment",
-        component: VisionAssessmentSection,
-    },
-    {
-        id: "pupilAssessment",
-        label: "Pupil Assessment",
-        component: PupilAssessmentSection,
-    },
-    {
-        id: "anteriorSegment",
-        label: "Anterior Segment",
-        component: AnteriorSegmentSection,
-    },
-    {
-        id: "posteriorSegment",
-        label: "Posterior Segment",
-        component: PosteriorSegmentSection,
-    },
-];
 
 export default function FormThree() {
     const [isSubmitting, setIsSubmitting] = useState(false);
