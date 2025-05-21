@@ -29,7 +29,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Name",
+                            "label": "Name",
                             "visible_header": false
                         },
                         {
@@ -41,7 +41,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Age",
+                            "label": "Age",
                             "visible_header": false
                         },
                         {
@@ -78,7 +78,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "Sex",
+                            "label": "Sex",
                             "visible_header": false
                         },
                         {
@@ -90,13 +90,13 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "UHID",
+                            "label": "UHID",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "Basic Information",
-                    "view": "simple"
+                    "ui": "flex"
                 },
                 {
                     "is_disabled": false,
@@ -113,7 +113,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Chief Complaint",
+                            "label": "Chief Complaint",
                             "visible_header": false
                         },
                         {
@@ -125,7 +125,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "History of Present Illness",
+                            "label": "History of Present Illness",
                             "visible_header": false
                         },
                         {
@@ -137,7 +137,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Past History",
+                            "label": "Past History",
                             "visible_header": false
                         },
                         {
@@ -149,7 +149,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Family History",
+                            "label": "Family History",
                             "visible_header": false
                         },
                         {
@@ -161,13 +161,13 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Other Relevant History",
+                            "label": "Other Relevant History",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "Clinical History",
-                    "view": "simple"
+                    "ui": "flex"
                 },
                 {
                     "is_disabled": false,
@@ -337,7 +337,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "UCVA - Right Eye",
+                            "label": "UCVA - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -502,7 +502,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "UCVA - Left Eye",
+                            "label": "UCVA - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -675,7 +675,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "BCVA - Right Eye",
+                            "label": "BCVA - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -848,7 +848,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "BCVA - Left Eye",
+                            "label": "BCVA - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -860,7 +860,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Refraction - Right Eye",
+                            "label": "Refraction - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -872,7 +872,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Refraction - Left Eye",
+                            "label": "Refraction - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -1525,7 +1525,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "INTRAOCULAR PRESSURE - Right Eye",
+                            "label": "INTRAOCULAR PRESSURE - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2178,13 +2178,13 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "INTRAOCULAR PRESSURE - Left Eye",
+                            "label": "INTRAOCULAR PRESSURE - Left Eye",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "Vision Assessment",
-                    "view": "two_column"
+                    "ui": "grid-cols-2"
                 },
                 {
                     "is_disabled": false,
@@ -2217,7 +2217,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "Pupil - Direct  - Right Eye",
+                            "label": "Pupil - Direct  - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2246,7 +2246,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "Pupil - Direct  - Left Eye",
+                            "label": "Pupil - Direct  - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2275,7 +2275,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "Pupil - Consensual  - Right Eye",
+                            "label": "Pupil - Consensual  - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2304,7 +2304,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "Pupil - Consensual  - Left Eye",
+                            "label": "Pupil - Consensual  - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2333,7 +2333,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "RAPD  - Right Eye",
+                            "label": "RAPD  - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2362,13 +2362,13 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "RAPD  - Left Eye",
+                            "label": "RAPD  - Left Eye",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "Pupil",
-                    "view": "two_column"
+                    "ui": "grid-cols-2"
                 },
                 {
                     "is_disabled": false,
@@ -2384,7 +2384,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "LID AND ADNEXA - Right Eye",
+                            "label": "LID AND ADNEXA - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2396,7 +2396,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "LID AND ADNEXA - Left Eye",
+                            "label": "LID AND ADNEXA - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2408,7 +2408,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "EYE ALIGNMENT - Right Eye",
+                            "label": "EYE ALIGNMENT - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2420,7 +2420,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "EYE ALIGNMENT - Left Eye",
+                            "label": "EYE ALIGNMENT - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2432,7 +2432,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "CORNEA - Right Eye",
+                            "label": "CORNEA - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2444,7 +2444,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "CORNEA - Left Eye",
+                            "label": "CORNEA - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2505,7 +2505,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "ANTERIOR CHAMBER AC Cells - Right Eye",
+                            "label": "ANTERIOR CHAMBER AC Cells - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2566,7 +2566,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "ANTERIOR CHAMBER AC Cells - Left Eye",
+                            "label": "ANTERIOR CHAMBER AC Cells - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2611,7 +2611,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "ANTERIOR CHAMBER AC Flare - Right Eye",
+                            "label": "ANTERIOR CHAMBER AC Flare - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2656,7 +2656,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "ANTERIOR CHAMBER AC Flare - Left Eye",
+                            "label": "ANTERIOR CHAMBER AC Flare - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2668,7 +2668,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OTHER FINDINGS - Right Eye",
+                            "label": "OTHER FINDINGS - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2680,7 +2680,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OTHER FINDINGS - Left Eye",
+                            "label": "OTHER FINDINGS - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2692,7 +2692,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "ANTERIOR CHAMBER DEPTH - Right Eye",
+                            "label": "ANTERIOR CHAMBER DEPTH - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2704,7 +2704,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "ANTERIOR CHAMBER DEPTH - Left Eye",
+                            "label": "ANTERIOR CHAMBER DEPTH - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2716,7 +2716,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "IRIS - Right Eye",
+                            "label": "IRIS - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2728,7 +2728,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "IRIS - Left Eye",
+                            "label": "IRIS - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2805,7 +2805,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "LENS - Right Eye",
+                            "label": "LENS - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2882,7 +2882,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "LENS - Left Eye",
+                            "label": "LENS - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -2894,7 +2894,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OTHER FINDINGS - Right Eye",
+                            "label": "OTHER FINDINGS - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -2906,13 +2906,13 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OTHER FINDINGS - Left Eye",
+                            "label": "OTHER FINDINGS - Left Eye",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "ANTERIOR SEGMENT EXAMINATION",
-                    "view": "two_column"
+                    "ui": "grid-cols-2"
                 },
                 {
                     "is_disabled": false,
@@ -2969,7 +2969,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "VITREOUS CAVITY MEDIA HAZE - Right Eye",
+                            "label": "VITREOUS CAVITY MEDIA HAZE - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3022,7 +3022,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "VITREOUS CAVITY MEDIA HAZE - Left Eye",
+                            "label": "VITREOUS CAVITY MEDIA HAZE - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3034,7 +3034,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OTHER FINDINGS - Right Eye",
+                            "label": "OTHER FINDINGS - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3046,7 +3046,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OTHER FINDINGS - Left Eye",
+                            "label": "OTHER FINDINGS - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3058,7 +3058,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "RETINA DISC - Right Eye",
+                            "label": "RETINA DISC - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3070,7 +3070,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "RETINA DISC - Left Eye",
+                            "label": "RETINA DISC - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3082,7 +3082,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "MACULA - Right Eye",
+                            "label": "MACULA - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3094,7 +3094,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "MACULA - Left Eye",
+                            "label": "MACULA - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3106,7 +3106,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "MID PERIPHERY - Right Eye",
+                            "label": "MID PERIPHERY - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3118,7 +3118,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "MID PERIPHERY - Left Eye",
+                            "label": "MID PERIPHERY - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3130,7 +3130,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "PERIPHERY - Right Eye",
+                            "label": "PERIPHERY - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3142,13 +3142,13 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "PERIPHERY - Left Eye",
+                            "label": "PERIPHERY - Left Eye",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "POSTERIOR SEGMENT EVALUATION",
-                    "view": "two_column"
+                    "ui": "grid-cols-2"
                 },
                 {
                     "is_disabled": false,
@@ -3164,7 +3164,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "COLOR PHOTO - Right Eye",
+                            "label": "COLOR PHOTO - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3176,7 +3176,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "COLOR PHOTO - Left Eye",
+                            "label": "COLOR PHOTO - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3188,7 +3188,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "FFA - Right Eye",
+                            "label": "FFA - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3200,7 +3200,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "FFA - Left Eye",
+                            "label": "FFA - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3212,7 +3212,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "ICGA - Right Eye",
+                            "label": "ICGA - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3224,7 +3224,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "ICGA - Left Eye",
+                            "label": "ICGA - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3236,7 +3236,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OCT - Right Eye",
+                            "label": "OCT - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3248,7 +3248,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OCT - Left Eye",
+                            "label": "OCT - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3260,7 +3260,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OCT - A - Right Eye",
+                            "label": "OCT - A - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3272,7 +3272,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "OCT - A - Left Eye",
+                            "label": "OCT - A - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3284,7 +3284,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "FAF - Right Eye",
+                            "label": "FAF - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3296,7 +3296,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "FAF - Left Eye",
+                            "label": "FAF - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3308,7 +3308,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "USG FOR PSE - Right Eye",
+                            "label": "USG FOR PSE - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3320,7 +3320,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "USG FOR PSE - Left Eye",
+                            "label": "USG FOR PSE - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3332,7 +3332,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "FF - ERG - Right Eye",
+                            "label": "FF - ERG - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3344,7 +3344,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "FF - ERG - Left Eye",
+                            "label": "FF - ERG - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3356,7 +3356,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "MF - ERG - Right Eye",
+                            "label": "MF - ERG - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3368,7 +3368,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "MF - ERG - Left Eye",
+                            "label": "MF - ERG - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3380,7 +3380,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "VER - Right Eye",
+                            "label": "VER - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3392,7 +3392,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "VER - Left Eye",
+                            "label": "VER - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3404,7 +3404,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "EOG - Right Eye",
+                            "label": "EOG - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3416,13 +3416,13 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "EOG - Left Eye",
+                            "label": "EOG - Left Eye",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "INVESTIGATIONS (GIVE OPTION TO SELECT WHICH EYE)",
-                    "view": "two_column"
+                    "ui": "grid-cols-2"
                 },
                 {
                     "is_disabled": false,
@@ -3438,7 +3438,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Provisional Diagnosis - Right Eye",
+                            "label": "Provisional Diagnosis - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3450,13 +3450,13 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Provisional Diagnosis - Left Eye",
+                            "label": "Provisional Diagnosis - Left Eye",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "PROVISIONAL DIAGNOSIS",
-                    "view": "simple"
+                    "ui": "flex"
                 },
                 {
                     "is_disabled": false,
@@ -3472,7 +3472,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Treatment Plan - Right Eye",
+                            "label": "Treatment Plan - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3484,7 +3484,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Treatment Plan - Left Eye",
+                            "label": "Treatment Plan - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3657,7 +3657,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "Medication - Right Eye",
+                            "label": "Medication - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3830,7 +3830,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "Medication - Left Eye",
+                            "label": "Medication - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3842,7 +3842,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Other Medication - Right Eye",
+                            "label": "Other Medication - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3854,13 +3854,13 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Other Medication - Left Eye",
+                            "label": "Other Medication - Left Eye",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "TREATMENT PLAN",
-                    "view": "two_column"
+                    "ui": "grid-cols-2"
                 },
                 {
                     "is_disabled": false,
@@ -3876,7 +3876,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Laser - Right Eye",
+                            "label": "Laser - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -3888,7 +3888,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Laser - Left Eye",
+                            "label": "Laser - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -3965,7 +3965,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "Intravitreal - Right Eye",
+                            "label": "Intravitreal - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -4042,7 +4042,7 @@
                                 }
                             ],
                             "repeat_min": 0,
-                            "text": "Intravitreal - Left Eye",
+                            "label": "Intravitreal - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -4054,7 +4054,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Other Treatment(Intravitreal) - Right Eye",
+                            "label": "Other Treatment(Intravitreal) - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -4066,7 +4066,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Other Treatment(Intravitreal) - Left Eye",
+                            "label": "Other Treatment(Intravitreal) - Left Eye",
                             "visible_header": false
                         },
                         {
@@ -4078,7 +4078,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Surgery - Right Eye",
+                            "label": "Surgery - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -4090,13 +4090,13 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Surgery - Left Eye",
+                            "label": "Surgery - Left Eye",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "OTHER TREATMENT",
-                    "view": "two_column"
+                    "ui": "grid-cols-2"
                 },
                 {
                     "is_disabled": false,
@@ -4112,7 +4112,7 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Notes - Right Eye",
+                            "label": "Notes - Right Eye",
                             "visible_header": false
                         },
                         {
@@ -4124,18 +4124,18 @@
                             "meta_data": {},
                             "options": [],
                             "repeat_min": 0,
-                            "text": "Notes - Left Eye",
+                            "label": "Notes - Left Eye",
                             "visible_header": false
                         }
                     ],
                     "repeat_min": 0,
                     "title": "Other Notes",
-                    "view": "two_column"
+                    "ui": "grid-cols-2"
                 }
             ],
             "version": "1.0"
         }
     ],
-    "view": "simple",
-    "viewers": []
+    "ui": "flex",
+    "uiers": []
 }
