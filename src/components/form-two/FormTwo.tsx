@@ -36,7 +36,6 @@ export default function FormTwo() {
         <div
             className={`container mx-auto py-8 px-4 md:px-6 max-w-4xl animate-in fade-in duration-500`}
         >
-            {" "}
             <BreadcrumbNavigation
                 sections={sections}
                 activeSection={activeSection}

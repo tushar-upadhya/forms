@@ -1,5 +1,5 @@
 import { FormHeader } from "./components/form-header/FormHeader";
-import FormThree from "./components/form-three/FormThree";
+import FormOne from "./components/form-one/FormOne";
 import { BentoGrid } from "./components/ui/bento-grid";
 import { ThemeProvider } from "./theme-provider";
 
@@ -15,7 +15,9 @@ function App() {
                         </div> */}
 
                         <div className="order-2 flex-1 w-full">
-                            <FormThree />
+                            <FormOne />
+                            {/* <FormThree /> */}
+                            {/* <FormTwo /> */}
                         </div>
 
                         <div className="hidden md:block flex-none order-3 w-[300px]">
