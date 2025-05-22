@@ -8,7 +8,7 @@ import {
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { formSchemaJson } from "@/lib/schemas";
+import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import { EyeIcon } from "lucide-react";
 import { renderField, type PatientInfoSectionProps } from "../FormOne";
 

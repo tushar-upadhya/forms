@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import { formSchemaJson } from "@/lib/schemas";
+import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import { ClipboardListIcon } from "lucide-react";
 import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
