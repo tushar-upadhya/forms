@@ -17,7 +17,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { formSchemaJson } from "@/lib/schemas";
+import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import { useState } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import ClinicalHistorySection from "./section/ClinicalHistorySection";
