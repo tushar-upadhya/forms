@@ -1,6 +1,5 @@
 import { FormHeader } from "./components/form-header/FormHeader";
 import FormOne from "./components/form-one/FormOne";
-import { BentoGrid } from "./components/ui/bento-grid";
 import { ThemeProvider } from "./theme-provider";
 
 function App() {
@@ -20,9 +19,9 @@ function App() {
                             {/* <FormTwo /> */}
                         </div>
 
-                        <div className="hidden md:block flex-none order-3 w-[300px]">
+                        {/* <div className="hidden md:block flex-none order-3 w-[300px]">
                             <BentoGrid side="right" />
-                        </div>
+                        </div> */}
 
                         {/* <div className="md:hidden order-4 space-y-6 w-full mt-6">
                             <BentoGrid side="left" className="w-full" />

@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { formSchemaJson } from "@/lib/schemas";
 import { EyeIcon } from "lucide-react";
 import { renderField, type PatientInfoSectionProps } from "../FormOne";
@@ -39,20 +40,18 @@ export default function VisionAssessmentSection({
         );
     }
 
-    // Group questions by eye (Right Eye, Left Eye) based on meta_data.group
-    const rightEyeQuestions = visionSection.questions.filter(
-        (q: any) => q.meta_data?.group === "Right Eye"
+    const rightEyeQuestions = visionSection.questions.filter((q: any) =>
+        q.label.includes("Right Eye")
     );
-    const leftEyeQuestions = visionSection.questions.filter(
-        (q: any) => q.meta_data?.group === "Left Eye"
+    const leftEyeQuestions = visionSection.questions.filter((q: any) =>
+        q.label.includes("Left Eye")
     );
 
-    // Determine grid layout based on ui property
     const gridClass =
         visionSection.ui === "grid-cols-2"
-            ? "grid-cols-1 sm:grid-cols-2"
+            ? "grid-cols-2"
             : visionSection.ui === "flex"
-            ? "grid-cols-1 sm:grid-cols-2"
+            ? "grid-cols-2"
             : "grid-cols-1";
 
     return (
@@ -75,61 +74,65 @@ export default function VisionAssessmentSection({
                     <AccordionContent>
                         <CardContent className="p-4 pt-2">
                             <Form {...form}>
-                                <div className="space-y-6">
-                                    <div className={`grid ${gridClass} gap-4`}>
-                                        <div className="space-y-4">
-                                            <h3 className="font-medium text-sm">
-                                                Right Eye
-                                            </h3>
-                                            {rightEyeQuestions.map(
-                                                (question: any) => (
-                                                    <div
-                                                        key={
-                                                            question._id ||
-                                                            question.label
-                                                        }
-                                                        className={
-                                                            question.field_type ===
-                                                            "textarea"
-                                                                ? "col-span-1 sm:col-span-2"
-                                                                : "col-span-1"
-                                                        }
-                                                    >
-                                                        {renderField(
-                                                            question,
-                                                            form
-                                                        )}
-                                                    </div>
-                                                )
-                                            )}
+                                <div className="">
+                                    <ScrollArea className="w-full whitespace-nowrap">
+                                        <div
+                                            className={`grid ${gridClass} gap-4 min-w-[600px]`}
+                                        >
+                                            <div className="space-y-4">
+                                                <h3 className="font-medium text-sm">
+                                                    Right Eye
+                                                </h3>
+                                                {rightEyeQuestions.map(
+                                                    (question: any) => (
+                                                        <div
+                                                            key={
+                                                                question._id ||
+                                                                question.label
+                                                            }
+                                                            className={
+                                                                question.field_type ===
+                                                                "textarea"
+                                                                    ? "col-span-2"
+                                                                    : "col-span-1"
+                                                            }
+                                                        >
+                                                            {renderField(
+                                                                question,
+                                                                form
+                                                            )}
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+                                            <div className="space-y-4">
+                                                <h3 className="font-medium text-sm">
+                                                    Left Eye
+                                                </h3>
+                                                {leftEyeQuestions.map(
+                                                    (question: any) => (
+                                                        <div
+                                                            key={
+                                                                question._id ||
+                                                                question.label
+                                                            }
+                                                            className={
+                                                                question.field_type ===
+                                                                "textarea"
+                                                                    ? "col-span-2"
+                                                                    : "col-span-1"
+                                                            }
+                                                        >
+                                                            {renderField(
+                                                                question,
+                                                                form
+                                                            )}
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
                                         </div>
-                                        <div className="space-y-4">
-                                            <h3 className="font-medium text-sm">
-                                                Left Eye
-                                            </h3>
-                                            {leftEyeQuestions.map(
-                                                (question: any) => (
-                                                    <div
-                                                        key={
-                                                            question._id ||
-                                                            question.label
-                                                        }
-                                                        className={
-                                                            question.field_type ===
-                                                            "textarea"
-                                                                ? "col-span-1 sm:col-span-2"
-                                                                : "col-span-1"
-                                                        }
-                                                    >
-                                                        {renderField(
-                                                            question,
-                                                            form
-                                                        )}
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    </div>
+                                    </ScrollArea>
                                 </div>
                             </Form>
                         </CardContent>
