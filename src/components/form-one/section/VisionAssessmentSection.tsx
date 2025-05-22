@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Accordion,
     AccordionContent,
@@ -5,376 +6,136 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
+import { formSchemaJson } from "@/lib/schemas";
 import { EyeIcon } from "lucide-react";
-import { type UseFormReturn } from "react-hook-form";
-
-const visionOptions = [
-    "6/6",
-    "6/9",
-    "6/12",
-    "6/18",
-    "6/24",
-    "6/36",
-    "6/60",
-    "CF 1m",
-    "CF 2m",
-    "CF 3m",
-    "HM",
-    "PL+",
-    "PL-",
-    "NPL",
-];
-
-const pressureOptions = [
-    "Normal (10-21 mmHg)",
-    "Elevated (>21 mmHg)",
-    "Low (<10 mmHg)",
-    "Not Measurable",
-];
-
-interface VisionAssessmentSectionProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    form: UseFormReturn<any>;
-}
+import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
 export default function VisionAssessmentSection({
     form,
-}: VisionAssessmentSectionProps) {
-    return (
-        <Accordion
-            type="single"
-            defaultValue="vision-assessment"
-            collapsible
-            className="border rounded-lg overflow-hidden bg-card"
-        >
-            <AccordionItem value="vision-assessment" className="border-0">
-                <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group">
-                    <div className="flex items-center gap-2">
-                        <EyeIcon className="h-5 w-5 text-primary" />
-                        <span className="font-medium">Vision Assessment</span>
-                    </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                    <CardContent className="p-4 pt-2">
-                        <Form {...form}>
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-4">
-                                    <div className="space-y-4">
-                                        <h3 className="font-medium text-sm">
-                                            Right Eye
-                                        </h3>
-                                        <FormField
-                                            control={form.control}
-                                            name="ucvaRight"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>UCVA</FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 w-full select-trigger">
-                                                                <SelectValue placeholder="Select vision" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent className="select-content">
-                                                            {visionOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        className="select-item"
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="bcvaRight"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>BCVA</FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 w-full">
-                                                                <SelectValue placeholder="Select vision" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {visionOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="refractionRight"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        Refraction
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="Sph/Cyl x Axis"
-                                                            className="h-10 w-full"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="iopRight"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        IOP right
-                                                    </FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 sm:w-full w-[7.5rem]">
-                                                                <SelectValue placeholder="Select IOP range" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {pressureOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+}: PatientInfoSectionProps) {
+    if (!form || !form.control) {
+        console.error(
+            "Form prop is undefined or invalid in VisionAssessmentSection"
+        );
+        return (
+            <div className="text-red-500">
+                Error: Form is not properly initialized
+            </div>
+        );
+    }
 
-                                    <div className="space-y-4">
-                                        <h3 className="font-medium text-sm">
-                                            Left Eye
-                                        </h3>
-                                        <FormField
-                                            control={form.control}
-                                            name="ucvaLeft"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>UCVA</FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
+    const sections = formSchemaJson.versions[0]?.sections || [];
+    const visionSection = sections.find(
+        (section: any) => section.title === "Vision Assessment"
+    );
+
+    if (!visionSection) {
+        console.error("Vision Assessment section not found in schema");
+        return (
+            <div className="text-red-500">
+                Error: Vision Assessment section not found
+            </div>
+        );
+    }
+
+    // Group questions by eye (Right Eye, Left Eye) based on meta_data.group
+    const rightEyeQuestions = visionSection.questions.filter(
+        (q: any) => q.meta_data?.group === "Right Eye"
+    );
+    const leftEyeQuestions = visionSection.questions.filter(
+        (q: any) => q.meta_data?.group === "Left Eye"
+    );
+
+    // Determine grid layout based on ui property
+    const gridClass =
+        visionSection.ui === "grid-cols-2"
+            ? "grid-cols-1 sm:grid-cols-2"
+            : visionSection.ui === "flex"
+            ? "grid-cols-1 sm:grid-cols-2"
+            : "grid-cols-1";
+
+    return (
+        <div className="space-y-4">
+            <Accordion
+                type="single"
+                defaultValue="vision-assessment"
+                collapsible
+                className="border rounded-lg overflow-hidden bg-card"
+            >
+                <AccordionItem value="vision-assessment" className="border-0">
+                    <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
+                        <div className="flex items-center gap-2">
+                            <EyeIcon className="h-5 w-5 text-primary" />
+                            <span className="font-medium">
+                                {visionSection.title}
+                            </span>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <CardContent className="p-4 pt-2">
+                            <Form {...form}>
+                                <div className="space-y-6">
+                                    <div className={`grid ${gridClass} gap-4`}>
+                                        <div className="space-y-4">
+                                            <h3 className="font-medium text-sm">
+                                                Right Eye
+                                            </h3>
+                                            {rightEyeQuestions.map(
+                                                (question: any) => (
+                                                    <div
+                                                        key={
+                                                            question._id ||
+                                                            question.label
                                                         }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 w-full">
-                                                                <SelectValue placeholder="Select vision" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {visionOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="bcvaLeft"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>BCVA</FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 w-full">
-                                                                <SelectValue placeholder="Select vision" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {visionOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="refractionLeft"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        Refraction
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="Sph/Cyl x Axis"
-                                                            className="h-10 w-full"
-                                                            {...field}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="iopLeft"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        IOP left
-                                                    </FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
+                                                        className={
+                                                            question.field_type ===
+                                                            "textarea"
+                                                                ? "col-span-1 sm:col-span-2"
+                                                                : "col-span-1"
                                                         }
                                                     >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 sm:w-full w-[7.5rem]">
-                                                                <SelectValue placeholder="Select IOP range" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {pressureOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
+                                                        {renderField(
+                                                            question,
+                                                            form
+                                                        )}
+                                                    </div>
+                                                )
                                             )}
-                                        />
+                                        </div>
+                                        <div className="space-y-4">
+                                            <h3 className="font-medium text-sm">
+                                                Left Eye
+                                            </h3>
+                                            {leftEyeQuestions.map(
+                                                (question: any) => (
+                                                    <div
+                                                        key={
+                                                            question._id ||
+                                                            question.label
+                                                        }
+                                                        className={
+                                                            question.field_type ===
+                                                            "textarea"
+                                                                ? "col-span-1 sm:col-span-2"
+                                                                : "col-span-1"
+                                                        }
+                                                    >
+                                                        {renderField(
+                                                            question,
+                                                            form
+                                                        )}
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </Form>
-                    </CardContent>
-                </AccordionContent>
-            </AccordionItem>
-        </Accordion>
+                            </Form>
+                        </CardContent>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </div>
     );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import {
     FormControl,
@@ -8,10 +9,20 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { formSchemaJson } from "@/lib/schemas";
 import { useState } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
+import ClinicalHistorySection from "./section/ClinicalHistorySection";
 import PatientInfoSection from "./section/PatientInfoSection";
+import VisionAssessmentSection from "./section/VisionAssessmentSection";
 
 const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
@@ -37,7 +48,7 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
     const fieldName = getFieldName(question.label);
 
     if (!form || !form.control) {
-        console.error(fieldName);
+        console.error("Form control is undefined for field:", fieldName);
         return null;
     }
 
@@ -51,7 +62,9 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                         <FormItem>
                             <FormLabel
                                 className={
-                                    question.is_required ? "required" : ""
+                                    question.is_required
+                                        ? "required after:content-['*'] after:text-red-500"
+                                        : ""
                                 }
                             >
                                 {question.label}
@@ -62,6 +75,38 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                     disabled={question.is_disabled}
                                     {...field}
                                     value={field.value ?? ""}
+                                    className="w-full"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            );
+
+        case "textarea":
+            return (
+                <FormField
+                    control={form.control}
+                    name={fieldName}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel
+                                className={
+                                    question.is_required
+                                        ? "required after:content-['*'] after:text-red-500"
+                                        : ""
+                                }
+                            >
+                                {question.label}
+                            </FormLabel>
+                            <FormControl>
+                                <Textarea
+                                    placeholder={`Enter ${question.label.toLowerCase()}`}
+                                    disabled={question.is_disabled}
+                                    {...field}
+                                    value={field.value ?? ""}
+                                    className="w-full min-h-[100px] resize-y"
                                 />
                             </FormControl>
                             <FormMessage />
@@ -79,7 +124,9 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                         <FormItem className="space-y-3">
                             <FormLabel
                                 className={
-                                    question.is_required ? "required" : ""
+                                    question.is_required
+                                        ? "required after:content-['*'] after:text-red-500"
+                                        : ""
                                 }
                             >
                                 {question.label}
@@ -88,7 +135,7 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                 <RadioGroup
                                     onValueChange={field.onChange}
                                     value={field.value}
-                                    className="flex space-y-1"
+                                    className="flex flex-wrap gap-4"
                                     disabled={question.is_disabled}
                                 >
                                     {question.options.map((option: any) => (
@@ -117,6 +164,52 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                 />
             );
 
+        case "select":
+            return (
+                <FormField
+                    control={form.control}
+                    name={fieldName}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel
+                                className={
+                                    question.is_required
+                                        ? "required after:content-['*'] after:text-red-500"
+                                        : ""
+                                }
+                            >
+                                {question.label}
+                            </FormLabel>
+                            <FormControl>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    value={field.value}
+                                    disabled={question.is_disabled}
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue
+                                            placeholder={`Select ${question.label.toLowerCase()}`}
+                                        />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {question.options.map((option: any) => (
+                                            <SelectItem
+                                                key={option._id}
+                                                value={option.option_value}
+                                                disabled={option.is_disabled}
+                                            >
+                                                {option.option_label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            );
+
         default:
             return null;
     }
@@ -129,6 +222,8 @@ export default function FormOne() {
         defaultValues,
     });
 
+    console.log("FormOne: form object", form);
+
     function onSubmit(data: FormValues) {
         setIsSubmitting(true);
         setTimeout(() => {
@@ -139,12 +234,18 @@ export default function FormOne() {
     }
 
     return (
-        <div>
+        <div className="max-w-2xl mx-auto p-4">
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {form ? (
-                    <PatientInfoSection form={form} />
+                    <>
+                        <PatientInfoSection form={form} />
+                        <ClinicalHistorySection form={form} />
+                        <VisionAssessmentSection form={form} />
+                    </>
                 ) : (
-                    <div>Error: Form not initialized</div>
+                    <div className="text-red-500">
+                        Error: Form not initialized
+                    </div>
                 )}
                 <div className="pt-4 flex justify-end">
                     <Button
