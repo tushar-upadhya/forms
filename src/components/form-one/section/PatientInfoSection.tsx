@@ -7,9 +7,10 @@ import {
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import QuestionWrapper from "@/lib/QuestionWrapper";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import { ClipboardListIcon } from "lucide-react";
-import { renderField, type PatientInfoSectionProps } from "../FormOne";
+import type { PatientInfoSectionProps } from "../FormOne";
 
 export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
     if (!form || !form.control) {
@@ -24,6 +25,19 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
     }
 
     const sections = formSchemaJson.versions[0]?.sections || [];
+
+    // Get the Basic Information section
+    const basicInfoSection = sections.find(
+        (section) => section.title === "Basic Information"
+    );
+
+    const fieldNames =
+        basicInfoSection?.questions.map((question: any) =>
+            question.label.toLowerCase().replace(/\s+/g, "_")
+        ) || [];
+
+    // console.log("PatientInfoSection: fieldNames", fieldNames);
+    // console.log("PatientInfoSection: fieldValues", form.watch());
 
     return (
         <div className="space-y-4">
@@ -60,24 +74,20 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                                             }`}
                                         >
                                             {section.questions.map(
-                                                (question: any) => (
-                                                    <div
+                                                (
+                                                    question: any,
+                                                    qIndex: number
+                                                ) => (
+                                                    <QuestionWrapper
                                                         key={
                                                             question._id ||
                                                             question.label
                                                         }
-                                                        className={
-                                                            question.field_type ===
-                                                            "textarea"
-                                                                ? "col-span-1 sm:col-span-2"
-                                                                : "col-span-1"
-                                                        }
-                                                    >
-                                                        {renderField(
-                                                            question,
-                                                            form
-                                                        )}
-                                                    </div>
+                                                        question={question}
+                                                        form={form}
+                                                        qIndex={qIndex}
+                                                        fieldNames={fieldNames}
+                                                    />
                                                 )
                                             )}
                                         </div>
