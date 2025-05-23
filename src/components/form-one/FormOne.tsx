@@ -237,8 +237,6 @@ export default function FormOne() {
                 {form ? (
                     <>
                         <PatientInfoSection form={form} />
-                        {/* <ClinicalHistorySection form={form} />
-                        <VisionAssessmentSection form={form} /> */}
                     </>
                 ) : (
                     <div className="text-red-500">
