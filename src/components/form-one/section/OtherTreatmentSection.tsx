@@ -64,12 +64,6 @@ export default function OtherTreatmentSection({
                                         {section.title}
                                     </span>
                                 </div>
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <span className="text-xs text-muted-foreground mr-4">
-                                        Laser, intravitreal, and surgical
-                                        treatments for both eyes
-                                    </span>
-                                </div>
                             </AccordionTrigger>
                             <AccordionContent>
                                 <CardContent className="p-6">

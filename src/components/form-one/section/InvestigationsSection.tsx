@@ -68,12 +68,6 @@ export default function InvestigationsSection({
                                         {section.title}
                                     </span>
                                 </div>
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <span className="text-xs text-muted-foreground mr-4">
-                                        Diagnostic imaging and test results for
-                                        both eyes
-                                    </span>
-                                </div>
                             </AccordionTrigger>
 
                             <AccordionContent>
