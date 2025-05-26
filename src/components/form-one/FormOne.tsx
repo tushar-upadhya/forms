@@ -253,8 +253,10 @@ export default function FormOne() {
                         <PupilAssessmentSection form={form} />
                         <AnteriorSegmentSection form={form} />
                         <PosteriorSegmentSection form={form} />
+                        {/* trigger getting padding */}
                         <InvestigationsSection form={form} />
                         <ProvisionalDiagnosisSection form={form} />
+                        {/*  */}
                         <TreatmentPlanSection form={form} />
                         <OtherTreatmentSection form={form} />
                     </>

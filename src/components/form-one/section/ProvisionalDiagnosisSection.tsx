@@ -27,7 +27,6 @@ export default function ProvisionalDiagnosisSection({
 
     const sections = formSchemaJson.versions[0]?.sections || [];
 
-    // Get the Provisional Diagnosis section
     const provisionalDiagnosisSection = sections.find(
         (section) => section.title === "PROVISIONAL DIAGNOSIS"
     );
@@ -58,9 +57,9 @@ export default function ProvisionalDiagnosisSection({
                             className="border-0"
                         >
                             <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 w-full">
                                     <ClipboardCheck className="h-5 w-5 text-primary" />
-                                    <span className="font-medium truncate w-[10rem] md:w-full sm:w-full text-left">
+                                    <span className="font-medium truncate w-[10rem] sm:w-auto text-left">
                                         {section.title}
                                     </span>
                                 </div>
