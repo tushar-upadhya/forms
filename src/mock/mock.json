@@ -42,7 +42,8 @@
                             "options": [],
                             "repeat_min": 0,
                             "label": "Age",
-                            "visible_header": false
+                            "visible_header": false,
+                            "variable": "age"
                         },
                         {
                             "_id": "91deaef0-dfc6-43ac-adff-dedbd739ae95",
@@ -79,7 +80,8 @@
                             ],
                             "repeat_min": 0,
                             "label": "Sex",
-                            "visible_header": false
+                            "visible_header": false,
+                            "visible_condition": "age > 15"
                         },
                         {
                             "_id": "baba0b79-d5bd-406e-8bd0-a88e8fa32933",

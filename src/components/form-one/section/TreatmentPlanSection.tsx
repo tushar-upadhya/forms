@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Accordion,
     AccordionContent,
@@ -9,13 +8,15 @@ import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import clsx from "clsx";
-import { ClipboardListIcon } from "lucide-react";
+import { Syringe } from "lucide-react";
 import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
-export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
+export default function TreatmentPlanSection({
+    form,
+}: PatientInfoSectionProps) {
     if (!form || !form.control) {
         console.error(
-            "Form prop is undefined or invalid in PatientInfoSection"
+            "Form prop is undefined or invalid in TreatmentPlanSection"
         );
         return (
             <div className="text-red-500">
@@ -26,15 +27,24 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
 
     const sections = formSchemaJson.versions[0]?.sections || [];
 
-    // Get the Basic Information section
-    const basicInfoSection = sections.find(
-        (section) => section.title === "Basic Information"
+    // Get the Treatment Plan section
+    const treatmentPlanSection = sections.find(
+        (section) => section.title === "TREATMENT PLAN"
     );
+
+    if (!treatmentPlanSection) {
+        console.error("Treatment Plan section not found in schema");
+        return (
+            <div className="text-red-500">
+                Error: Treatment Plan section not found
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4">
             {sections
-                .filter((section) => section.title === "Basic Information")
+                .filter((section) => section.title === "TREATMENT PLAN")
                 .map((section, index) => (
                     <Accordion
                         key={index}
@@ -47,26 +57,35 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                             value={`section-${index}`}
                             className="border-0"
                         >
-                            <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
+                            <AccordionTrigger className="px-6 py-4 hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="flex items-center gap-2">
-                                    <ClipboardListIcon className="h-5 w-5 text-primary" />
+                                    <Syringe className="h-4 w-4 text-green-600" />
                                     <span className="font-medium">
                                         {section.title}
                                     </span>
                                 </div>
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span className="text-xs text-muted-foreground mr-4">
+                                        Planned interventions and medications
+                                        for both eyes
+                                    </span>
+                                </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                                <CardContent className="p-4 pt-2">
+                                <CardContent className="p-6">
                                     <Form {...form}>
                                         <div
-                                            className={`grid gap-6 ${
-                                                section.ui === "flex"
+                                            className={clsx(
+                                                "grid gap-6",
+                                                section.ui === "grid-cols-2"
+                                                    ? "grid-cols-1 md:grid-cols-2"
+                                                    : section.ui === "flex"
                                                     ? "grid-cols-1 sm:grid-cols-2"
                                                     : "grid-cols-1"
-                                            }`}
+                                            )}
                                         >
-                                            {basicInfoSection?.questions.map(
-                                                (question: any) => (
+                                            {treatmentPlanSection.questions.map(
+                                                (question) => (
                                                     <div
                                                         key={
                                                             question._id ||
@@ -74,8 +93,10 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                                                         }
                                                         className={clsx(
                                                             question.field_type ===
-                                                                "textarea"
-                                                                ? "col-span-1 sm:col-span-2"
+                                                                "textarea" ||
+                                                                question.field_type ===
+                                                                    "checkbox"
+                                                                ? "col-span-1 md:col-span-2"
                                                                 : "col-span-1"
                                                         )}
                                                     >

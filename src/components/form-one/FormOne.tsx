@@ -20,7 +20,16 @@ import { Textarea } from "@/components/ui/textarea";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import { useState } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
+import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
+import ClinicalHistorySection from "./section/ClinicalHistorySection";
+import InvestigationsSection from "./section/InvestigationsSection";
+import OtherTreatmentSection from "./section/OtherTreatmentSection";
 import PatientInfoSection from "./section/PatientInfoSection";
+import PosteriorSegmentSection from "./section/PosteriorSegmentSection";
+import ProvisionalDiagnosisSection from "./section/ProvisionalDiagnosisSection";
+import PupilAssessmentSection from "./section/PupilAssessmentSection";
+import TreatmentPlanSection from "./section/TreatmentPlanSection";
+import VisionAssessmentSection from "./section/VisionAssessmentSection";
 
 const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
@@ -237,6 +246,15 @@ export default function FormOne() {
                 {form ? (
                     <>
                         <PatientInfoSection form={form} />
+                        <ClinicalHistorySection form={form} />
+                        <VisionAssessmentSection form={form} />
+                        <PupilAssessmentSection form={form} />
+                        <AnteriorSegmentSection form={form} />
+                        <PosteriorSegmentSection form={form} />
+                        <InvestigationsSection form={form} />
+                        <ProvisionalDiagnosisSection form={form} />
+                        <TreatmentPlanSection form={form} />
+                        <OtherTreatmentSection form={form} />
                     </>
                 ) : (
                     <div className="text-red-500">

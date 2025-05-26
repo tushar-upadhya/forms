@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Accordion,
     AccordionContent,
@@ -9,13 +8,15 @@ import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import clsx from "clsx";
-import { ClipboardListIcon } from "lucide-react";
+import { ClipboardCheck } from "lucide-react";
 import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
-export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
+export default function ProvisionalDiagnosisSection({
+    form,
+}: PatientInfoSectionProps) {
     if (!form || !form.control) {
         console.error(
-            "Form prop is undefined or invalid in PatientInfoSection"
+            "Form prop is undefined or invalid in ProvisionalDiagnosisSection"
         );
         return (
             <div className="text-red-500">
@@ -26,15 +27,24 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
 
     const sections = formSchemaJson.versions[0]?.sections || [];
 
-    // Get the Basic Information section
-    const basicInfoSection = sections.find(
-        (section) => section.title === "Basic Information"
+    // Get the Provisional Diagnosis section
+    const provisionalDiagnosisSection = sections.find(
+        (section) => section.title === "PROVISIONAL DIAGNOSIS"
     );
+
+    if (!provisionalDiagnosisSection) {
+        console.error("Provisional Diagnosis section not found in schema");
+        return (
+            <div className="text-red-500">
+                Error: Provisional Diagnosis section not found
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-4">
             {sections
-                .filter((section) => section.title === "Basic Information")
+                .filter((section) => section.title === "PROVISIONAL DIAGNOSIS")
                 .map((section, index) => (
                     <Accordion
                         key={index}
@@ -49,8 +59,8 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                         >
                             <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="flex items-center gap-2">
-                                    <ClipboardListIcon className="h-5 w-5 text-primary" />
-                                    <span className="font-medium">
+                                    <ClipboardCheck className="h-5 w-5 text-primary" />
+                                    <span className="font-medium truncate w-[10rem] md:w-full sm:w-full text-left">
                                         {section.title}
                                     </span>
                                 </div>
@@ -59,14 +69,18 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                                 <CardContent className="p-4 pt-2">
                                     <Form {...form}>
                                         <div
-                                            className={`grid gap-6 ${
+                                            className={clsx(
+                                                "grid gap-6",
                                                 section.ui === "flex"
                                                     ? "grid-cols-1 sm:grid-cols-2"
+                                                    : section.ui ===
+                                                      "grid-cols-2"
+                                                    ? "grid-cols-1 md:grid-cols-2"
                                                     : "grid-cols-1"
-                                            }`}
+                                            )}
                                         >
-                                            {basicInfoSection?.questions.map(
-                                                (question: any) => (
+                                            {provisionalDiagnosisSection.questions.map(
+                                                (question) => (
                                                     <div
                                                         key={
                                                             question._id ||

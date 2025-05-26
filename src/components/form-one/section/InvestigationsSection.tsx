@@ -8,15 +8,15 @@ import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import clsx from "clsx";
-import { ClipboardListIcon } from "lucide-react";
+import { FileSearch } from "lucide-react";
 import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
-export default function PosteriorSegmentSection({
+export default function InvestigationsSection({
     form,
 }: PatientInfoSectionProps) {
     if (!form || !form.control) {
         console.error(
-            "Form prop is undefined or invalid in PosteriorSegmentSection"
+            "Form prop is undefined or invalid in InvestigationsSection"
         );
         return (
             <div className="text-red-500">
@@ -27,17 +27,16 @@ export default function PosteriorSegmentSection({
 
     const sections = formSchemaJson.versions[0]?.sections || [];
 
-    const posteriorSegmentSection = sections.find(
-        (section) => section.title === "POSTERIOR SEGMENT EVALUATION"
+    const investigationsSection = sections.find(
+        (section) =>
+            section.title === "INVESTIGATIONS (GIVE OPTION TO SELECT WHICH EYE)"
     );
 
-    if (!posteriorSegmentSection) {
-        console.error(
-            "Posterior Segment Evaluation section not found in schema"
-        );
+    if (!investigationsSection) {
+        console.error("Investigations section not found in schema");
         return (
             <div className="text-red-500">
-                Error: Posterior Segment Evaluation section not found
+                Error: Investigations section not found
             </div>
         );
     }
@@ -47,7 +46,8 @@ export default function PosteriorSegmentSection({
             {sections
                 .filter(
                     (section) =>
-                        section.title === "POSTERIOR SEGMENT EVALUATION"
+                        section.title ===
+                        "INVESTIGATIONS (GIVE OPTION TO SELECT WHICH EYE)"
                 )
                 .map((section, index) => (
                     <Accordion
@@ -63,9 +63,15 @@ export default function PosteriorSegmentSection({
                         >
                             <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="flex items-center gap-2 w-full">
-                                    <ClipboardListIcon className="h-5 w-5 text-primary" />
+                                    <FileSearch className="h-5 w-5 text-primary" />
                                     <span className="font-medium truncate w-[10rem] md:w-full sm:w-full text-left">
                                         {section.title}
+                                    </span>
+                                </div>
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <span className="text-xs text-muted-foreground mr-4">
+                                        Diagnostic imaging and test results for
+                                        both eyes
                                     </span>
                                 </div>
                             </AccordionTrigger>
@@ -84,7 +90,7 @@ export default function PosteriorSegmentSection({
                                                         : "grid-cols-1"
                                                 )}
                                             >
-                                                {posteriorSegmentSection.questions.map(
+                                                {investigationsSection.questions.map(
                                                     (question) => (
                                                         <div
                                                             key={

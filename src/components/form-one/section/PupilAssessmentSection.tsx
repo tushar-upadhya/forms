@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Accordion,
     AccordionContent,
@@ -5,41 +6,46 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
+import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
+import clsx from "clsx";
 import { EyeIcon } from "lucide-react";
-import { type UseFormReturn } from "react-hook-form";
-
-const pupilOptions = [
-    "Round",
-    "Irregular",
-    "Dilated",
-    "Constricted",
-    "Sluggish",
-    "Non-reactive",
-];
-
-interface PupilAssessmentSectionProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    form: UseFormReturn<any>;
-}
+import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
 export default function PupilAssessmentSection({
     form,
-}: PupilAssessmentSectionProps) {
+}: PatientInfoSectionProps) {
+    if (!form || !form.control) {
+        console.error(
+            "Form prop is undefined or invalid in PupilAssessmentSection"
+        );
+        return (
+            <div className="text-red-500">
+                Error: Form is not properly initialized
+            </div>
+        );
+    }
+
+    const sections = formSchemaJson.versions[0]?.sections || [];
+
+    // Get the Pupil section
+    const pupilSection = sections.find((section) => section.title === "Pupil");
+
+    if (!pupilSection) {
+        console.error("Pupil section not found in schema");
+        return (
+            <div className="text-red-500">Error: Pupil section not found</div>
+        );
+    }
+
+    // Group questions by eye for rendering
+    const rightEyeQuestions = pupilSection.questions.filter((q: any) =>
+        q.label.toLowerCase().includes("right eye")
+    );
+    const leftEyeQuestions = pupilSection.questions.filter((q: any) =>
+        q.label.toLowerCase().includes("left eye")
+    );
+
     return (
         <Accordion
             type="single"
@@ -48,260 +54,61 @@ export default function PupilAssessmentSection({
             className="border rounded-lg overflow-hidden bg-card"
         >
             <AccordionItem value="pupil-assessment" className="border-0">
-                <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group">
+                <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
                     <div className="flex items-center gap-2">
                         <EyeIcon className="h-5 w-5 text-primary" />
-                        <span className="font-medium">Pupil Assessment</span>
+                        <span className="font-medium">
+                            {pupilSection.title}
+                        </span>
                     </div>
                 </AccordionTrigger>
                 <AccordionContent>
                     <CardContent className="p-4 pt-2">
                         <Form {...form}>
-                            <div className="space-y-6">
-                                <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-4">
-                                    <div className="space-y-4">
-                                        <h4 className="text-sm font-medium text-muted-foreground">
-                                            Right Eye
-                                        </h4>
-                                        <FormField
-                                            control={form.control}
-                                            name="pupilDirectRight"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        Direct Response
-                                                    </FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 sm:w-full w-[7.5rem]">
-                                                                <SelectValue placeholder="Select response" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {pupilOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
+                            <div
+                                className={`grid gap-4 ${
+                                    pupilSection.ui === "grid-cols-2"
+                                        ? "grid-cols-1 sm:grid-cols-2"
+                                        : "grid-cols-1"
+                                }`}
+                            >
+                                {/* Right Eye Column */}
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        Right Eye
+                                    </h4>
+                                    {rightEyeQuestions.map((question: any) => (
+                                        <div
+                                            key={question._id || question.label}
+                                            className={clsx(
+                                                question.field_type ===
+                                                    "textarea"
+                                                    ? "col-span-1 sm:col-span-2"
+                                                    : "col-span-1"
                                             )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="pupilConsensualRight"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        Consensual Response
-                                                    </FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 sm:w-full w-[7.5rem]">
-                                                                <SelectValue placeholder="Select response" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {pupilOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
+                                        >
+                                            {renderField(question, form)}
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* Left Eye Column */}
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-medium text-muted-foreground">
+                                        Left Eye
+                                    </h4>
+                                    {leftEyeQuestions.map((question: any) => (
+                                        <div
+                                            key={question._id || question.label}
+                                            className={clsx(
+                                                question.field_type ===
+                                                    "textarea"
+                                                    ? "col-span-1 sm:col-span-2"
+                                                    : "col-span-1"
                                             )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="rapdRight"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>RAPD</FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 w-full">
-                                                                <SelectValue placeholder="Select RAPD" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            <SelectItem value="Present">
-                                                                Present
-                                                            </SelectItem>
-                                                            <SelectItem value="Absent">
-                                                                Absent
-                                                            </SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <h4 className="text-sm font-medium text-muted-foreground">
-                                            Left Eye
-                                        </h4>
-                                        <FormField
-                                            control={form.control}
-                                            name="pupilDirectLeft"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        Direct Response
-                                                    </FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 sm:w-full w-[7.5rem]">
-                                                                <SelectValue placeholder="Select response" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {pupilOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="pupilConsensualLeft"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>
-                                                        Consensual Response
-                                                    </FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 sm:w-full w-[7.5rem]">
-                                                                <SelectValue placeholder="Select response" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            {pupilOptions.map(
-                                                                (option) => (
-                                                                    <SelectItem
-                                                                        key={
-                                                                            option
-                                                                        }
-                                                                        value={
-                                                                            option
-                                                                        }
-                                                                    >
-                                                                        {option}
-                                                                    </SelectItem>
-                                                                )
-                                                            )}
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="rapdLeft"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>RAPD</FormLabel>
-                                                    <Select
-                                                        onValueChange={
-                                                            field.onChange
-                                                        }
-                                                        defaultValue={
-                                                            field.value
-                                                        }
-                                                    >
-                                                        <FormControl>
-                                                            <SelectTrigger className="h-10 w-full">
-                                                                <SelectValue placeholder="Select RAPD" />
-                                                            </SelectTrigger>
-                                                        </FormControl>
-                                                        <SelectContent>
-                                                            <SelectItem value="Present">
-                                                                Present
-                                                            </SelectItem>
-                                                            <SelectItem value="Absent">
-                                                                Absent
-                                                            </SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                        >
+                                            {renderField(question, form)}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </Form>
