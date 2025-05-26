@@ -255,6 +255,7 @@ export default function FormOne() {
                         <PosteriorSegmentSection form={form} />
                         {/* trigger getting padding */}
                         <InvestigationsSection form={form} />
+                        {/* select is responsive for small screen */}
                         <ProvisionalDiagnosisSection form={form} />
                         {/*  */}
                         <TreatmentPlanSection form={form} />
