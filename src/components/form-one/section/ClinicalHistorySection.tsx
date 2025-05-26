@@ -19,7 +19,7 @@ export default function ClinicalHistorySection({
             "Form prop is undefined or invalid in ClinicalHistorySection"
         );
         return (
-            <div className="text-red-500">
+            <div className="text-red-500 text-sm sm:text-base">
                 Error: Form is not properly initialized
             </div>
         );
@@ -28,7 +28,7 @@ export default function ClinicalHistorySection({
     const sections = formSchemaJson.versions[0]?.sections || [];
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
             {sections
                 .filter((section) => section.title === "Clinical History")
                 .map((section, index) => (
@@ -43,21 +43,21 @@ export default function ClinicalHistorySection({
                             value={`section-${index}`}
                             className="border-0"
                         >
-                            <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
+                            <AccordionTrigger className="px-2 sm:px-4 py-2 sm:py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="flex items-center gap-2">
-                                    <ClipboardIcon className="h-5 w-5 text-primary" />
-                                    <span className="font-medium">
+                                    <ClipboardIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                                    <span className="font-medium text-sm sm:text-base">
                                         {section.title}
                                     </span>
                                 </div>
                             </AccordionTrigger>
                             <AccordionContent>
-                                <CardContent className="p-4 pt-2">
+                                <CardContent className="p-2 sm:p-4 pt-1 sm:pt-2">
                                     <Form {...form}>
                                         <div
-                                            className={`grid gap-6 ${
+                                            className={`grid gap-4 sm:gap-6 ${
                                                 section.ui === "flex"
-                                                    ? "grid-cols-1 sm:grid-cols-2"
+                                                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                                                     : "grid-cols-1"
                                             }`}
                                         >
@@ -71,7 +71,7 @@ export default function ClinicalHistorySection({
                                                         className={
                                                             question.field_type ===
                                                             "textarea"
-                                                                ? "col-span-1 sm:col-span-2"
+                                                                ? "col-span-1 sm:col-span-2 lg:col-span-3"
                                                                 : "col-span-1"
                                                         }
                                                     >
