@@ -8,7 +8,7 @@ import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import clsx from "clsx";
-import { FileSearch } from "lucide-react";
+import { ClipboardListIcon } from "lucide-react";
 import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
 export default function InvestigationsSection({
@@ -27,6 +27,7 @@ export default function InvestigationsSection({
 
     const sections = formSchemaJson.versions[0]?.sections || [];
 
+    // Get the Investigations section
     const investigationsSection = sections.find(
         (section) =>
             section.title === "INVESTIGATIONS (GIVE OPTION TO SELECT WHICH EYE)"
@@ -61,54 +62,52 @@ export default function InvestigationsSection({
                             value={`section-${index}`}
                             className="border-0"
                         >
-                            <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
-                                <div className="flex items-center gap-2 w-full">
-                                    <FileSearch className="h-5 w-5 text-primary" />
-                                    <span className="font-medium truncate w-[10rem] md:w-full sm:w-full text-left">
-                                        {section.title}
-                                    </span>
+                            <AccordionTrigger className="px-3 py-2 sm:px-4 sm:py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
+                                <div className="flex items-center justify-between w-full gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <ClipboardListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                                        <span className="font-medium text-sm sm:text-base">
+                                            {section.title}
+                                        </span>
+                                    </div>
                                 </div>
                             </AccordionTrigger>
-
                             <AccordionContent>
                                 <CardContent className="p-4 pt-2">
-                                    <div className="w-full max-w-full overflow-x-auto">
-                                        <Form {...form}>
-                                            <div
-                                                className={clsx(
-                                                    "grid gap-6",
-                                                    section.ui === "grid-cols-2"
-                                                        ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                                                        : section.ui === "flex"
-                                                        ? "grid-cols-1 sm:grid-cols-2"
-                                                        : "grid-cols-1"
-                                                )}
-                                            >
-                                                {investigationsSection.questions.map(
-                                                    (question) => (
-                                                        <div
-                                                            key={
-                                                                question._id ||
-                                                                question.label
-                                                            }
-                                                            className={clsx(
-                                                                question.field_type ===
-                                                                    "textarea"
-                                                                    ? "col-span-1 sm:col-span-2"
-                                                                    : "col-span-1",
-                                                                "w-full"
-                                                            )}
-                                                        >
-                                                            {renderField(
-                                                                question,
-                                                                form
-                                                            )}
-                                                        </div>
-                                                    )
-                                                )}
-                                            </div>
-                                        </Form>
-                                    </div>
+                                    <Form {...form}>
+                                        <div
+                                            className={clsx(
+                                                "grid gap-6",
+                                                section.ui === "grid-cols-2"
+                                                    ? "grid-cols-1 md:grid-cols-2"
+                                                    : section.ui === "flex"
+                                                    ? "grid-cols-1 sm:grid-cols-2"
+                                                    : "grid-cols-1"
+                                            )}
+                                        >
+                                            {investigationsSection.questions.map(
+                                                (question) => (
+                                                    <div
+                                                        key={
+                                                            question._id ||
+                                                            question.label
+                                                        }
+                                                        className={clsx(
+                                                            question.field_type ===
+                                                                "textarea"
+                                                                ? "col-span-1 md:col-span-2"
+                                                                : "col-span-1"
+                                                        )}
+                                                    >
+                                                        {renderField(
+                                                            question,
+                                                            form
+                                                        )}
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                    </Form>
                                 </CardContent>
                             </AccordionContent>
                         </AccordionItem>
