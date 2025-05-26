@@ -70,8 +70,8 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                             <FormLabel
                                 className={
                                     question.is_required
-                                        ? "required after:content-['*'] after:text-red-500"
-                                        : ""
+                                        ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
+                                        : "text-sm sm:text-base"
                                 }
                             >
                                 {question.label}
@@ -82,10 +82,10 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                     disabled={question.is_disabled}
                                     {...field}
                                     value={field.value ?? ""}
-                                    className="w-full"
+                                    className="w-full text-sm sm:text-base"
                                 />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs sm:text-sm" />
                         </FormItem>
                     )}
                 />
@@ -101,8 +101,8 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                             <FormLabel
                                 className={
                                     question.is_required
-                                        ? "required after:content-['*'] after:text-red-500"
-                                        : ""
+                                        ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
+                                        : "text-sm sm:text-base"
                                 }
                             >
                                 {question.label}
@@ -113,10 +113,10 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                     disabled={question.is_disabled}
                                     {...field}
                                     value={field.value ?? ""}
-                                    className="w-full min-h-[100px] resize-y"
+                                    className="w-full min-h-[80px] sm:min-h-[100px] resize-y text-sm sm:text-base"
                                 />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs sm:text-sm" />
                         </FormItem>
                     )}
                 />
@@ -128,12 +128,12 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                     control={form.control}
                     name={fieldName}
                     render={({ field }) => (
-                        <FormItem className="space-y-3">
+                        <FormItem className="space-y-2 sm:space-y-3">
                             <FormLabel
                                 className={
                                     question.is_required
-                                        ? "required after:content-['*'] after:text-red-500"
-                                        : ""
+                                        ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
+                                        : "text-sm sm:text-base"
                                 }
                             >
                                 {question.label}
@@ -142,13 +142,13 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                 <RadioGroup
                                     onValueChange={field.onChange}
                                     value={field.value}
-                                    className="flex flex-wrap gap-4"
+                                    className="flex flex-wrap gap-3 sm:gap-4"
                                     disabled={question.is_disabled}
                                 >
                                     {question.options.map((option: any) => (
                                         <FormItem
                                             key={option._id}
-                                            className="flex items-center space-x-3 space-y-0"
+                                            className="flex items-center space-x-2 sm:space-x-3 space-y-0"
                                         >
                                             <FormControl>
                                                 <RadioGroupItem
@@ -158,14 +158,14 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                                     }
                                                 />
                                             </FormControl>
-                                            <FormLabel className="font-normal cursor-pointer">
+                                            <FormLabel className="font-normal cursor-pointer text-xs sm:text-sm">
                                                 {option.option_label}
                                             </FormLabel>
                                         </FormItem>
                                     ))}
                                 </RadioGroup>
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs sm:text-sm" />
                         </FormItem>
                     )}
                 />
@@ -181,8 +181,8 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                             <FormLabel
                                 className={
                                     question.is_required
-                                        ? "required after:content-['*'] after:text-red-500"
-                                        : ""
+                                        ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
+                                        : "text-sm sm:text-base"
                                 }
                             >
                                 {question.label}
@@ -193,7 +193,7 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                     value={field.value}
                                     disabled={question.is_disabled}
                                 >
-                                    <SelectTrigger className="w-full">
+                                    <SelectTrigger className="w-full text-sm sm:text-base">
                                         <SelectValue
                                             placeholder={`Select ${question.label.toLowerCase()}`}
                                         />
@@ -204,6 +204,7 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                                 key={option._id}
                                                 value={option.option_value}
                                                 disabled={option.is_disabled}
+                                                className="text-sm sm:text-base"
                                             >
                                                 {option.option_label}
                                             </SelectItem>
@@ -211,7 +212,7 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                     </SelectContent>
                                 </Select>
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className="text-xs sm:text-sm" />
                         </FormItem>
                     )}
                 />
@@ -229,8 +230,6 @@ export default function FormOne() {
         defaultValues,
     });
 
-    // console.log("FormOne: form object", form);
-
     function onSubmit(data: FormValues) {
         setIsSubmitting(true);
         setTimeout(() => {
@@ -241,8 +240,11 @@ export default function FormOne() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto p-4">
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6">
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4 sm:space-y-6"
+            >
                 {form ? (
                     <>
                         <PatientInfoSection form={form} />
@@ -257,7 +259,7 @@ export default function FormOne() {
                         <OtherTreatmentSection form={form} />
                     </>
                 ) : (
-                    <div className="text-red-500">
+                    <div className="text-red-500 text-sm sm:text-base">
                         Error: Form not initialized
                     </div>
                 )}
@@ -266,7 +268,7 @@ export default function FormOne() {
                         type="submit"
                         size="lg"
                         disabled={isSubmitting}
-                        className="transition-all duration-200"
+                        className="w-full sm:w-auto transition-all duration-200 text-sm sm:text-base"
                     >
                         {isSubmitting ? "Submitting..." : "Submit Evaluation"}
                     </Button>
