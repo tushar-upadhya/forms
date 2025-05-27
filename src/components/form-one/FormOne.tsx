@@ -255,9 +255,8 @@ export default function FormOne() {
                         <PosteriorSegmentSection form={form} />
 
                         <InvestigationsSection form={form} />
-                        {/* select is responsive for small screen */}
                         <ProvisionalDiagnosisSection form={form} />
-                        {/*  */}
+
                         <TreatmentPlanSection form={form} />
                         <OtherTreatmentSection form={form} />
                     </>
