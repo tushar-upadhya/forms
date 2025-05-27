@@ -6,8 +6,8 @@ import {
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
-import clsx from "clsx";
 import { Zap } from "lucide-react";
 import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
@@ -68,15 +68,7 @@ export default function OtherTreatmentSection({
                             <AccordionContent>
                                 <CardContent className="p-2 sm:p-4 pt-1 sm:pt-2">
                                     <Form {...form}>
-                                        <div
-                                            className={clsx(
-                                                "grid gap-4 sm:gap-6",
-                                                section.ui === "flex" ||
-                                                    section.ui === "grid-cols-2"
-                                                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                                                    : "grid-cols-1"
-                                            )}
-                                        >
+                                        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
                                             {otherTreatmentSection.questions.map(
                                                 (question) => (
                                                     <div
@@ -84,18 +76,23 @@ export default function OtherTreatmentSection({
                                                             question._id ||
                                                             question.label
                                                         }
-                                                        className={clsx(
-                                                            question.field_type ===
-                                                                "textarea" ||
-                                                                question.field_type ===
-                                                                    "checkbox"
-                                                                ? "col-span-1 sm:col-span-2 lg:col-span-3"
-                                                                : "col-span-1"
-                                                        )}
+                                                        className="col-span-1"
                                                     >
-                                                        {renderField(
-                                                            question,
-                                                            form
+                                                        {question.field_type ===
+                                                            "checkbox" &&
+                                                        question.options
+                                                            .length > 10 ? (
+                                                            <ScrollArea className="h-[200px] sm:h-[250px] w-full">
+                                                                {renderField(
+                                                                    question,
+                                                                    form
+                                                                )}
+                                                            </ScrollArea>
+                                                        ) : (
+                                                            renderField(
+                                                                question,
+                                                                form
+                                                            )
                                                         )}
                                                     </div>
                                                 )
