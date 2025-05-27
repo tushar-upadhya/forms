@@ -1,25 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
-import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import { useState } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
+import InputField from "../form-fields/InputField";
+import RadioGroupField from "../form-fields/RadioGroupField";
+import SelectField from "../form-fields/SelectField";
+import TextareaField from "../form-fields/TextareaField";
 import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
 import ClinicalHistorySection from "./section/ClinicalHistorySection";
 import InvestigationsSection from "./section/InvestigationsSection";
@@ -54,170 +41,49 @@ export interface PatientInfoSectionProps {
 export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
     const fieldName = getFieldName(question.label);
 
-    if (!form || !form.control) {
-        console.error("Form control is undefined for field:", fieldName);
-        return null;
-    }
-
     switch (question.field_type) {
         case "input":
             return (
-                <FormField
-                    control={form.control}
-                    name={fieldName}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel
-                                className={
-                                    question.is_required
-                                        ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
-                                        : "text-sm sm:text-base"
-                                }
-                            >
-                                {question.label}
-                            </FormLabel>
-                            <FormControl>
-                                <Input
-                                    placeholder={`Enter ${question.label.toLowerCase()}`}
-                                    disabled={question.is_disabled}
-                                    {...field}
-                                    value={field.value ?? ""}
-                                    className="w-full text-sm sm:text-base"
-                                />
-                            </FormControl>
-                            <FormMessage className="text-xs sm:text-sm" />
-                        </FormItem>
-                    )}
+                <InputField
+                    form={form}
+                    fieldName={fieldName}
+                    label={question.label}
+                    isRequired={question.is_required}
+                    isDisabled={question.is_disabled}
                 />
             );
-
         case "textarea":
             return (
-                <FormField
-                    control={form.control}
-                    name={fieldName}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel
-                                className={
-                                    question.is_required
-                                        ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
-                                        : "text-sm sm:text-base"
-                                }
-                            >
-                                {question.label}
-                            </FormLabel>
-                            <FormControl>
-                                <Textarea
-                                    placeholder={`Enter ${question.label.toLowerCase()}`}
-                                    disabled={question.is_disabled}
-                                    {...field}
-                                    value={field.value ?? ""}
-                                    className="w-full min-h-[80px] sm:min-h-[100px] resize-y text-sm sm:text-base"
-                                />
-                            </FormControl>
-                            <FormMessage className="text-xs sm:text-sm" />
-                        </FormItem>
-                    )}
+                <TextareaField
+                    form={form}
+                    fieldName={fieldName}
+                    label={question.label}
+                    isRequired={question.is_required}
+                    isDisabled={question.is_disabled}
                 />
             );
-
         case "radio":
             return (
-                <FormField
-                    control={form.control}
-                    name={fieldName}
-                    render={({ field }) => (
-                        <FormItem className="space-y-2 sm:space-y-3">
-                            <FormLabel
-                                className={
-                                    question.is_required
-                                        ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
-                                        : "text-sm sm:text-base"
-                                }
-                            >
-                                {question.label}
-                            </FormLabel>
-                            <FormControl>
-                                <RadioGroup
-                                    onValueChange={field.onChange}
-                                    value={field.value}
-                                    className="flex flex-wrap gap-3 sm:gap-4"
-                                    disabled={question.is_disabled}
-                                >
-                                    {question.options.map((option: any) => (
-                                        <FormItem
-                                            key={option._id}
-                                            className="flex items-center space-x-2 sm:space-x-3 space-y-0"
-                                        >
-                                            <FormControl>
-                                                <RadioGroupItem
-                                                    value={option.option_value}
-                                                    disabled={
-                                                        option.is_disabled
-                                                    }
-                                                />
-                                            </FormControl>
-                                            <FormLabel className="font-normal cursor-pointer text-xs sm:text-sm">
-                                                {option.option_label}
-                                            </FormLabel>
-                                        </FormItem>
-                                    ))}
-                                </RadioGroup>
-                            </FormControl>
-                            <FormMessage className="text-xs sm:text-sm" />
-                        </FormItem>
-                    )}
+                <RadioGroupField
+                    form={form}
+                    fieldName={fieldName}
+                    label={question.label}
+                    options={question.options}
+                    isRequired={question.is_required}
+                    isDisabled={question.is_disabled}
                 />
             );
-
         case "select":
             return (
-                <FormField
-                    control={form.control}
-                    name={fieldName}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel
-                                className={
-                                    question.is_required
-                                        ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
-                                        : "text-sm sm:text-base"
-                                }
-                            >
-                                {question.label}
-                            </FormLabel>
-                            <FormControl>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    value={field.value}
-                                    disabled={question.is_disabled}
-                                >
-                                    <SelectTrigger className="w-full text-sm sm:text-base">
-                                        <SelectValue
-                                            placeholder={`Select ${question.label.toLowerCase()}`}
-                                        />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {question.options.map((option: any) => (
-                                            <SelectItem
-                                                key={option._id}
-                                                value={option.option_value}
-                                                disabled={option.is_disabled}
-                                                className="text-sm sm:text-base"
-                                            >
-                                                {option.option_label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage className="text-xs sm:text-sm" />
-                        </FormItem>
-                    )}
+                <SelectField
+                    form={form}
+                    fieldName={fieldName}
+                    label={question.label}
+                    options={question.options}
+                    isRequired={question.is_required}
+                    isDisabled={question.is_disabled}
                 />
             );
-
         default:
             return null;
     }
