@@ -73,7 +73,7 @@ export default function VisionAssessmentSection({
                         <CardContent className="p-2 sm:p-4 pt-1 sm:pt-2">
                             <Form {...form}>
                                 <div className="w-full">
-                                    <ScrollArea className="w-full sm:whitespace-nowrap">
+                                    <ScrollArea className="w-full">
                                         <div
                                             className={`grid ${gridClass} gap-4 sm:gap-6`}
                                         >

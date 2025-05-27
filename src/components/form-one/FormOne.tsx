@@ -17,7 +17,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
+import formSchemaJson from "@/mock/mock.json";
+import clsx from "clsx";
 import { useState } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
@@ -35,17 +36,24 @@ const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
 
 const generateDefaultValues = () => {
-    const fields: Record<string, string | undefined> = {};
+    const fields: Record<string, string | string[] | undefined> = {};
     formSchemaJson.versions[0].sections.forEach((section) => {
         section.questions.forEach((question: any) => {
             const fieldName = getFieldName(question.label);
-            fields[fieldName] = question.is_required ? "" : undefined;
+            fields[fieldName] =
+                question.field_type === "checkbox"
+                    ? question.is_required
+                        ? []
+                        : undefined
+                    : question.is_required
+                    ? ""
+                    : undefined;
         });
     });
     return fields;
 };
 
-type FormValues = Record<string, string | undefined>;
+type FormValues = Record<string, string | string[] | undefined>;
 
 export interface PatientInfoSectionProps {
     form: UseFormReturn<FormValues>;
@@ -53,6 +61,10 @@ export interface PatientInfoSectionProps {
 
 export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
     const fieldName = getFieldName(question.label);
+    const truncatePlaceholder = (text: string, maxLength: number = 30) =>
+        text.length > maxLength
+            ? `${text.substring(0, maxLength - 3)}...`
+            : text;
 
     if (!form || !form.control) {
         console.error("Form control is undefined for field:", fieldName);
@@ -78,11 +90,13 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                             </FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder={`Enter ${question.label.toLowerCase()}`}
+                                    placeholder={truncatePlaceholder(
+                                        `Enter ${question.label.toLowerCase()}`
+                                    )}
                                     disabled={question.is_disabled}
                                     {...field}
                                     value={field.value ?? ""}
-                                    className="w-full text-sm sm:text-base"
+                                    className="w-full text-sm sm:text-base h-9 sm:h-10"
                                 />
                             </FormControl>
                             <FormMessage className="text-xs sm:text-sm" />
@@ -109,7 +123,9 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                             </FormLabel>
                             <FormControl>
                                 <Textarea
-                                    placeholder={`Enter ${question.label.toLowerCase()}`}
+                                    placeholder={truncatePlaceholder(
+                                        `Enter ${question.label.toLowerCase()}`
+                                    )}
                                     disabled={question.is_disabled}
                                     {...field}
                                     value={field.value ?? ""}
@@ -142,7 +158,7 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                 <RadioGroup
                                     onValueChange={field.onChange}
                                     value={field.value}
-                                    className="flex flex-wrap gap-3 sm:gap-4"
+                                    className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4"
                                     disabled={question.is_disabled}
                                 >
                                     {question.options.map((option: any) => (
@@ -156,9 +172,10 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                                     disabled={
                                                         option.is_disabled
                                                     }
+                                                    className="h-4 w-4 sm:h-5 sm:w-5"
                                                 />
                                             </FormControl>
-                                            <FormLabel className="font-normal cursor-pointer text-xs sm:text-sm">
+                                            <FormLabel className="font-normal cursor-pointer text-sm sm:text-base">
                                                 {option.option_label}
                                             </FormLabel>
                                         </FormItem>
@@ -193,24 +210,100 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                     value={field.value}
                                     disabled={question.is_disabled}
                                 >
-                                    <SelectTrigger className="w-full text-sm sm:text-base">
+                                    <SelectTrigger className="w-full h-9 sm:h-10 text-sm sm:text-base truncate">
                                         <SelectValue
-                                            placeholder={`Select ${question.label.toLowerCase()}`}
+                                            placeholder={truncatePlaceholder(
+                                                `Select ${question.label.toLowerCase()}`
+                                            )}
                                         />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="max-w-full">
                                         {question.options.map((option: any) => (
                                             <SelectItem
                                                 key={option._id}
                                                 value={option.option_value}
                                                 disabled={option.is_disabled}
-                                                className="text-sm sm:text-base"
+                                                className="text-sm sm:text-base py-2 sm:py-2.5 max-w-full truncate"
                                             >
                                                 {option.option_label}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
+                            </FormControl>
+                            <FormMessage className="text-xs sm:text-sm" />
+                        </FormItem>
+                    )}
+                />
+            );
+
+        case "checkbox":
+            return (
+                <FormField
+                    control={form.control}
+                    name={fieldName}
+                    render={({ field }) => (
+                        <FormItem className="space-y-2 sm:space-y-3">
+                            <FormLabel
+                                className={
+                                    question.is_required
+                                        ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
+                                        : "text-sm sm:text-base"
+                                }
+                            >
+                                {question.label}
+                            </FormLabel>
+                            <FormControl>
+                                <div
+                                    className={clsx(
+                                        "grid gap-2 sm:gap-3",
+                                        question.options.length > 10
+                                            ? "grid-cols-1 sm:grid-cols-2"
+                                            : "grid-cols-1"
+                                    )}
+                                >
+                                    {question.options.map((option: any) => (
+                                        <label
+                                            key={option._id}
+                                            className="flex items-center space-x-2 sm:space-x-3 cursor-pointer"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                value={option.option_value}
+                                                checked={field.value?.includes(
+                                                    option.option_value
+                                                )}
+                                                onChange={(e) => {
+                                                    const updatedValue = e
+                                                        .target.checked
+                                                        ? [
+                                                              ...(field.value ||
+                                                                  []),
+                                                              option.option_value,
+                                                          ]
+                                                        : (
+                                                              field.value || []
+                                                          ).filter(
+                                                              (v: string) =>
+                                                                  v !==
+                                                                  option.option_value
+                                                          );
+                                                    field.onChange(
+                                                        updatedValue
+                                                    );
+                                                }}
+                                                disabled={
+                                                    option.is_disabled ||
+                                                    question.is_disabled
+                                                }
+                                                className="h-4 w-4 sm:h-5 sm:w-5 rounded border-gray-300 text-primary focus:ring-primary"
+                                            />
+                                            <span className="text-sm sm:text-base">
+                                                {option.option_label}
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
                             </FormControl>
                             <FormMessage className="text-xs sm:text-sm" />
                         </FormItem>
@@ -253,10 +346,8 @@ export default function FormOne() {
                         <PupilAssessmentSection form={form} />
                         <AnteriorSegmentSection form={form} />
                         <PosteriorSegmentSection form={form} />
-
                         <InvestigationsSection form={form} />
                         <ProvisionalDiagnosisSection form={form} />
-
                         <TreatmentPlanSection form={form} />
                         <OtherTreatmentSection form={form} />
                     </>
@@ -265,12 +356,12 @@ export default function FormOne() {
                         Error: Form not initialized
                     </div>
                 )}
-                <div className="pt-4 flex justify-end">
+                <div className="pt-4 flex justify-end sticky bottom-0 bg-background py-2 sm:py-4">
                     <Button
                         type="submit"
                         size="lg"
                         disabled={isSubmitting}
-                        className="w-full sm:w-auto transition-all duration-200 text-sm sm:text-base"
+                        className="w-full sm:w-auto transition-all duration-200 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-6"
                     >
                         {isSubmitting ? "Submitting..." : "Submit Evaluation"}
                     </Button>
