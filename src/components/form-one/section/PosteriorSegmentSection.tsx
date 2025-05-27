@@ -64,8 +64,8 @@ export default function PosteriorSegmentSection({
                             <AccordionTrigger className="px-3 py-2 sm:px-4 sm:py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="flex items-center justify-between w-full gap-2">
                                     <div className="flex items-center gap-2">
-                                        <ClipboardListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                                        <span className="font-medium text-xs sm:text-base">
+                                        <ClipboardListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                                        <span className="font-medium text-sm sm:text-base">
                                             {section.title}
                                         </span>
                                     </div>
@@ -76,12 +76,7 @@ export default function PosteriorSegmentSection({
                                     <Form {...form}>
                                         <div
                                             className={clsx(
-                                                "grid gap-4 sm:gap-6 lg:gap-8",
-                                                section.ui === "grid-cols-2"
-                                                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                                                    : section.ui === "flex"
-                                                    ? "grid-cols-1 sm:grid-cols-2"
-                                                    : "grid-cols-1"
+                                                "grid gap-4 sm:gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2"
                                             )}
                                         >
                                             {posteriorSegmentSection.questions.map(
@@ -91,12 +86,7 @@ export default function PosteriorSegmentSection({
                                                             question._id ||
                                                             question.label
                                                         }
-                                                        className={clsx(
-                                                            question.field_type ===
-                                                                "textarea"
-                                                                ? "col-span-1 sm:col-span-2 lg:col-span-3"
-                                                                : "col-span-1"
-                                                        )}
+                                                        className="col-span-1"
                                                     >
                                                         {renderField(
                                                             question,
