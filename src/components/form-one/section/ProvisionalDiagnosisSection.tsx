@@ -7,7 +7,6 @@ import {
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
-import clsx from "clsx";
 import { ClipboardCheck } from "lucide-react";
 import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
@@ -67,15 +66,7 @@ export default function ProvisionalDiagnosisSection({
                             <AccordionContent>
                                 <CardContent className="p-2 sm:p-4 pt-1 sm:pt-2">
                                     <Form {...form}>
-                                        <div
-                                            className={clsx(
-                                                "grid gap-4 sm:gap-6",
-                                                section.ui === "flex" ||
-                                                    section.ui === "grid-cols-2"
-                                                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                                                    : "grid-cols-1"
-                                            )}
-                                        >
+                                        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
                                             {provisionalDiagnosisSection.questions.map(
                                                 (question) => (
                                                     <div
@@ -83,12 +74,7 @@ export default function ProvisionalDiagnosisSection({
                                                             question._id ||
                                                             question.label
                                                         }
-                                                        className={clsx(
-                                                            question.field_type ===
-                                                                "textarea"
-                                                                ? "col-span-1 sm:col-span-2 lg:col-span-3"
-                                                                : "col-span-1"
-                                                        )}
+                                                        className="col-span-1"
                                                     >
                                                         {renderField(
                                                             question,
