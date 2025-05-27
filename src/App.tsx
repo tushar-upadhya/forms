@@ -10,9 +10,9 @@ function App() {
     return (
         <ThemeProvider defaultTheme="dark">
             <div className="min-h-screen bg-background">
-                <div className="max-w-[1600px] mx-auto py-8 px-4 md:px-6">
+                <div className="max-w-[1600px] mx-auto py-8 px-4 sm:px-6 lg:px-8">
                     {!isLoggedIn ? (
-                        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+                        <div className="flex min-h-svh w-full items-center justify-center p-6">
                             <div className="w-full max-w-sm">
                                 <LoginForm
                                     onLogin={() => setIsLoggedIn(true)}
@@ -23,9 +23,9 @@ function App() {
                         <>
                             <FormHeader />
                             <div className="flex flex-col md:flex-row gap-6 mt-6">
-                                <div className="order-2 flex-1 w-full">
+                                <main className="w-full flex-1">
                                     <FormOne />
-                                </div>
+                                </main>
                             </div>
                         </>
                     )}
