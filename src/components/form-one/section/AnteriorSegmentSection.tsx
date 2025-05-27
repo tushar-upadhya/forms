@@ -1,4 +1,3 @@
-import { renderField } from "@/components/renderField";
 import {
     Accordion,
     AccordionContent,
@@ -10,7 +9,7 @@ import { Form } from "@/components/ui/form";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import clsx from "clsx";
 import { Eye } from "lucide-react";
-import type { PatientInfoSectionProps } from "../FormOne";
+import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
 export default function AnteriorSegmentSection({
     form,

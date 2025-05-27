@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { renderField } from "@/components/renderField";
+
 import {
     Accordion,
     AccordionContent,
@@ -10,7 +10,7 @@ import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import { ClipboardIcon } from "lucide-react";
-import type { PatientInfoSectionProps } from "../FormOne";
+import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
 export default function ClinicalHistorySection({
     form,

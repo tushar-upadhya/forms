@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { renderField } from "@/components/renderField";
 import {
     Accordion,
     AccordionContent,
@@ -11,7 +10,7 @@ import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import { EyeIcon } from "lucide-react";
-import type { PatientInfoSectionProps } from "../FormOne";
+import { renderField, type PatientInfoSectionProps } from "../FormOne";
 
 export default function VisionAssessmentSection({
     form,
