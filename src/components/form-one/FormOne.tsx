@@ -157,7 +157,11 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                             <FormControl>
                                 <RadioGroup
                                     onValueChange={field.onChange}
-                                    value={field.value}
+                                    value={
+                                        Array.isArray(field.value)
+                                            ? field.value[0] ?? ""
+                                            : field.value ?? ""
+                                    }
                                     className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4"
                                     disabled={question.is_disabled}
                                 >
@@ -207,7 +211,11 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                             <FormControl>
                                 <Select
                                     onValueChange={field.onChange}
-                                    value={field.value}
+                                    value={
+                                        Array.isArray(field.value)
+                                            ? field.value[0] ?? ""
+                                            : field.value ?? ""
+                                    }
                                     disabled={question.is_disabled}
                                 >
                                     <SelectTrigger className="w-full h-9 sm:h-10 text-sm sm:text-base truncate">
@@ -281,8 +289,11 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                                                   []),
                                                               option.option_value,
                                                           ]
-                                                        : (
-                                                              field.value || []
+                                                        : (Array.isArray(
+                                                              field.value
+                                                          )
+                                                              ? field.value
+                                                              : []
                                                           ).filter(
                                                               (v: string) =>
                                                                   v !==
