@@ -22,22 +22,9 @@ export function LoginForm({
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const loginMutation = useLogin(
-        () => {
-            console.log("Login successful!");
-            if (onLogin) onLogin();
-        },
-        (error) => {
-            console.error(
-                "Login failed:",
-                error.response?.data || error.message
-            );
-            alert(
-                "Login failed: " +
-                    (error.response?.data?.message || error.message)
-            );
-        }
-    );
+    const loginMutation = useLogin(() => {
+        if (onLogin) onLogin();
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -105,7 +92,7 @@ export function LoginForm({
                             </Button>
                         </div>
                         <p className="mt-4 text-center text-sm">
-                            Don&apos;t have an account?{" "}
+                            Don't have an account?{" "}
                             <a
                                 href="#"
                                 className="underline underline-offset-4 hover:text-primary"

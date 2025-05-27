@@ -17,9 +17,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import formSchemaJson from "@/mock/mock.json";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
 import ClinicalHistorySection from "./section/ClinicalHistorySection";
@@ -35,9 +34,9 @@ import VisionAssessmentSection from "./section/VisionAssessmentSection";
 const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
 
-const generateDefaultValues = () => {
+const generateDefaultValues = (sections: any[]) => {
     const fields: Record<string, string | string[] | undefined> = {};
-    formSchemaJson.versions[0].sections.forEach((section) => {
+    sections.forEach((section) => {
         section.questions.forEach((question: any) => {
             const fieldName = getFieldName(question.label);
             fields[fieldName] =
@@ -57,6 +56,7 @@ type FormValues = Record<string, string | string[] | undefined>;
 
 export interface PatientInfoSectionProps {
     form: UseFormReturn<FormValues>;
+    formSchema?: any;
 }
 
 export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
@@ -157,11 +157,7 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                             <FormControl>
                                 <RadioGroup
                                     onValueChange={field.onChange}
-                                    value={
-                                        Array.isArray(field.value)
-                                            ? field.value[0] ?? ""
-                                            : field.value ?? ""
-                                    }
+                                    value={field.value}
                                     className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4"
                                     disabled={question.is_disabled}
                                 >
@@ -211,11 +207,7 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                             <FormControl>
                                 <Select
                                     onValueChange={field.onChange}
-                                    value={
-                                        Array.isArray(field.value)
-                                            ? field.value[0] ?? ""
-                                            : field.value ?? ""
-                                    }
+                                    value={field.value}
                                     disabled={question.is_disabled}
                                 >
                                     <SelectTrigger className="w-full h-9 sm:h-10 text-sm sm:text-base truncate">
@@ -289,11 +281,8 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
                                                                   []),
                                                               option.option_value,
                                                           ]
-                                                        : (Array.isArray(
-                                                              field.value
-                                                          )
-                                                              ? field.value
-                                                              : []
+                                                        : (
+                                                              field.value || []
                                                           ).filter(
                                                               (v: string) =>
                                                                   v !==
@@ -329,10 +318,50 @@ export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
 
 export default function FormOne() {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const defaultValues = generateDefaultValues();
+    const [formSchema, setFormSchema] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const defaultValues = formSchema
+        ? generateDefaultValues(formSchema.versions[0].sections)
+        : {};
     const form = useForm<FormValues>({
         defaultValues,
     });
+
+    useEffect(() => {
+        const fetchFormSchema = async () => {
+            try {
+                setIsLoading(true);
+                const response = await fetch(
+                    "https://rpcapplication.aiims.edu/form/api/v1/form/dc8e18b4-b0ad-4b76-a4c5-cd340f84d494",
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error(
+                            "Unauthorized: Invalid or missing authentication credentials"
+                        );
+                    }
+                    throw new Error(
+                        `Failed to fetch form schema: ${response.statusText}`
+                    );
+                }
+                const data = await response.json();
+                setFormSchema(data);
+            } catch (err: any) {
+                setError(err.message || "Error fetching form schema");
+                console.error(err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchFormSchema();
+    }, []);
 
     function onSubmit(data: FormValues) {
         setIsSubmitting(true);
@@ -343,36 +372,92 @@ export default function FormOne() {
         }, 1500);
     }
 
+    if (isLoading) {
+        return (
+            <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 text-center">
+                <p className="text-sm sm:text-base text-gray-500">
+                    Loading form schema...
+                </p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 text-center">
+                <p className="text-red-500 text-sm sm:text-base">{error}</p>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4 text-sm sm:text-base"
+                    onClick={() => window.location.reload()}
+                >
+                    Retry
+                </Button>
+            </div>
+        );
+    }
+
     return (
         <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6">
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-4 sm:space-y-6"
             >
-                {form ? (
+                {form && formSchema ? (
                     <>
-                        <PatientInfoSection form={form} />
-                        <ClinicalHistorySection form={form} />
-                        <VisionAssessmentSection form={form} />
-                        <PupilAssessmentSection form={form} />
-                        <AnteriorSegmentSection form={form} />
-                        <PosteriorSegmentSection form={form} />
-                        <InvestigationsSection form={form} />
-                        <ProvisionalDiagnosisSection form={form} />
-                        <TreatmentPlanSection form={form} />
-                        <OtherTreatmentSection form={form} />
+                        <PatientInfoSection
+                            form={form}
+                            formSchema={formSchema}
+                        />
+                        <ClinicalHistorySection
+                            form={form}
+                            formSchema={formSchema}
+                        />
+                        <VisionAssessmentSection
+                            form={form}
+                            formSchema={formSchema}
+                        />
+                        <PupilAssessmentSection
+                            form={form}
+                            formSchema={formSchema}
+                        />
+                        <AnteriorSegmentSection
+                            form={form}
+                            formSchema={formSchema}
+                        />
+                        <PosteriorSegmentSection
+                            form={form}
+                            formSchema={formSchema}
+                        />
+                        <InvestigationsSection
+                            form={form}
+                            formSchema={formSchema}
+                        />
+                        <ProvisionalDiagnosisSection
+                            form={form}
+                            formSchema={formSchema}
+                        />
+                        <TreatmentPlanSection
+                            form={form}
+                            formSchema={formSchema}
+                        />
+                        <OtherTreatmentSection
+                            form={form}
+                            formSchema={formSchema}
+                        />
                     </>
                 ) : (
                     <div className="text-red-500 text-sm sm:text-base">
                         Error: Form not initialized
                     </div>
                 )}
-                <div className="pt-4 flex justify-end sticky bottom-0 bg-background py-2 sm:py-4">
+                <div className="pt-4 flex justify-end sticky bottom-0 bg-background py-2 sm:py-4 z-10">
                     <Button
                         type="submit"
                         size="lg"
                         disabled={isSubmitting}
-                        className="w-full sm:w-auto transition-all duration-200 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-6"
+                        className="w-full sm:w-auto transition-all duration-200 text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-6 rounded-md"
                     >
                         {isSubmitting ? "Submitting..." : "Submit Evaluation"}
                     </Button>

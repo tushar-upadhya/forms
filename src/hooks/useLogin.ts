@@ -1,26 +1,46 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { toast } from "sonner";
 
-export interface LoginPayload {
+const LOGIN_API_URL = "https://rpcapplication.aiims.edu/form/api/v1/auth/login";
+
+interface LoginCredentials {
     email: string;
     password: string;
 }
 
-export function useLogin(
-    onSuccess?: () => void,
-    onError?: (error: any) => void
-) {
+export const useLogin = (onSuccessCallback?: () => void) => {
     return useMutation({
-        mutationFn: async (data: LoginPayload) => {
-            const response = await axios.post(
-                "https://rpcapplication.aiims.edu/form/api/v1/auth/login",
-                data
-            );
-            return response.data;
+        mutationFn: async (credentials: LoginCredentials) => {
+            const response = await fetch(LOGIN_API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(credentials),
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(
+                    errorData.message || `Login failed: ${response.status}`
+                );
+            }
+            return response.json();
         },
-        onSuccess,
-        onError,
+        onSuccess: (data) => {
+            if (data.token) {
+                localStorage.setItem("authToken", data.token);
+            }
+            toast.success("Login successful!", {
+                position: "top-right",
+                duration: 3000,
+            });
+            if (onSuccessCallback) onSuccessCallback();
+        },
+        onError: (err: Error) => {
+            toast.error(`Login failed: ${err.message}`, {
+                position: "top-right",
+                duration: 5000,
+            });
+        },
     });
-}
-// https://rpcapplication.aiims.edu/form/api/v1/form/dc8e18b4-b0ad-4b76-a4c5-cd340f84d494
+};
