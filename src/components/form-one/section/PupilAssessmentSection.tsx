@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { renderField } from "@/components/renderField";
 import {
     Accordion,
     AccordionContent,
@@ -10,7 +11,7 @@ import { Form } from "@/components/ui/form";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
 import clsx from "clsx";
 import { EyeIcon } from "lucide-react";
-import { renderField, type PatientInfoSectionProps } from "../FormOne";
+import type { PatientInfoSectionProps } from "../FormOne";
 
 export default function PupilAssessmentSection({
     form,
