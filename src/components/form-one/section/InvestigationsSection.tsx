@@ -64,8 +64,8 @@ export default function InvestigationsSection({
                         >
                             <AccordionTrigger className="px-2 sm:px-4 py-2 sm:py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="flex items-center gap-2 w-full">
-                                    <ClipboardListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                                    <span className="font-medium text-sm sm:text-base">
+                                    <ClipboardListIcon className="h-4 w-6 sm:h-5 sm:w-5 text-primary " />
+                                    <span className="font-medium text-xs sm:text-base">
                                         {section.title}
                                     </span>
                                 </div>

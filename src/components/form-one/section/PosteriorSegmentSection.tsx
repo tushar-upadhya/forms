@@ -65,7 +65,7 @@ export default function PosteriorSegmentSection({
                                 <div className="flex items-center justify-between w-full gap-2">
                                     <div className="flex items-center gap-2">
                                         <ClipboardListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                                        <span className="font-medium text-sm sm:text-base">
+                                        <span className="font-medium text-xs sm:text-base">
                                             {section.title}
                                         </span>
                                     </div>

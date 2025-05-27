@@ -59,7 +59,7 @@ export default function ProvisionalDiagnosisSection({
                             <AccordionTrigger className="px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
                                 <div className="flex items-center gap-2 w-full">
                                     <ClipboardCheck className="h-5 w-5 text-primary" />
-                                    <span className="font-medium truncate w-[10rem] sm:w-auto text-left">
+                                    <span className="font-medium text-xs sm:text-base">
                                         {section.title}
                                     </span>
                                 </div>
