@@ -13,7 +13,10 @@ export function useLogin(
 ) {
     return useMutation({
         mutationFn: async (data: LoginPayload) => {
-            const response = await axios.post("/form/api/v1/auth/login", data);
+            const response = await axios.post(
+                "https://rpcapplication.aiims.edu/form/api/v1/auth/login",
+                data
+            );
             return response.data;
         },
         onSuccess,
