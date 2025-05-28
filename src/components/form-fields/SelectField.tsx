@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     FormControl,
     FormField,
@@ -13,32 +12,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import type { FormValues, Question } from "@/lib/types";
 import type { UseFormReturn } from "react-hook-form";
 
-interface Option {
-    _id: string;
-    option_label: string;
-    option_value: string;
-    is_disabled?: boolean;
-}
-
 interface SelectFieldProps {
-    form: UseFormReturn<any>;
-    fieldName: string;
-    label: string;
-    options: Option[];
-    isRequired?: boolean;
-    isDisabled?: boolean;
+    question: Question;
+    form: UseFormReturn<FormValues>;
 }
 
-export default function SelectField({
-    form,
-    fieldName,
-    label,
-    options,
-    isRequired,
-    isDisabled,
-}: SelectFieldProps) {
+const getFieldName = (label: string) =>
+    label.toLowerCase().replace(/\s+/g, "_");
+
+export default function SelectField({ question, form }: SelectFieldProps) {
+    const fieldName = getFieldName(question.label);
+
     return (
         <FormField
             control={form.control}
@@ -47,31 +34,31 @@ export default function SelectField({
                 <FormItem>
                     <FormLabel
                         className={
-                            isRequired
-                                ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
-                                : "text-sm sm:text-base"
+                            question.is_required
+                                ? "required after:content-['*'] after:text-red-500 text-xs sm:text-sm md:text-base"
+                                : "text-xs sm:text-sm md:text-base"
                         }
                     >
-                        {label}
+                        {question.label}
                     </FormLabel>
                     <FormControl>
                         <Select
                             onValueChange={field.onChange}
                             value={field.value}
-                            disabled={isDisabled}
+                            disabled={question.is_disabled}
                         >
-                            <SelectTrigger className="w-full text-sm sm:text-base">
+                            <SelectTrigger className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-3">
                                 <SelectValue
-                                    placeholder={`Select ${label.toLowerCase()}`}
+                                    placeholder={`Select ${question.label.toLowerCase()}`}
                                 />
                             </SelectTrigger>
                             <SelectContent>
-                                {options.map((option) => (
+                                {question.options?.map((option) => (
                                     <SelectItem
                                         key={option._id}
                                         value={option.option_value}
                                         disabled={option.is_disabled}
-                                        className="text-sm sm:text-base"
+                                        className="text-xs sm:text-sm md:text-base"
                                     >
                                         {option.option_label}
                                     </SelectItem>

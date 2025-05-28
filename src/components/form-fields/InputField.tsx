@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     FormControl,
     FormField,
@@ -7,23 +6,20 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import type { FormValues, Question } from "@/lib/types";
 import type { UseFormReturn } from "react-hook-form";
 
 interface InputFieldProps {
-    form: UseFormReturn<any>;
-    fieldName: string;
-    label: string;
-    isRequired?: boolean;
-    isDisabled?: boolean;
+    question: Question;
+    form: UseFormReturn<FormValues>;
 }
 
-export default function InputField({
-    form,
-    fieldName,
-    label,
-    isRequired,
-    isDisabled,
-}: InputFieldProps) {
+const getFieldName = (label: string) =>
+    label.toLowerCase().replace(/\s+/g, "_");
+
+export default function InputField({ question, form }: InputFieldProps) {
+    const fieldName = getFieldName(question.label);
+
     return (
         <FormField
             control={form.control}
@@ -32,20 +28,20 @@ export default function InputField({
                 <FormItem>
                     <FormLabel
                         className={
-                            isRequired
-                                ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
-                                : "text-sm sm:text-base"
+                            question.is_required
+                                ? "required after:content-['*'] after:text-red-500 text-xs sm:text-sm md:text-base"
+                                : "text-xs sm:text-sm md:text-base"
                         }
                     >
-                        {label}
+                        {question.label}
                     </FormLabel>
                     <FormControl>
                         <Input
-                            placeholder={`Enter ${label.toLowerCase()}`}
-                            disabled={isDisabled}
+                            placeholder={`Enter ${question.label.toLowerCase()}`}
+                            disabled={question.is_disabled}
                             {...field}
                             value={field.value ?? ""}
-                            className="w-full text-sm sm:text-base"
+                            className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-3"
                         />
                     </FormControl>
                     <FormMessage className="text-xs sm:text-sm" />

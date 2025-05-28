@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
+import { useFormSchema } from "@/hooks/useFormSchema";
+import type { FormValues } from "@/lib/types";
 import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
-import { useState } from "react";
-import { useForm, type UseFormReturn } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import InputField from "../form-fields/InputField";
-import RadioGroupField from "../form-fields/RadioGroupField";
+import RadioField from "../form-fields/RadioGroupField";
 import SelectField from "../form-fields/SelectField";
 import TextareaField from "../form-fields/TextareaField";
 import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
@@ -16,14 +18,13 @@ import PosteriorSegmentSection from "./section/PosteriorSegmentSection";
 import ProvisionalDiagnosisSection from "./section/ProvisionalDiagnosisSection";
 import PupilAssessmentSection from "./section/PupilAssessmentSection";
 import TreatmentPlanSection from "./section/TreatmentPlanSection";
-import VisionAssessmentSection from "./section/VisionAssessmentSection";
 
 const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
 
-const generateDefaultValues = () => {
+const generateDefaultValues = (sections: any[]) => {
     const fields: Record<string, string | undefined> = {};
-    formSchemaJson.versions[0].sections.forEach((section) => {
+    sections.forEach((section) => {
         section.questions.forEach((question: any) => {
             const fieldName = getFieldName(question.label);
             fields[fieldName] = question.is_required ? "" : undefined;
@@ -32,69 +33,30 @@ const generateDefaultValues = () => {
     return fields;
 };
 
-type FormValues = Record<string, string | undefined>;
-
-export interface PatientInfoSectionProps {
-    form: UseFormReturn<FormValues>;
-}
-
-export const renderField = (question: any, form: UseFormReturn<FormValues>) => {
-    const fieldName = getFieldName(question.label);
-
-    switch (question.field_type) {
-        case "input":
-            return (
-                <InputField
-                    form={form}
-                    fieldName={fieldName}
-                    label={question.label}
-                    isRequired={question.is_required}
-                    isDisabled={question.is_disabled}
-                />
-            );
-        case "textarea":
-            return (
-                <TextareaField
-                    form={form}
-                    fieldName={fieldName}
-                    label={question.label}
-                    isRequired={question.is_required}
-                    isDisabled={question.is_disabled}
-                />
-            );
-        case "radio":
-            return (
-                <RadioGroupField
-                    form={form}
-                    fieldName={fieldName}
-                    label={question.label}
-                    options={question.options}
-                    isRequired={question.is_required}
-                    isDisabled={question.is_disabled}
-                />
-            );
-        case "select":
-            return (
-                <SelectField
-                    form={form}
-                    fieldName={fieldName}
-                    label={question.label}
-                    options={question.options}
-                    isRequired={question.is_required}
-                    isDisabled={question.is_disabled}
-                />
-            );
-        default:
-            return null;
-    }
+const fieldComponents: Record<string, React.ComponentType<any>> = {
+    input: InputField,
+    textarea: TextareaField,
+    radio: RadioField,
+    select: SelectField,
 };
 
 export default function FormOne() {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const defaultValues = generateDefaultValues();
+    const { data: formSchema, isLoading, error } = useFormSchema();
     const form = useForm<FormValues>({
-        defaultValues,
+        defaultValues: {},
     });
+
+    useEffect(() => {
+        if (formSchema && formSchema.versions && formSchema.versions[0]) {
+            form.reset(generateDefaultValues(formSchema.versions[0].sections));
+        } else if (error) {
+            console.warn("Using mock.json as fallback due to API error");
+            form.reset(
+                generateDefaultValues(formSchemaJson.versions[0].sections)
+            );
+        }
+    }, [formSchema, error, form]);
 
     function onSubmit(data: FormValues) {
         setIsSubmitting(true);
@@ -105,38 +67,61 @@ export default function FormOne() {
         }, 1500);
     }
 
+    if (isLoading) {
+        return (
+            <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8 text-xs sm:text-sm md:text-base">
+                Loading form...
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8 text-red-500 text-xs sm:text-sm md:text-base">
+                Failed to load form schema: {error.message}. Using mock data as
+                fallback.
+            </div>
+        );
+    }
+
+    if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
+        return (
+            <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8 text-red-500 text-xs sm:text-sm md:text-base">
+                Form schema is invalid or empty. Using mock data as fallback.
+            </div>
+        );
+    }
+
     return (
-        <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6">
+        <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
             <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4 sm:space-y-6"
+                className="space-y-4 sm:space-y-6 md:space-y-8"
             >
                 {form ? (
                     <>
                         <PatientInfoSection form={form} />
                         <ClinicalHistorySection form={form} />
-                        <VisionAssessmentSection form={form} />
+                        {/* <VisionAssessmentSection form={form} /> */}
                         <PupilAssessmentSection form={form} />
                         <AnteriorSegmentSection form={form} />
                         <PosteriorSegmentSection form={form} />
-
                         <InvestigationsSection form={form} />
                         <ProvisionalDiagnosisSection form={form} />
-
                         <TreatmentPlanSection form={form} />
                         <OtherTreatmentSection form={form} />
                     </>
                 ) : (
-                    <div className="text-red-500 text-sm sm:text-base">
+                    <div className="text-red-500 text-xs sm:text-sm md:text-base">
                         Error: Form not initialized
                     </div>
                 )}
-                <div className="pt-4 flex justify-end">
+                <div className="pt-4 sm:pt-6 flex justify-end">
                     <Button
                         type="submit"
                         size="lg"
                         disabled={isSubmitting}
-                        className="w-full sm:w-auto transition-all duration-200 text-sm sm:text-base"
+                        className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm md:text-base transition-all duration-200"
                     >
                         {isSubmitting ? "Submitting..." : "Submit Evaluation"}
                     </Button>
@@ -145,3 +130,5 @@ export default function FormOne() {
         </div>
     );
 }
+
+export { fieldComponents }; // Export for use in section components

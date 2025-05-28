@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     FormControl,
     FormField,
@@ -7,32 +6,20 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import type { FormValues, Question } from "@/lib/types";
 import type { UseFormReturn } from "react-hook-form";
 
-interface Option {
-    _id: string;
-    option_label: string;
-    option_value: string;
-    is_disabled?: boolean;
+interface RadioFieldProps {
+    question: Question;
+    form: UseFormReturn<FormValues>;
 }
 
-interface RadioGroupFieldProps {
-    form: UseFormReturn<any>;
-    fieldName: string;
-    label: string;
-    options: Option[];
-    isRequired?: boolean;
-    isDisabled?: boolean;
-}
+const getFieldName = (label: string) =>
+    label.toLowerCase().replace(/\s+/g, "_");
 
-export default function RadioGroupField({
-    form,
-    fieldName,
-    label,
-    options,
-    isRequired,
-    isDisabled,
-}: RadioGroupFieldProps) {
+export default function RadioField({ question, form }: RadioFieldProps) {
+    const fieldName = getFieldName(question.label);
+
     return (
         <FormField
             control={form.control}
@@ -41,21 +28,21 @@ export default function RadioGroupField({
                 <FormItem className="space-y-2 sm:space-y-3">
                     <FormLabel
                         className={
-                            isRequired
-                                ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
-                                : "text-sm sm:text-base"
+                            question.is_required
+                                ? "required after:content-['*'] after:text-red-500 text-xs sm:text-sm md:text-base"
+                                : "text-xs sm:text-sm md:text-base"
                         }
                     >
-                        {label}
+                        {question.label}
                     </FormLabel>
                     <FormControl>
                         <RadioGroup
                             onValueChange={field.onChange}
                             value={field.value}
-                            className="flex flex-wrap gap-3 sm:gap-4"
-                            disabled={isDisabled}
+                            className="flex flex-wrap gap-2 sm:gap-3 md:gap-4"
+                            disabled={question.is_disabled}
                         >
-                            {options.map((option) => (
+                            {question.options?.map((option) => (
                                 <FormItem
                                     key={option._id}
                                     className="flex items-center space-x-2 sm:space-x-3 space-y-0"
@@ -66,7 +53,7 @@ export default function RadioGroupField({
                                             disabled={option.is_disabled}
                                         />
                                     </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer text-xs sm:text-sm">
+                                    <FormLabel className="font-normal cursor-pointer text-xs sm:text-sm md:text-base">
                                         {option.option_label}
                                     </FormLabel>
                                 </FormItem>

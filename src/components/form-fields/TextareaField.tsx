@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     FormControl,
     FormField,
@@ -7,23 +6,20 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import type { FormValues, Question } from "@/lib/types";
 import type { UseFormReturn } from "react-hook-form";
 
 interface TextareaFieldProps {
-    form: UseFormReturn<any>;
-    fieldName: string;
-    label: string;
-    isRequired?: boolean;
-    isDisabled?: boolean;
+    question: Question;
+    form: UseFormReturn<FormValues>;
 }
 
-export default function TextareaField({
-    form,
-    fieldName,
-    label,
-    isRequired,
-    isDisabled,
-}: TextareaFieldProps) {
+const getFieldName = (label: string) =>
+    label.toLowerCase().replace(/\s+/g, "_");
+
+export default function TextareaField({ question, form }: TextareaFieldProps) {
+    const fieldName = getFieldName(question.label);
+
     return (
         <FormField
             control={form.control}
@@ -32,20 +28,20 @@ export default function TextareaField({
                 <FormItem>
                     <FormLabel
                         className={
-                            isRequired
-                                ? "required after:content-['*'] after:text-red-500 text-sm sm:text-base"
-                                : "text-sm sm:text-base"
+                            question.is_required
+                                ? "required after:content-['*'] after:text-red-500 text-xs sm:text-sm md:text-base"
+                                : "text-xs sm:text-sm md:text-base"
                         }
                     >
-                        {label}
+                        {question.label}
                     </FormLabel>
                     <FormControl>
                         <Textarea
-                            placeholder={`Enter ${label.toLowerCase()}`}
-                            disabled={isDisabled}
+                            placeholder={`Enter ${question.label.toLowerCase()}`}
+                            disabled={question.is_disabled}
                             {...field}
                             value={field.value ?? ""}
-                            className="w-full min-h-[80px] sm:min-h-[100px] resize-y text-sm sm:text-base"
+                            className="w-full min-h-[60px] sm:min-h-[80px] md:min-h-[100px] resize-y text-xs sm:text-sm md:text-base"
                         />
                     </FormControl>
                     <FormMessage className="text-xs sm:text-sm" />

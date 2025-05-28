@@ -6,14 +6,20 @@ import {
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
+import type { PatientInfoSectionProps, Question } from "@/lib/types";
+import type { RootState } from "@/store/store";
 import clsx from "clsx";
 import { ClipboardListIcon } from "lucide-react";
-import { renderField, type PatientInfoSectionProps } from "../FormOne";
+import { useSelector } from "react-redux";
+import { fieldComponents } from "../FormOne";
 
 export default function PosteriorSegmentSection({
     form,
 }: PatientInfoSectionProps) {
+    const formSchema = useSelector(
+        (state: RootState) => state.formSchema.schema
+    );
+
     if (!form || !form.control) {
         console.error(
             "Form prop is undefined or invalid in PosteriorSegmentSection"
@@ -25,7 +31,18 @@ export default function PosteriorSegmentSection({
         );
     }
 
-    const sections = formSchemaJson.versions[0]?.sections || [];
+    if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
+        console.error(
+            "Form schema is invalid or empty in PosteriorSegmentSection"
+        );
+        return (
+            <div className="text-red-500 text-sm sm:text-base">
+                Error: Form schema is not available
+            </div>
+        );
+    }
+
+    const sections = formSchema.versions[0]?.sections || [];
 
     const posteriorSegmentSection = sections.find(
         (section) => section.title === "POSTERIOR SEGMENT EVALUATION"
@@ -80,20 +97,28 @@ export default function PosteriorSegmentSection({
                                             )}
                                         >
                                             {posteriorSegmentSection.questions.map(
-                                                (question) => (
-                                                    <div
-                                                        key={
-                                                            question._id ||
-                                                            question.label
-                                                        }
-                                                        className="col-span-1"
-                                                    >
-                                                        {renderField(
-                                                            question,
-                                                            form
-                                                        )}
-                                                    </div>
-                                                )
+                                                (question: Question) => {
+                                                    const FieldComponent =
+                                                        fieldComponents[
+                                                            question.field_type
+                                                        ];
+                                                    return FieldComponent ? (
+                                                        <div
+                                                            key={
+                                                                question._id ||
+                                                                question.label
+                                                            }
+                                                            className="col-span-1"
+                                                        >
+                                                            <FieldComponent
+                                                                question={
+                                                                    question
+                                                                }
+                                                                form={form}
+                                                            />
+                                                        </div>
+                                                    ) : null;
+                                                }
                                             )}
                                         </div>
                                     </Form>

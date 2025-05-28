@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Accordion,
     AccordionContent,
@@ -7,12 +6,18 @@ import {
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
+import type { PatientInfoSectionProps, Question } from "@/lib/types";
+import type { RootState } from "@/store/store";
 import clsx from "clsx";
 import { ClipboardListIcon } from "lucide-react";
-import { renderField, type PatientInfoSectionProps } from "../FormOne";
+import { useSelector } from "react-redux";
+import { fieldComponents } from "../FormOne";
 
 export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
+    const formSchema = useSelector(
+        (state: RootState) => state.formSchema.schema
+    );
+
     if (!form || !form.control) {
         console.error(
             "Form prop is undefined or invalid in PatientInfoSection"
@@ -24,12 +29,30 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
         );
     }
 
-    const sections = formSchemaJson.versions[0]?.sections || [];
+    if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
+        console.error("Form schema is invalid or empty in PatientInfoSection");
+        return (
+            <div className="text-red-500 text-sm sm:text-base">
+                Error: Form schema is not available
+            </div>
+        );
+    }
+
+    const sections = formSchema.versions[0]?.sections || [];
 
     // Get the Basic Information section
     const basicInfoSection = sections.find(
         (section) => section.title === "Basic Information"
     );
+
+    if (!basicInfoSection) {
+        console.error("Basic Information section not found in schema");
+        return (
+            <div className="text-red-500 text-sm sm:text-base">
+                Error: Basic Information section not found
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-3 sm:space-y-4">
@@ -65,8 +88,8 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                                                     : "grid-cols-1"
                                             }`}
                                         >
-                                            {basicInfoSection?.questions.map(
-                                                (question: any) => (
+                                            {basicInfoSection.questions.map(
+                                                (question: Question) => (
                                                     <div
                                                         key={
                                                             question._id ||
@@ -79,10 +102,21 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                                                                 : "col-span-1"
                                                         )}
                                                     >
-                                                        {renderField(
-                                                            question,
-                                                            form
-                                                        )}
+                                                        {(() => {
+                                                            const FieldComponent =
+                                                                fieldComponents[
+                                                                    question
+                                                                        .field_type
+                                                                ];
+                                                            return FieldComponent ? (
+                                                                <FieldComponent
+                                                                    question={
+                                                                        question
+                                                                    }
+                                                                    form={form}
+                                                                />
+                                                            ) : null;
+                                                        })()}
                                                     </div>
                                                 )
                                             )}

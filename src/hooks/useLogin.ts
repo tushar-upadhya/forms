@@ -1,46 +1,30 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { LoginPayload } from "@/lib/types";
+import { setAccessToken } from "@/store/slices/authSlice";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
+import axios from "axios";
+import { useDispatch } from "react-redux";
 
-const LOGIN_API_URL = "https://rpcapplication.aiims.edu/form/api/v1/auth/login";
+export function useLogin(
+    onSuccess?: (data: any) => void,
+    onError?: (error: any) => void
+) {
+    const dispatch = useDispatch();
 
-interface LoginCredentials {
-    email: string;
-    password: string;
-}
-
-export const useLogin = (onSuccessCallback?: () => void) => {
     return useMutation({
-        mutationFn: async (credentials: LoginCredentials) => {
-            const response = await fetch(LOGIN_API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(credentials),
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(
-                    errorData.message || `Login failed: ${response.status}`
-                );
-            }
-            return response.json();
+        mutationFn: async (data: LoginPayload) => {
+            const response = await axios.post(
+                "https://rpcapplication.aiims.edu/form/api/v1/auth/login",
+                data
+            );
+            return response.data;
         },
         onSuccess: (data) => {
-            if (data.token) {
-                localStorage.setItem("authToken", data.token);
+            if (data.access_token) {
+                dispatch(setAccessToken(data.access_token));
             }
-            toast.success("Login successful!", {
-                position: "top-right",
-                duration: 3000,
-            });
-            if (onSuccessCallback) onSuccessCallback();
+            onSuccess?.(data);
         },
-        onError: (err: Error) => {
-            toast.error(`Login failed: ${err.message}`, {
-                position: "top-right",
-                duration: 5000,
-            });
-        },
+        onError,
     });
-};
+}

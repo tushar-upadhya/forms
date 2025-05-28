@@ -7,13 +7,19 @@ import {
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
+import type { PatientInfoSectionProps, Question } from "@/lib/types";
+import type { RootState } from "@/store/store";
 import { Zap } from "lucide-react";
-import { renderField, type PatientInfoSectionProps } from "../FormOne";
+import { useSelector } from "react-redux";
+import { fieldComponents } from "../FormOne";
 
 export default function OtherTreatmentSection({
     form,
 }: PatientInfoSectionProps) {
+    const formSchema = useSelector(
+        (state: RootState) => state.formSchema.schema
+    );
+
     if (!form || !form.control) {
         console.error(
             "Form prop is undefined or invalid in OtherTreatmentSection"
@@ -25,7 +31,18 @@ export default function OtherTreatmentSection({
         );
     }
 
-    const sections = formSchemaJson.versions[0]?.sections || [];
+    if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
+        console.error(
+            "Form schema is invalid or empty in OtherTreatmentSection"
+        );
+        return (
+            <div className="text-red-500 text-sm sm:text-base">
+                Error: Form schema is not available
+            </div>
+        );
+    }
+
+    const sections = formSchema.versions[0]?.sections || [];
 
     // Get the Other Treatment section
     const otherTreatmentSection = sections.find(
@@ -70,32 +87,45 @@ export default function OtherTreatmentSection({
                                     <Form {...form}>
                                         <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
                                             {otherTreatmentSection.questions.map(
-                                                (question) => (
-                                                    <div
-                                                        key={
-                                                            question._id ||
-                                                            question.label
-                                                        }
-                                                        className="col-span-1"
-                                                    >
-                                                        {question.field_type ===
-                                                            "checkbox" &&
-                                                        question.options
-                                                            .length > 10 ? (
-                                                            <ScrollArea className="h-[200px] sm:h-[250px] w-full">
-                                                                {renderField(
-                                                                    question,
-                                                                    form
-                                                                )}
-                                                            </ScrollArea>
-                                                        ) : (
-                                                            renderField(
-                                                                question,
-                                                                form
-                                                            )
-                                                        )}
-                                                    </div>
-                                                )
+                                                (question: Question) => {
+                                                    const FieldComponent =
+                                                        fieldComponents[
+                                                            question.field_type
+                                                        ];
+                                                    return FieldComponent ? (
+                                                        <div
+                                                            key={
+                                                                question._id ||
+                                                                question.label
+                                                            }
+                                                            className="col-span-1"
+                                                        >
+                                                            {question.field_type ===
+                                                                "checkbox" &&
+                                                            question.options &&
+                                                            question.options
+                                                                .length > 10 ? (
+                                                                <ScrollArea className="h-[200px] sm:h-[250px] w-full">
+                                                                    <FieldComponent
+                                                                        question={
+                                                                            question
+                                                                        }
+                                                                        form={
+                                                                            form
+                                                                        }
+                                                                    />
+                                                                </ScrollArea>
+                                                            ) : (
+                                                                <FieldComponent
+                                                                    question={
+                                                                        question
+                                                                    }
+                                                                    form={form}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    ) : null;
+                                                }
                                             )}
                                         </div>
                                     </Form>

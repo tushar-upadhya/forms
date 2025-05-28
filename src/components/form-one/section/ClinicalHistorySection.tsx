@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import {
     Accordion,
     AccordionContent,
@@ -8,13 +6,20 @@ import {
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
+import { useSelector } from "react-redux";
+
+import type { PatientInfoSectionProps, Question } from "@/lib/types";
+import type { RootState } from "@/store/store";
 import { ClipboardIcon } from "lucide-react";
-import { renderField, type PatientInfoSectionProps } from "../FormOne";
+import { fieldComponents } from "../FormOne";
 
 export default function ClinicalHistorySection({
     form,
 }: PatientInfoSectionProps) {
+    const formSchema = useSelector(
+        (state: RootState) => state.formSchema.schema
+    );
+
     if (!form || !form.control) {
         console.error(
             "Form prop is undefined or invalid in ClinicalHistorySection"
@@ -26,7 +31,31 @@ export default function ClinicalHistorySection({
         );
     }
 
-    const sections = formSchemaJson.versions[0]?.sections || [];
+    if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
+        console.error(
+            "Form schema is invalid or empty in ClinicalHistorySection"
+        );
+        return (
+            <div className="text-red-500 text-sm sm:text-base">
+                Error: Form schema is not available
+            </div>
+        );
+    }
+
+    const sections = formSchema.versions[0]?.sections || [];
+
+    const clinicalHistorySection = sections.find(
+        (section) => section.title === "Clinical History"
+    );
+
+    if (!clinicalHistorySection) {
+        console.error("Clinical History section not found in schema");
+        return (
+            <div className="text-red-500 text-sm sm:text-base">
+                Error: Clinical History section not found
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-3 sm:space-y-4">
@@ -62,26 +91,34 @@ export default function ClinicalHistorySection({
                                                     : "grid-cols-1"
                                             }`}
                                         >
-                                            {section.questions.map(
-                                                (question: any) => (
-                                                    <div
-                                                        key={
-                                                            question._id ||
-                                                            question.label
-                                                        }
-                                                        className={
-                                                            question.field_type ===
-                                                            "textarea"
-                                                                ? "col-span-1 sm:col-span-2 lg:col-span-3"
-                                                                : "col-span-1"
-                                                        }
-                                                    >
-                                                        {renderField(
-                                                            question,
-                                                            form
-                                                        )}
-                                                    </div>
-                                                )
+                                            {clinicalHistorySection.questions.map(
+                                                (question: Question) => {
+                                                    const FieldComponent =
+                                                        fieldComponents[
+                                                            question.field_type
+                                                        ];
+                                                    return FieldComponent ? (
+                                                        <div
+                                                            key={
+                                                                question._id ||
+                                                                question.label
+                                                            }
+                                                            className={
+                                                                question.field_type ===
+                                                                "textarea"
+                                                                    ? "col-span-1 sm:col-span-2 lg:col-span-3"
+                                                                    : "col-span-1"
+                                                            }
+                                                        >
+                                                            <FieldComponent
+                                                                question={
+                                                                    question
+                                                                }
+                                                                form={form}
+                                                            />
+                                                        </div>
+                                                    ) : null;
+                                                }
                                             )}
                                         </div>
                                     </Form>

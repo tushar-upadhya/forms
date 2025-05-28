@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Accordion,
     AccordionContent,
@@ -7,14 +6,20 @@ import {
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
+import type { PatientInfoSectionProps, Question } from "@/lib/types";
+import type { RootState } from "@/store/store";
 import clsx from "clsx";
 import { EyeIcon } from "lucide-react";
-import { renderField, type PatientInfoSectionProps } from "../FormOne";
+import { useSelector } from "react-redux";
+import { fieldComponents } from "../FormOne";
 
 export default function PupilAssessmentSection({
     form,
 }: PatientInfoSectionProps) {
+    const formSchema = useSelector(
+        (state: RootState) => state.formSchema.schema
+    );
+
     if (!form || !form.control) {
         console.error(
             "Form prop is undefined or invalid in PupilAssessmentSection"
@@ -26,7 +31,18 @@ export default function PupilAssessmentSection({
         );
     }
 
-    const sections = formSchemaJson.versions[0]?.sections || [];
+    if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
+        console.error(
+            "Form schema is invalid or empty in PupilAssessmentSection"
+        );
+        return (
+            <div className="text-red-500 text-sm sm:text-base">
+                Error: Form schema is not available
+            </div>
+        );
+    }
+
+    const sections = formSchema.versions[0]?.sections || [];
 
     // Get the Pupil section
     const pupilSection = sections.find((section) => section.title === "Pupil");
@@ -41,10 +57,10 @@ export default function PupilAssessmentSection({
     }
 
     // Group questions by eye for rendering
-    const rightEyeQuestions = pupilSection.questions.filter((q: any) =>
+    const rightEyeQuestions = pupilSection.questions.filter((q) =>
         q.label.toLowerCase().includes("right eye")
     );
-    const leftEyeQuestions = pupilSection.questions.filter((q: any) =>
+    const leftEyeQuestions = pupilSection.questions.filter((q) =>
         q.label.toLowerCase().includes("left eye")
     );
 
@@ -81,25 +97,31 @@ export default function PupilAssessmentSection({
                                             Right Eye
                                         </h4>
                                         {rightEyeQuestions.map(
-                                            (question: any) => (
-                                                <div
-                                                    key={
-                                                        question._id ||
-                                                        question.label
-                                                    }
-                                                    className={clsx(
-                                                        question.field_type ===
-                                                            "textarea"
-                                                            ? "col-span-1 sm:col-span-2"
-                                                            : "col-span-1"
-                                                    )}
-                                                >
-                                                    {renderField(
-                                                        question,
-                                                        form
-                                                    )}
-                                                </div>
-                                            )
+                                            (question: Question) => {
+                                                const FieldComponent =
+                                                    fieldComponents[
+                                                        question.field_type
+                                                    ];
+                                                return FieldComponent ? (
+                                                    <div
+                                                        key={
+                                                            question._id ||
+                                                            question.label
+                                                        }
+                                                        className={clsx(
+                                                            question.field_type ===
+                                                                "textarea"
+                                                                ? "col-span-1 sm:col-span-2"
+                                                                : "col-span-1"
+                                                        )}
+                                                    >
+                                                        <FieldComponent
+                                                            question={question}
+                                                            form={form}
+                                                        />
+                                                    </div>
+                                                ) : null;
+                                            }
                                         )}
                                     </div>
                                     {/* Left Eye Column */}
@@ -108,25 +130,31 @@ export default function PupilAssessmentSection({
                                             Left Eye
                                         </h4>
                                         {leftEyeQuestions.map(
-                                            (question: any) => (
-                                                <div
-                                                    key={
-                                                        question._id ||
-                                                        question.label
-                                                    }
-                                                    className={clsx(
-                                                        question.field_type ===
-                                                            "textarea"
-                                                            ? "col-span-1 sm:col-span-2"
-                                                            : "col-span-1"
-                                                    )}
-                                                >
-                                                    {renderField(
-                                                        question,
-                                                        form
-                                                    )}
-                                                </div>
-                                            )
+                                            (question: Question) => {
+                                                const FieldComponent =
+                                                    fieldComponents[
+                                                        question.field_type
+                                                    ];
+                                                return FieldComponent ? (
+                                                    <div
+                                                        key={
+                                                            question._id ||
+                                                            question.label
+                                                        }
+                                                        className={clsx(
+                                                            question.field_type ===
+                                                                "textarea"
+                                                                ? "col-span-1 sm:col-span-2"
+                                                                : "col-span-1"
+                                                        )}
+                                                    >
+                                                        <FieldComponent
+                                                            question={question}
+                                                            form={form}
+                                                        />
+                                                    </div>
+                                                ) : null;
+                                            }
                                         )}
                                     </div>
                                 </div>
