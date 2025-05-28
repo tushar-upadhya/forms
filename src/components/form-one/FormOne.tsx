@@ -18,6 +18,7 @@ import PosteriorSegmentSection from "./section/PosteriorSegmentSection";
 import ProvisionalDiagnosisSection from "./section/ProvisionalDiagnosisSection";
 import PupilAssessmentSection from "./section/PupilAssessmentSection";
 import TreatmentPlanSection from "./section/TreatmentPlanSection";
+import VisionAssessmentSection from "./section/VisionAssessmentSection";
 
 const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
@@ -33,7 +34,7 @@ const generateDefaultValues = (sections: any[]) => {
     return fields;
 };
 
-const fieldComponents: Record<string, React.ComponentType<any>> = {
+export const fieldComponents: Record<string, React.ComponentType<any>> = {
     input: InputField,
     textarea: TextareaField,
     radio: RadioField,
@@ -102,7 +103,7 @@ export default function FormOne() {
                     <>
                         <PatientInfoSection form={form} />
                         <ClinicalHistorySection form={form} />
-                        {/* <VisionAssessmentSection form={form} /> */}
+                        <VisionAssessmentSection form={form} />
                         <PupilAssessmentSection form={form} />
                         <AnteriorSegmentSection form={form} />
                         <PosteriorSegmentSection form={form} />
@@ -130,5 +131,3 @@ export default function FormOne() {
         </div>
     );
 }
-
-export { fieldComponents }; // Export for use in section components
