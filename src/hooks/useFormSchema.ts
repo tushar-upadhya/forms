@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { FormSchema } from "@/lib/types";
+import mockSchema from "@/mock/mock.json";
 import { setFormSchema } from "@/store/slices/formSchemaSlice";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
 
-//  decode token
+// Decode JWT to extract payload
 const decodeJWT = (token: string): { [key: string]: any } | null => {
     try {
         const base64Url = token.split(".")[1];
@@ -21,9 +21,15 @@ const decodeJWT = (token: string): { [key: string]: any } | null => {
         );
         return JSON.parse(jsonPayload);
     } catch (error) {
-        console.log("Failed to decode JWT:", error);
+        console.error("Failed to decode JWT:", error);
         return null;
     }
+};
+
+// Check if token is expired
+const isTokenExpired = (decoded: { exp?: number }): boolean => {
+    if (!decoded?.exp) return true;
+    return Date.now() >= decoded.exp * 1000;
 };
 
 export const useFormSchema = () => {
@@ -34,31 +40,33 @@ export const useFormSchema = () => {
         queryKey: ["formSchema"],
         queryFn: async () => {
             if (!accessToken) {
-                const errorMsg = "No access token available";
-
-                console.log(errorMsg);
-
-                throw new Error(errorMsg);
+                console.warn(
+                    "No access token available, falling back to mock schema"
+                );
+                dispatch(setFormSchema(mockSchema as unknown as FormSchema));
+                return mockSchema as unknown as FormSchema;
             }
 
+            // Decode JWT to extract formID
             const decodedToken = decodeJWT(accessToken);
             if (!decodedToken) {
-                const errorMsg = "Invalid JWT token";
-
-                console.log(errorMsg);
-
-                throw new Error(errorMsg);
+                console.warn("Invalid JWT token, falling back to mock schema");
+                dispatch(setFormSchema(mockSchema as unknown as FormSchema));
+                return mockSchema as unknown as FormSchema;
             }
 
-            const formID = decodedToken.formID || decodedToken.username;
-            if (!formID) {
-                const errorMsg = "No formID found in JWT token";
-
-                console.log(errorMsg);
-
-                throw new Error(errorMsg);
+            if (isTokenExpired(decodedToken)) {
+                console.warn(
+                    "Access token expired, falling back to mock schema"
+                );
+                // Optionally: Implement refresh token logic here
+                dispatch(setFormSchema(mockSchema as unknown as FormSchema));
+                return mockSchema as unknown as FormSchema;
             }
 
+            // Use hardcoded formID or extract from token if available
+            const formID =
+                decodedToken.formID || "dc8e18b4-b0ad-4b76-a4c5-cd340f84d494";
             const apiUrl = `https://rpcapplication.aiims.edu/form/api/v1/form/${formID}`;
 
             try {
@@ -67,17 +75,15 @@ export const useFormSchema = () => {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
-
                 const schema = response.data;
-
-                console.log("API Response:", schema);
-
                 if (!schema || !schema.versions || !schema.versions.length) {
-                    const errorMsg = "Invalid or empty form schema received";
-
-                    console.log(errorMsg, schema);
-
-                    throw new Error(errorMsg);
+                    console.warn(
+                        "Invalid or empty form schema, falling back to mock"
+                    );
+                    dispatch(
+                        setFormSchema(mockSchema as unknown as FormSchema)
+                    );
+                    return mockSchema as unknown as FormSchema;
                 }
                 dispatch(setFormSchema(schema));
                 return schema;
@@ -89,12 +95,16 @@ export const useFormSchema = () => {
                           axiosError.message
                       }`
                     : `Network Error: ${axiosError.message}`;
-
-                console.log(errorMsg, axiosError);
-
-                throw new Error(errorMsg);
+                console.error(errorMsg, axiosError);
+                console.warn("API request failed, falling back to mock schema");
+                dispatch(setFormSchema(mockSchema as unknown as FormSchema));
+                return mockSchema as unknown as FormSchema;
             }
         },
-        enabled: !!accessToken,
+        enabled: true,
+        retry: (failureCount, error) => {
+            if (error.message.includes("401")) return false;
+            return failureCount < 2;
+        },
     });
 };

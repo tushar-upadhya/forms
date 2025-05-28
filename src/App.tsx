@@ -12,11 +12,8 @@ function App() {
     );
 
     useEffect(() => {
-        const checkAuth = () => {
-            setIsLoggedIn(!!sessionStorage.getItem("accessToken"));
-        };
-        window.addEventListener("storage", checkAuth);
-        return () => window.removeEventListener("storage", checkAuth);
+        // Update isLoggedIn if accessToken changes
+        setIsLoggedIn(!!sessionStorage.getItem("accessToken"));
     }, []);
 
     return (

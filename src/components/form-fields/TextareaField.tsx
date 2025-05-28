@@ -14,8 +14,10 @@ interface TextareaFieldProps {
     form: UseFormReturn<FormValues>;
 }
 
-const getFieldName = (label: string) =>
-    label.toLowerCase().replace(/\s+/g, "_");
+const getFieldName = (label?: string) => {
+    const fieldLabel = label || "unnamed_field";
+    return fieldLabel.toLowerCase().replace(/\s+/g, "_");
+};
 
 export default function TextareaField({ question, form }: TextareaFieldProps) {
     const fieldName = getFieldName(question.label);
@@ -33,11 +35,13 @@ export default function TextareaField({ question, form }: TextareaFieldProps) {
                                 : "text-xs sm:text-sm md:text-base"
                         }
                     >
-                        {question.label}
+                        {question.label || "Unnamed Field"}
                     </FormLabel>
                     <FormControl>
                         <Textarea
-                            placeholder={`Enter ${question.label.toLowerCase()}`}
+                            placeholder={`Enter ${(
+                                question.label || "details"
+                            ).toLowerCase()}`}
                             disabled={question.is_disabled}
                             {...field}
                             value={field.value ?? ""}

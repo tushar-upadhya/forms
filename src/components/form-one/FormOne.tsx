@@ -55,6 +55,7 @@ export const fieldComponents: Record<
     textarea: TextareaField,
     radio: RadioField,
     select: SelectField,
+    // checkbox: CheckboxField,
 };
 
 export default function FormOne() {
@@ -99,7 +100,8 @@ export default function FormOne() {
     ) {
         return (
             <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8 text-red-500 text-xs sm:text-sm md:text-base">
-                {error?.message || "Invalid schema"}
+                Failed to load form schema: {error?.message || "Invalid schema"}
+                . Please try again or contact support.
             </div>
         );
     }

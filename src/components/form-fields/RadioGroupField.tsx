@@ -14,8 +14,10 @@ interface RadioFieldProps {
     form: UseFormReturn<FormValues>;
 }
 
-const getFieldName = (label: string) =>
-    label.toLowerCase().replace(/\s+/g, "_");
+const getFieldName = (label?: string) => {
+    const fieldLabel = label || "unnamed_field";
+    return fieldLabel.toLowerCase().replace(/\s+/g, "_");
+};
 
 export default function RadioField({ question, form }: RadioFieldProps) {
     const fieldName = getFieldName(question.label);
@@ -33,12 +35,16 @@ export default function RadioField({ question, form }: RadioFieldProps) {
                                 : "text-xs sm:text-sm md:text-base"
                         }
                     >
-                        {question.label}
+                        {question.label || "Unnamed Field"}
                     </FormLabel>
                     <FormControl>
                         <RadioGroup
                             onValueChange={field.onChange}
-                            value={field.value}
+                            value={
+                                typeof field.value === "string"
+                                    ? field.value
+                                    : ""
+                            }
                             className="flex flex-wrap gap-2 sm:gap-3 md:gap-4"
                             disabled={question.is_disabled}
                         >

@@ -44,7 +44,11 @@ export default function SelectField({ question, form }: SelectFieldProps) {
                     <FormControl>
                         <Select
                             onValueChange={field.onChange}
-                            value={field.value}
+                            value={
+                                Array.isArray(field.value)
+                                    ? field.value[0] ?? undefined
+                                    : field.value
+                            }
                             disabled={question.is_disabled}
                         >
                             <SelectTrigger className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-3">

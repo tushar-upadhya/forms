@@ -32,7 +32,7 @@ export default function PupilAssessmentSection({
     }
 
     if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
-        console.log(
+        console.error(
             "Form schema is invalid or empty in PupilAssessmentSection"
         );
         return (
