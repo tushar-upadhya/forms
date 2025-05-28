@@ -32,7 +32,7 @@ export default function PosteriorSegmentSection({
     }
 
     if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
-        console.error(
+        console.log(
             "Form schema is invalid or empty in PosteriorSegmentSection"
         );
         return (

@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { useFormSchema } from "@/hooks/useFormSchema";
-import type { FormValues } from "@/lib/types";
-import formSchemaJson from "@/mock/mock.json" assert { type: "json" };
+import type { FormValues, Question, Section } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import InputField from "../form-fields/InputField";
@@ -23,18 +21,36 @@ import VisionAssessmentSection from "./section/VisionAssessmentSection";
 const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
 
-const generateDefaultValues = (sections: any[]) => {
-    const fields: Record<string, string | undefined> = {};
+const generateDefaultValues = (sections: Section[]) => {
+    const fields: Record<string, string | string[] | undefined> = {};
     sections.forEach((section) => {
-        section.questions.forEach((question: any) => {
+        section.questions.forEach((question: Question) => {
             const fieldName = getFieldName(question.label);
-            fields[fieldName] = question.is_required ? "" : undefined;
+            if (question.field_type === "checkbox") {
+                fields[fieldName] = question.is_required
+                    ? question.default_value
+                        ? Array.isArray(question.default_value)
+                            ? question.default_value
+                            : [question.default_value]
+                        : []
+                    : undefined;
+            } else {
+                fields[fieldName] = question.is_required
+                    ? question.default_value || ""
+                    : undefined;
+            }
         });
     });
     return fields;
 };
 
-export const fieldComponents: Record<string, React.ComponentType<any>> = {
+export const fieldComponents: Record<
+    string,
+    React.ComponentType<{
+        question: Question;
+        form: ReturnType<typeof useForm<FormValues>>;
+    }>
+> = {
     input: InputField,
     textarea: TextareaField,
     radio: RadioField,
@@ -49,15 +65,14 @@ export default function FormOne() {
     });
 
     useEffect(() => {
-        if (formSchema && formSchema.versions && formSchema.versions[0]) {
+        if (
+            formSchema &&
+            formSchema.versions &&
+            formSchema.versions[0]?.sections
+        ) {
             form.reset(generateDefaultValues(formSchema.versions[0].sections));
-        } else if (error) {
-            console.warn("Using mock.json as fallback due to API error");
-            form.reset(
-                generateDefaultValues(formSchemaJson.versions[0].sections)
-            );
         }
-    }, [formSchema, error, form]);
+    }, [formSchema, form]);
 
     function onSubmit(data: FormValues) {
         setIsSubmitting(true);
@@ -76,19 +91,15 @@ export default function FormOne() {
         );
     }
 
-    if (error) {
+    if (
+        error ||
+        !formSchema ||
+        !formSchema.versions ||
+        !formSchema.versions[0]?.sections
+    ) {
         return (
             <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8 text-red-500 text-xs sm:text-sm md:text-base">
-                Failed to load form schema: {error.message}. Using mock data as
-                fallback.
-            </div>
-        );
-    }
-
-    if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
-        return (
-            <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8 text-red-500 text-xs sm:text-sm md:text-base">
-                Form schema is invalid or empty. Using mock data as fallback.
+                {error?.message || "Invalid schema"}
             </div>
         );
     }

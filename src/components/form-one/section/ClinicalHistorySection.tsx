@@ -32,7 +32,7 @@ export default function ClinicalHistorySection({
     }
 
     if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
-        console.error(
+        console.log(
             "Form schema is invalid or empty in ClinicalHistorySection"
         );
         return (

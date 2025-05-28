@@ -32,9 +32,7 @@ export default function InvestigationsSection({
     }
 
     if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
-        console.error(
-            "Form schema is invalid or empty in InvestigationsSection"
-        );
+        console.log("Form schema is invalid or empty in InvestigationsSection");
         return (
             <div className="text-red-500 text-sm sm:text-base">
                 Error: Form schema is not available
@@ -51,7 +49,7 @@ export default function InvestigationsSection({
     );
 
     if (!investigationsSection) {
-        console.error("Investigations section not found in schema");
+        console.log("Investigations section not found in schema");
         return (
             <div className="text-red-500 text-sm sm:text-base">
                 Error: Investigations section not found

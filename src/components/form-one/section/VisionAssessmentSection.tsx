@@ -33,7 +33,7 @@ export default function VisionAssessmentSection({
     }
 
     if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
-        console.error(
+        console.log(
             "Form schema is invalid or empty in VisionAssessmentSection"
         );
         return (

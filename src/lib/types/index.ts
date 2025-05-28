@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { UseFormReturn } from "react-hook-form";
 
 export interface FormValues {
-    [key: string]: string | undefined;
+    [key: string]: string | string[] | undefined;
 }
 
 export interface PatientInfoSectionProps {
@@ -19,17 +20,45 @@ export interface Question {
         option_value: string;
         option_label: string;
         is_disabled: boolean;
+        is_default?: boolean;
+        order?: number;
     }[];
+    created_at?: string;
+    default_value?: string | null;
+    help_text?: string | null;
+    meta_data?: Record<string, any>;
+    order?: number | null;
+    validation_rules?: any;
 }
 
 export interface Section {
     title: string;
     questions: Question[];
-    ui: "flex" | "grid" | "grid-cols-2";
+    ui: "flex" | "grid" | "grid-cols-2" | "simple";
+    is_disabled?: boolean;
+    is_repeatable?: boolean;
+    meta_data?: Record<string, any>;
+    order?: number;
+    created_at?: string;
 }
 
 export interface FormSchema {
-    versions: { sections: Section[] }[];
+    id: string;
+    title: string;
+    created_at: string;
+    updated_at: string;
+    created_by: string;
+    description: string;
+    is_public: boolean;
+    status: string;
+    slug: string;
+    editors: string[];
+    submitters: string[];
+    tags: string[];
+    versions: {
+        created_at: string;
+        sections: Section[];
+    }[];
 }
 
 export interface LoginPayload {

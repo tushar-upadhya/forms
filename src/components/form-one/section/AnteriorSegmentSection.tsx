@@ -32,7 +32,7 @@ export default function AnteriorSegmentSection({
     }
 
     if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
-        console.error(
+        console.log(
             "Form schema is invalid or empty in AnteriorSegmentSection"
         );
         return (

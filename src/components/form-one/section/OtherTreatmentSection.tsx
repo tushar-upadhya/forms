@@ -32,9 +32,7 @@ export default function OtherTreatmentSection({
     }
 
     if (!formSchema || !formSchema.versions || !formSchema.versions[0]) {
-        console.error(
-            "Form schema is invalid or empty in OtherTreatmentSection"
-        );
+        console.log("Form schema is invalid or empty in OtherTreatmentSection");
         return (
             <div className="text-red-500 text-sm sm:text-base">
                 Error: Form schema is not available
