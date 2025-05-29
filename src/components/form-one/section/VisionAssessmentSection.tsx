@@ -45,7 +45,7 @@ export default function VisionAssessmentSection({
 
     const sections = formSchema.versions[0]?.sections || [];
     const visionSection = sections.find(
-        (section) => section.title === "VISION ASSESSMENT"
+        (section) => section.title.toLowerCase() === "vision assessment"
     );
 
     if (!visionSection) {
