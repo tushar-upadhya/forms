@@ -56,12 +56,11 @@ export default function PupilAssessmentSection({
         );
     }
 
-    // Group questions by eye for rendering
-    const rightEyeQuestions = pupilSection.questions.filter((q) =>
-        q.label.toLowerCase().includes("right eye")
+    const rightEyeQuestions = pupilSection.questions.filter(
+        (q) => q.label && q.label.toLowerCase().includes("right eye")
     );
-    const leftEyeQuestions = pupilSection.questions.filter((q) =>
-        q.label.toLowerCase().includes("left eye")
+    const leftEyeQuestions = pupilSection.questions.filter(
+        (q) => q.label && q.label.toLowerCase().includes("left eye")
     );
 
     return (

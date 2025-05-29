@@ -57,11 +57,11 @@ export default function VisionAssessmentSection({
         );
     }
 
-    const rightEyeQuestions = visionSection.questions.filter((q) =>
-        q.label.includes("Right Eye")
+    const rightEyeQuestions = visionSection.questions.filter(
+        (q) => q.label && q.label.includes("Right Eye")
     );
-    const leftEyeQuestions = visionSection.questions.filter((q) =>
-        q.label.includes("Left Eye")
+    const leftEyeQuestions = visionSection.questions.filter(
+        (q) => q.label && q.label.includes("Left Eye")
     );
 
     const gridClass =

@@ -3,6 +3,7 @@ import { useFormSchema } from "@/hooks/useFormSchema";
 import type { FormValues, Question, Section } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import CheckboxField from "../form-fields/CheckboxField";
 import InputField from "../form-fields/InputField";
 import RadioField from "../form-fields/RadioGroupField";
 import SelectField from "../form-fields/SelectField";
@@ -44,6 +45,20 @@ const generateDefaultValues = (sections: Section[]) => {
     return fields;
 };
 
+const CheckboxFieldWrapper: React.FC<{
+    question: Question;
+    form: ReturnType<typeof useForm<FormValues>>;
+}> = ({ question, form }) => (
+    <CheckboxField
+        form={form}
+        fieldName={question.label.toLowerCase().replace(/\s+/g, "_")}
+        label={question.label}
+        options={question.options || []}
+        isRequired={question.is_required}
+        isDisabled={question.is_disabled}
+    />
+);
+
 export const fieldComponents: Record<
     string,
     React.ComponentType<{
@@ -55,7 +70,7 @@ export const fieldComponents: Record<
     textarea: TextareaField,
     radio: RadioField,
     select: SelectField,
-    // checkbox: CheckboxField,
+    checkbox: CheckboxFieldWrapper,
 };
 
 export default function FormOne() {
