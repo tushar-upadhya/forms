@@ -14,8 +14,7 @@ interface InputFieldProps {
     form: UseFormReturn<FormValues>;
 }
 
-const getFieldName = (label: string) =>
-    label.toLowerCase().replace(/\s+/g, "_");
+const getFieldName = (label: string) => label;
 
 export default function InputField({ question, form }: InputFieldProps) {
     const fieldName = getFieldName(question.label);
@@ -37,7 +36,7 @@ export default function InputField({ question, form }: InputFieldProps) {
                     </FormLabel>
                     <FormControl>
                         <Input
-                            placeholder={`Enter ${question.label.toLowerCase()}`}
+                            placeholder={`Enter ${question.label}`}
                             disabled={question.is_disabled}
                             {...field}
                             value={field.value ?? ""}

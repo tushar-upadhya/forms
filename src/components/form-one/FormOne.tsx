@@ -45,20 +45,6 @@ const generateDefaultValues = (sections: Section[]) => {
     return fields;
 };
 
-const CheckboxFieldWrapper: React.FC<{
-    question: Question;
-    form: ReturnType<typeof useForm<FormValues>>;
-}> = ({ question, form }) => (
-    <CheckboxField
-        form={form}
-        fieldName={question.label.toLowerCase().replace(/\s+/g, "_")}
-        label={question.label}
-        options={question.options || []}
-        isRequired={question.is_required}
-        isDisabled={question.is_disabled}
-    />
-);
-
 export const fieldComponents: Record<
     string,
     React.ComponentType<{
@@ -70,7 +56,7 @@ export const fieldComponents: Record<
     textarea: TextareaField,
     radio: RadioField,
     select: SelectField,
-    checkbox: CheckboxFieldWrapper,
+    checkbox: CheckboxField,
 };
 
 export default function FormOne() {

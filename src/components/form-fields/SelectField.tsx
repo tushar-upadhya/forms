@@ -20,8 +20,7 @@ interface SelectFieldProps {
     form: UseFormReturn<FormValues>;
 }
 
-const getFieldName = (label: string) =>
-    label.toLowerCase().replace(/\s+/g, "_");
+const getFieldName = (label?: string) => label ?? "";
 
 export default function SelectField({ question, form }: SelectFieldProps) {
     const fieldName = getFieldName(question.label);
@@ -53,7 +52,7 @@ export default function SelectField({ question, form }: SelectFieldProps) {
                         >
                             <SelectTrigger className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-3">
                                 <SelectValue
-                                    placeholder={`Select ${question.label.toLowerCase()}`}
+                                    placeholder={`Select ${question.label}`}
                                 />
                             </SelectTrigger>
                             <SelectContent>

@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FormSchema } from "@/lib/types";
-import mockSchema from "@/mock/mock.json";
 import { setFormSchema } from "@/store/slices/formSchemaSlice";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
 
-// Decode JWT to extract payload
 const decodeJWT = (token: string): { [key: string]: any } | null => {
     try {
         const base64Url = token.split(".")[1];
@@ -26,7 +24,6 @@ const decodeJWT = (token: string): { [key: string]: any } | null => {
     }
 };
 
-// Check if token is expired
 const isTokenExpired = (decoded: { exp?: number }): boolean => {
     if (!decoded?.exp) return true;
     return Date.now() >= decoded.exp * 1000;
@@ -40,31 +37,18 @@ export const useFormSchema = () => {
         queryKey: ["formSchema"],
         queryFn: async () => {
             if (!accessToken) {
-                console.warn(
-                    "No access token available, falling back to mock schema"
-                );
-                dispatch(setFormSchema(mockSchema as unknown as FormSchema));
-                return mockSchema as unknown as FormSchema;
+                throw new Error("Access token not found in sessionStorage.");
             }
 
-            // Decode JWT to extract formID
             const decodedToken = decodeJWT(accessToken);
             if (!decodedToken) {
-                console.warn("Invalid JWT token, falling back to mock schema");
-                dispatch(setFormSchema(mockSchema as unknown as FormSchema));
-                return mockSchema as unknown as FormSchema;
+                throw new Error("Invalid JWT token.");
             }
 
             if (isTokenExpired(decodedToken)) {
-                console.warn(
-                    "Access token expired, falling back to mock schema"
-                );
-                // Optionally: Implement refresh token logic here
-                dispatch(setFormSchema(mockSchema as unknown as FormSchema));
-                return mockSchema as unknown as FormSchema;
+                throw new Error("Access token is expired.");
             }
 
-            // Use hardcoded formID or extract from token if available
             const formID =
                 decodedToken.formID || "dc8e18b4-b0ad-4b76-a4c5-cd340f84d494";
             const apiUrl = `https://rpcapplication.aiims.edu/form/api/v1/form/${formID}`;
@@ -75,16 +59,14 @@ export const useFormSchema = () => {
                         Authorization: `Bearer ${accessToken}`,
                     },
                 });
+
                 const schema = response.data;
                 if (!schema || !schema.versions || !schema.versions.length) {
-                    console.warn(
-                        "Invalid or empty form schema, falling back to mock"
+                    throw new Error(
+                        "Received empty or invalid schema from API."
                     );
-                    dispatch(
-                        setFormSchema(mockSchema as unknown as FormSchema)
-                    );
-                    return mockSchema as unknown as FormSchema;
                 }
+
                 dispatch(setFormSchema(schema));
                 return schema;
             } catch (error) {
@@ -96,14 +78,16 @@ export const useFormSchema = () => {
                       }`
                     : `Network Error: ${axiosError.message}`;
                 console.error(errorMsg, axiosError);
-                console.warn("API request failed, falling back to mock schema");
-                dispatch(setFormSchema(mockSchema as unknown as FormSchema));
-                return mockSchema as unknown as FormSchema;
+                throw new Error(errorMsg);
             }
         },
         enabled: true,
         retry: (failureCount, error) => {
-            if (error.message.includes("401")) return false;
+            if (
+                error.message.includes("401") ||
+                error.message.includes("expired")
+            )
+                return false;
             return failureCount < 2;
         },
     });
