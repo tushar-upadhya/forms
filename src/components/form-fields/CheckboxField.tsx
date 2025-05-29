@@ -31,6 +31,10 @@ export default function CheckboxField({
     isRequired,
     isDisabled,
 }: CheckboxFieldProps) {
+    const hasLongLabel = options.some(
+        (option) => option.option_label.length > 20
+    );
+
     return (
         <FormField
             control={form.control}
@@ -50,16 +54,22 @@ export default function CheckboxField({
                     <FormControl>
                         <div
                             className={clsx(
-                                "grid gap-2 xs:gap-3 sm:gap-4 max-h-[300px] overflow-y-auto",
-                                options.length > 10
-                                    ? "grid-cols-1 xs:grid-cols-2 sm:grid-cols-3"
-                                    : "grid-cols-1"
+                                "grid overflow-x-auto overflow-y-hidden max-w-full scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100",
+                                hasLongLabel
+                                    ? "grid-cols-1 sm:grid-cols-2"
+                                    : "grid-cols-1 sm:grid-cols-3",
+                                "gap-2 xs:gap-3 sm:gap-4"
                             )}
+                            style={{ scrollbarWidth: "thin" }}
                         >
                             {options.map((option) => (
                                 <label
                                     key={option._id}
-                                    className="flex items-center space-x-2 xs:space-x-3 cursor-pointer"
+                                    className={clsx(
+                                        "flex items-center px-2 py-1 sm:px-3 sm:py-2",
+                                        "rounded cursor-pointer min-w-[150px]",
+                                        "space-x-2 xs:space-x-3"
+                                    )}
                                 >
                                     <input
                                         type="checkbox"
@@ -86,7 +96,7 @@ export default function CheckboxField({
                                         }
                                         className="h-4 w-4 xs:h-5 xs:w-5 sm:h-6 sm:w-6 rounded border-gray-300 text-primary focus:ring-primary"
                                     />
-                                    <span className="text-xs xs:text-sm sm:text-base">
+                                    <span className="text-xs xs:text-sm sm:text-base whitespace-nowrap">
                                         {option.option_label}
                                     </span>
                                 </label>
