@@ -19,8 +19,8 @@ import PupilAssessmentSection from "./section/PupilAssessmentSection";
 import TreatmentPlanSection from "./section/TreatmentPlanSection";
 import VisionAssessmentSection from "./section/VisionAssessmentSection";
 
-const getFieldName = (label: string) =>
-    label.toLowerCase().replace(/\s+/g, "_");
+const getFieldName = (label?: string) =>
+    label ? label.toLowerCase().replace(/\s+/g, "_") : "";
 
 const generateDefaultValues = (sections: Section[]) => {
     const fields: Record<string, string | string[] | undefined> = {};
@@ -45,6 +45,20 @@ const generateDefaultValues = (sections: Section[]) => {
     return fields;
 };
 
+const CheckboxFieldWrapper: React.FC<{
+    question: Question;
+    form: ReturnType<typeof useForm<FormValues>>;
+}> = ({ question, form }) => (
+    <CheckboxField
+        form={form}
+        fieldName={question?.label ?? ""}
+        label={question.label}
+        options={question.options || []}
+        isRequired={question.is_required}
+        isDisabled={question.is_disabled}
+    />
+);
+
 export const fieldComponents: Record<
     string,
     React.ComponentType<{
@@ -56,7 +70,7 @@ export const fieldComponents: Record<
     textarea: TextareaField,
     radio: RadioField,
     select: SelectField,
-    checkbox: CheckboxField,
+    checkbox: CheckboxFieldWrapper,
 };
 
 export default function FormOne() {
@@ -102,7 +116,6 @@ export default function FormOne() {
         return (
             <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8 text-red-500 text-xs sm:text-sm md:text-base">
                 Failed to load form schema: {error?.message || "Invalid schema"}
-                . Please try again or contact support.
             </div>
         );
     }

@@ -32,6 +32,7 @@ export interface Question {
 }
 
 export interface Section {
+    _id?: string;
     title: string;
     questions: Question[];
     ui: "flex" | "grid" | "grid-cols-2" | "simple";
@@ -43,7 +44,7 @@ export interface Section {
 }
 
 export interface FormSchema {
-    id: string;
+    _id: string;
     title: string;
     created_at: string;
     updated_at: string;
