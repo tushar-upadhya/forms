@@ -9,6 +9,8 @@ import InputField from "../form-fields/InputField";
 import RadioField from "../form-fields/RadioGroupField";
 import SelectField from "../form-fields/SelectField";
 import TextareaField from "../form-fields/TextareaField";
+import ErrorMessage from "../skeleton/form-error/FormError";
+import LoadingSkeleton from "../skeleton/loading/LoadingSkeleton";
 import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
 import ClinicalHistorySection from "./section/ClinicalHistorySection";
 import InvestigationsSection from "./section/InvestigationsSection";
@@ -83,7 +85,6 @@ export default function FormOne() {
         defaultValues: {},
     });
 
-    // Initialize the submit mutation
     const { mutate: submitForm } = useSubmitForm(
         FORM_ID,
         (data) => {
@@ -112,13 +113,7 @@ export default function FormOne() {
         submitForm(data);
     }
 
-    if (isLoading) {
-        return (
-            <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8 text-xs sm:text-sm md:text-base">
-                Loading form...
-            </div>
-        );
-    }
+    if (isLoading) return <LoadingSkeleton />;
 
     if (
         error ||
@@ -126,11 +121,7 @@ export default function FormOne() {
         !formSchema.versions ||
         !formSchema.versions[0]?.sections
     ) {
-        return (
-            <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8 text-red-500 text-xs sm:text-sm md:text-base">
-                Failed to load form schema: {error?.message || "Invalid schema"}
-            </div>
-        );
+        return <ErrorMessage message={error?.message || "Invalid schema"} />;
     }
 
     return (
