@@ -9,7 +9,7 @@ import InputField from "../form-fields/InputField";
 import RadioField from "../form-fields/RadioGroupField";
 import SelectField from "../form-fields/SelectField";
 import TextareaField from "../form-fields/TextareaField";
-import ErrorMessage from "../skeleton/error/Error";
+import Error from "../skeleton/error/Error";
 import LoadingSkeleton from "../skeleton/loading/LoadingSkeleton";
 import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
 import ClinicalHistorySection from "./section/ClinicalHistorySection";
@@ -121,7 +121,7 @@ export default function FormOne() {
         !formSchema.versions ||
         !formSchema.versions[0]?.sections
     ) {
-        return <ErrorMessage message={error?.message || "Invalid schema"} />;
+        return <Error message={error?.message || "Invalid schema"} />;
     }
 
     return (

@@ -13,14 +13,11 @@ interface SubmitFormResponse {
 const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
 
-const transformPayload = (
-    data: FormValues,
-    schema: FormSchema | null
-): { responses: Array<{ question_id: string; value: any }> } => {
+const transformPayload = (data: FormValues, schema: FormSchema | null): any => {
     if (!schema || !schema.versions || !schema.versions[0]?.sections) {
-        console.error(
-            "Schema is invalid or missing for payload transformation"
-        );
+        // console.error(
+        //     "Schema is invalid or missing for payload transformation"
+        // );
         return { responses: [] };
     }
 
@@ -32,7 +29,7 @@ const transformPayload = (
             if (question._id) {
                 questionIdMap[fieldName] = question._id;
             }
-            //  else {
+            // else {
             //     console.warn(`Question "${question.label}" is missing _id`);
             // }
             if (question.is_required && question._id) {
@@ -50,7 +47,7 @@ const transformPayload = (
         .map(([key, value]) => {
             const questionId = questionIdMap[key] || key;
             if (!questionIdMap[key]) {
-                // console.warn(`No question_id found for field "${key}"`);
+                console.warn(`No question_id found for field "${key}"`);
             }
             return {
                 question_id: questionId,
@@ -63,7 +60,7 @@ const transformPayload = (
         (qId) => !responses.some((r) => r.question_id === qId)
     );
     if (missingRequired.length > 0) {
-        // console.(
+        // console.warn(
         //     "Missing required fields with question IDs:",
         //     missingRequired
         // );
