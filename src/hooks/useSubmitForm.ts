@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FormSchema, FormValues } from "@/lib/types";
 import type { RootState } from "@/store/store";
 import { useMutation } from "@tanstack/react-query";
@@ -12,7 +13,10 @@ interface SubmitFormResponse {
 const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
 
-const transformPayload = (data: FormValues, schema: FormSchema | null): any => {
+const transformPayload = (
+    data: FormValues,
+    schema: FormSchema | null
+): { responses: Array<{ question_id: string; value: any }> } => {
     if (!schema || !schema.versions || !schema.versions[0]?.sections) {
         console.error(
             "Schema is invalid or missing for payload transformation"
@@ -27,9 +31,10 @@ const transformPayload = (data: FormValues, schema: FormSchema | null): any => {
             const fieldName = getFieldName(question.label);
             if (question._id) {
                 questionIdMap[fieldName] = question._id;
-            } else {
-                console.warn(`Question "${question.label}" is missing _id`);
             }
+            //  else {
+            //     console.warn(`Question "${question.label}" is missing _id`);
+            // }
             if (question.is_required && question._id) {
                 requiredQuestions.add(question._id);
             }
@@ -38,14 +43,14 @@ const transformPayload = (data: FormValues, schema: FormSchema | null): any => {
 
     const responses = Object.entries(data)
         .filter(
-            ([key, value]) =>
+            ([, value]) =>
                 value !== undefined &&
                 (Array.isArray(value) ? value.length > 0 : value !== "")
         )
         .map(([key, value]) => {
             const questionId = questionIdMap[key] || key;
             if (!questionIdMap[key]) {
-                console.warn(`No question_id found for field "${key}"`);
+                // console.warn(`No question_id found for field "${key}"`);
             }
             return {
                 question_id: questionId,
@@ -58,13 +63,13 @@ const transformPayload = (data: FormValues, schema: FormSchema | null): any => {
         (qId) => !responses.some((r) => r.question_id === qId)
     );
     if (missingRequired.length > 0) {
-        console.warn(
-            "Missing required fields with question IDs:",
-            missingRequired
-        );
+        // console.(
+        //     "Missing required fields with question IDs:",
+        //     missingRequired
+        // );
     }
 
-    console.log("Transformed payload:", { responses });
+    console.log("responses:", responses);
     return { responses };
 };
 
