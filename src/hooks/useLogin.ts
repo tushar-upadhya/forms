@@ -22,10 +22,6 @@ export function useLogin(
         LoginPayload
     >({
         mutationFn: async (data: LoginPayload) => {
-            // console.log("Login request:", {
-            //     url: url,
-            //     data,
-            // });
             const response = await axios.post(url, data, {
                 headers: {
                     "Content-Type": "application/json",

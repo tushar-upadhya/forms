@@ -48,9 +48,9 @@ export default function RadioField({ question, form }: RadioFieldProps) {
                             className="flex flex-wrap gap-2 sm:gap-3 md:gap-4"
                             disabled={question.is_disabled}
                         >
-                            {question.options?.map((option) => (
+                            {question.options?.map((option, index) => (
                                 <FormItem
-                                    key={option._id}
+                                    key={option._id || `option-${index}`}
                                     className="flex items-center space-x-2 sm:space-x-3 space-y-0"
                                 >
                                     <FormControl>

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useFormSchema } from "@/hooks/useFormSchema";
+import { useSubmitForm } from "@/hooks/useSubmitForm"; // Import the new hook
 import type { FormValues, Question, Section } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -18,6 +19,8 @@ import ProvisionalDiagnosisSection from "./section/ProvisionalDiagnosisSection";
 import PupilAssessmentSection from "./section/PupilAssessmentSection";
 import TreatmentPlanSection from "./section/TreatmentPlanSection";
 import VisionAssessmentSection from "./section/VisionAssessmentSection";
+
+const FORM_ID = "dc8e18b4-b0ad-4b76-a4c5-cd340f84d494";
 
 const getFieldName = (label?: string) =>
     label ? label.toLowerCase().replace(/\s+/g, "_") : "";
@@ -80,6 +83,20 @@ export default function FormOne() {
         defaultValues: {},
     });
 
+    // Initialize the submit mutation
+    const { mutate: submitForm } = useSubmitForm(
+        FORM_ID,
+        (data) => {
+            setIsSubmitting(false);
+            form.reset();
+            console.log("Form submitted successfully:", data);
+        },
+        (error) => {
+            setIsSubmitting(false);
+            console.error("Submission error:", error.message);
+        }
+    );
+
     useEffect(() => {
         if (
             formSchema &&
@@ -92,11 +109,7 @@ export default function FormOne() {
 
     function onSubmit(data: FormValues) {
         setIsSubmitting(true);
-        setTimeout(() => {
-            console.log("Form submitted:", data);
-            setIsSubmitting(false);
-            form.reset();
-        }, 1500);
+        submitForm(data);
     }
 
     if (isLoading) {

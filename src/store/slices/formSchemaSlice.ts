@@ -3,28 +3,38 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface FormSchemaState {
     schema: FormSchema | null;
-    error: string | null;
+    submissionStatus: {
+        status: "idle" | "success" | "error";
+        responseId?: string;
+        message?: string;
+    };
 }
 
 const initialState: FormSchemaState = {
     schema: null,
-    error: null,
+    submissionStatus: { status: "idle" },
 };
 
 const formSchemaSlice = createSlice({
     name: "formSchema",
     initialState,
     reducers: {
-        setFormSchema: (state, action: PayloadAction<FormSchema>) => {
+        setFormSchema(state, action: PayloadAction<FormSchema>) {
             state.schema = action.payload;
-            state.error = null;
         },
-        setFormSchemaError: (state, action: PayloadAction<string>) => {
-            state.error = action.payload;
-            state.schema = null;
+        setFormSubmissionStatus(
+            state,
+            action: PayloadAction<{
+                status: "success" | "error";
+                responseId?: string;
+                message?: string;
+            }>
+        ) {
+            state.submissionStatus = action.payload;
         },
     },
 });
 
-export const { setFormSchema, setFormSchemaError } = formSchemaSlice.actions;
+export const { setFormSchema, setFormSubmissionStatus } =
+    formSchemaSlice.actions;
 export default formSchemaSlice.reducer;

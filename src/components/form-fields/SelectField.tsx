@@ -56,9 +56,13 @@ export default function SelectField({ question, form }: SelectFieldProps) {
                                 />
                             </SelectTrigger>
                             <SelectContent>
-                                {question.options?.map((option) => (
+                                {question.options?.map((option, index) => (
                                     <SelectItem
-                                        key={option._id}
+                                        key={
+                                            option._id
+                                                ? `${option._id}-${index}`
+                                                : `option-${index}`
+                                        }
                                         value={option.option_value}
                                         disabled={option.is_disabled}
                                         className="text-xs sm:text-sm md:text-base"

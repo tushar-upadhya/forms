@@ -96,7 +96,7 @@ export default function AnteriorSegmentSection({
                                             )}
                                         >
                                             {anteriorSegmentSection.questions.map(
-                                                (question) => {
+                                                (question, qIndex) => {
                                                     const FieldComponent =
                                                         fieldComponents[
                                                             question.field_type
@@ -104,8 +104,9 @@ export default function AnteriorSegmentSection({
                                                     return FieldComponent ? (
                                                         <div
                                                             key={
-                                                                question._id ||
-                                                                question.label
+                                                                question._id
+                                                                    ? `${question._id}-${qIndex}`
+                                                                    : `${question.label}-${qIndex}`
                                                             }
                                                             className="col-span-1"
                                                         >

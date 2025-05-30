@@ -62,9 +62,13 @@ export default function CheckboxField({
                             )}
                             style={{ scrollbarWidth: "thin" }}
                         >
-                            {options.map((option) => (
+                            {options.map((option, index) => (
                                 <label
-                                    key={option._id}
+                                    key={
+                                        option._id
+                                            ? `${option._id}-${index}`
+                                            : `option-${index}`
+                                    }
                                     className={clsx(
                                         "flex items-center px-2 py-1 sm:px-3 sm:py-2",
                                         "rounded cursor-pointer min-w-[150px]",
