@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { FormSchema, FormValues } from "@/lib/types";
 import type { RootState } from "@/store/store";
 import { useMutation } from "@tanstack/react-query";
@@ -7,67 +6,77 @@ import { useSelector } from "react-redux";
 
 interface SubmitFormResponse {
     message: string;
-    responseId?: string;
+    data?: Record<string, string | string[] | null>;
 }
 
 const getFieldName = (label: string) =>
     label.toLowerCase().replace(/\s+/g, "_");
 
-const transformPayload = (data: FormValues, schema: FormSchema | null): any => {
+const transformPayload = (
+    data: FormValues,
+    schema: FormSchema | null
+): { data: Record<string, string | string[] | null> } => {
     if (!schema || !schema.versions || !schema.versions[0]?.sections) {
-        // console.error(
-        //     "Schema is invalid or missing for payload transformation"
-        // );
-        return { responses: [] };
+        console.error("Invalid schema: Schema is missing or has no sections.");
+        return { data: {} };
     }
 
+    // Map field names to question IDs from schema
     const questionIdMap: Record<string, string> = {};
     const requiredQuestions: Set<string> = new Set();
+    const labelToIdMap: Record<string, string> = {}; // For debugging
+
     schema.versions[0].sections.forEach((section) => {
         section.questions.forEach((question) => {
             const fieldName = getFieldName(question.label);
             if (question._id) {
                 questionIdMap[fieldName] = question._id;
+                labelToIdMap[question.label] = question._id; // Track label to ID mapping
             }
-            // else {
-            //     console.warn(`Question "${question.label}" is missing _id`);
-            // }
             if (question.is_required && question._id) {
                 requiredQuestions.add(question._id);
             }
         });
     });
 
-    const responses = Object.entries(data)
-        .filter(
-            ([, value]) =>
-                value !== undefined &&
-                (Array.isArray(value) ? value.length > 0 : value !== "")
-        )
-        .map(([key, value]) => {
-            const questionId = questionIdMap[key] || key;
-            if (!questionIdMap[key]) {
-                console.warn(`No question_id found for field "${key}"`);
-            }
-            return {
-                question_id: questionId,
-                value: Array.isArray(value) ? value : value || null,
-            };
-        });
+    console.log("Question ID Map:", questionIdMap);
+    console.log("Required Question IDs:", Array.from(requiredQuestions));
+    console.log("Label to ID Mapping:", labelToIdMap);
+
+    // Build the data object with question_id as keys
+    const dataPayload: Record<string, string | string[] | null> = {};
+
+    Object.entries(data).forEach(([key, value]) => {
+        const questionId = questionIdMap[key];
+        if (
+            questionId &&
+            value !== undefined &&
+            (Array.isArray(value) ? value.length > 0 : value !== "")
+        ) {
+            dataPayload[questionId] = Array.isArray(value)
+                ? value
+                : value || null;
+        } else if (!questionId) {
+            console.warn(`No question_id found for field: ${key}`);
+        }
+    });
 
     // Check for missing required fields
     const missingRequired = Array.from(requiredQuestions).filter(
-        (qId) => !responses.some((r) => r.question_id === qId)
+        (qId) => !(qId in dataPayload)
     );
     if (missingRequired.length > 0) {
-        // console.warn(
-        //     "Missing required fields with question IDs:",
-        //     missingRequired
-        // );
+        console.error(
+            "Missing required fields with question IDs:",
+            missingRequired
+        );
+        throw new Error(
+            `Missing required fields: ${missingRequired.join(", ")}`
+        );
     }
 
-    console.log("responses:", responses);
-    return { responses };
+    console.log("Transformed payload:", { data: dataPayload });
+    return { data: dataPayload };
 };
 
 export function useSubmitForm(
@@ -91,6 +100,7 @@ export function useSubmitForm(
         FormValues
     >({
         mutationFn: async (data: FormValues) => {
+            console.log("Submitting form data:", data);
             const accessToken = sessionStorage.getItem("accessToken");
             if (!accessToken) {
                 throw new Error("Access token not found in sessionStorage.");
@@ -119,19 +129,7 @@ export function useSubmitForm(
                     headers: axiosError.response?.headers,
                     message: axiosError.message,
                 });
-                const errorMsg = axiosError.response
-                    ? `Submission Error: ${axiosError.response.status} - ${
-                          axiosError.response.data?.message ||
-                          "Request failed with status code " +
-                              axiosError.response.status
-                      }${
-                          axiosError.response.data?.details
-                              ? " Details: " +
-                                JSON.stringify(axiosError.response.data.details)
-                              : ""
-                      }`
-                    : `Network Error: ${axiosError.message}`;
-                throw new Error(errorMsg);
+                throw axiosError; // Let the error propagate to the onError callback
             }
         },
         onSuccess: (data) => {

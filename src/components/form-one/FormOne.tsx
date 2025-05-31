@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useFormSchema } from "@/hooks/useFormSchema";
-import { useSubmitForm } from "@/hooks/useSubmitForm"; // Import the new hook
+import { useSubmitForm } from "@/hooks/useSubmitForm";
 import type { FormValues, Question, Section } from "@/lib/types";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -56,7 +56,7 @@ const CheckboxFieldWrapper: React.FC<{
 }> = ({ question, form }) => (
     <CheckboxField
         form={form}
-        fieldName={question?.label ?? ""}
+        fieldName={getFieldName(question.label)}
         label={question.label}
         options={question.options || []}
         isRequired={question.is_required}
@@ -109,8 +109,20 @@ export default function FormOne() {
     }, [formSchema, form]);
 
     function onSubmit(data: FormValues) {
+        // Transform data to ensure field names are used as keys
+        const transformedData: FormValues = {};
+        Object.entries(data).forEach(([key, value]) => {
+            // Ensure only non-empty values are included
+            if (
+                value !== undefined &&
+                (Array.isArray(value) ? value.length > 0 : value !== "")
+            ) {
+                transformedData[key] = value;
+            }
+        });
+        console.log("Submitting transformed data:", transformedData);
         setIsSubmitting(true);
-        submitForm(data);
+        submitForm(transformedData);
     }
 
     if (isLoading) return <LoadingSkeleton />;
