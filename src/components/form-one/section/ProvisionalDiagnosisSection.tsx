@@ -102,7 +102,7 @@ export default function ProvisionalDiagnosisSection({
                                                     return FieldComponent ? (
                                                         <div
                                                             key={
-                                                                question._id ||
+                                                                question.id ||
                                                                 question.label
                                                             }
                                                             className={clsx(

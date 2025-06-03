@@ -105,7 +105,7 @@ export default function PosteriorSegmentSection({
                                                     return FieldComponent ? (
                                                         <div
                                                             key={
-                                                                question._id ||
+                                                                question.id ||
                                                                 question.label
                                                             }
                                                             className="col-span-1"

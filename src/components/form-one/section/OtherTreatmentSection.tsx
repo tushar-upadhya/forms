@@ -93,7 +93,7 @@ export default function OtherTreatmentSection({
                                                     return FieldComponent ? (
                                                         <div
                                                             key={
-                                                                question._id ||
+                                                                question.id ||
                                                                 question.label
                                                             }
                                                             className="col-span-1"

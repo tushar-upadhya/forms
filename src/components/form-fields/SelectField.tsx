@@ -59,8 +59,8 @@ export default function SelectField({ question, form }: SelectFieldProps) {
                                 {question.options?.map((option, index) => (
                                     <SelectItem
                                         key={
-                                            option._id
-                                                ? `${option._id}-${index}`
+                                            option.id
+                                                ? `${option.id}-${index}`
                                                 : `option-${index}`
                                         }
                                         value={option.option_value}

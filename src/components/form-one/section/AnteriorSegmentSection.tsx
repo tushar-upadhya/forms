@@ -104,8 +104,8 @@ export default function AnteriorSegmentSection({
                                                     return FieldComponent ? (
                                                         <div
                                                             key={
-                                                                question._id
-                                                                    ? `${question._id}-${qIndex}`
+                                                                question.id
+                                                                    ? `${question.id}-${qIndex}`
                                                                     : `${question.label}-${qIndex}`
                                                             }
                                                             className="col-span-1"

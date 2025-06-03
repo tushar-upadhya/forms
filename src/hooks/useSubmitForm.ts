@@ -24,17 +24,17 @@ const transformPayload = (
     // Map field names to question IDs from schema
     const questionIdMap: Record<string, string> = {};
     const requiredQuestions: Set<string> = new Set();
-    const labelToIdMap: Record<string, string> = {}; // For debugging
+    const labelToIdMap: Record<string, string> = {};
 
     schema.versions[0].sections.forEach((section) => {
         section.questions.forEach((question) => {
             const fieldName = getFieldName(question.label);
-            if (question._id) {
-                questionIdMap[fieldName] = question._id;
-                labelToIdMap[question.label] = question._id; // Track label to ID mapping
+            if (question.id) {
+                questionIdMap[fieldName] = question.id;
+                labelToIdMap[question.label] = question.id;
             }
-            if (question.is_required && question._id) {
-                requiredQuestions.add(question._id);
+            if (question.is_required && question.id) {
+                requiredQuestions.add(question.id);
             }
         });
     });
@@ -42,22 +42,27 @@ const transformPayload = (
     console.log("Question ID Map:", questionIdMap);
     console.log("Required Question IDs:", Array.from(requiredQuestions));
     console.log("Label to ID Mapping:", labelToIdMap);
+    console.log("Input form data:", data);
 
     // Build the data object with question_id as keys
     const dataPayload: Record<string, string | string[] | null> = {};
 
     Object.entries(data).forEach(([key, value]) => {
-        const questionId = questionIdMap[key];
+        const normalizedKey = key.toLowerCase();
+        const questionId = questionIdMap[normalizedKey];
         if (
             questionId &&
             value !== undefined &&
+            value !== null &&
             (Array.isArray(value) ? value.length > 0 : value !== "")
         ) {
             dataPayload[questionId] = Array.isArray(value)
                 ? value
-                : value || null;
-        } else if (!questionId) {
-            console.warn(`No question_id found for field: ${key}`);
+                : String(value);
+        } else {
+            console.warn(
+                `Skipping field: ${key} (normalized: ${normalizedKey}, questionId: ${questionId}, value: ${value})`
+            );
         }
     });
 
@@ -129,7 +134,7 @@ export function useSubmitForm(
                     headers: axiosError.response?.headers,
                     message: axiosError.message,
                 });
-                throw axiosError; // Let the error propagate to the onError callback
+                throw axiosError;
             }
         },
         onSuccess: (data) => {

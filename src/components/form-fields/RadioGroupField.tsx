@@ -39,7 +39,12 @@ export default function RadioField({ question, form }: RadioFieldProps) {
                     </FormLabel>
                     <FormControl>
                         <RadioGroup
-                            onValueChange={field.onChange}
+                            onValueChange={(value) => {
+                                field.onChange(value);
+                                console.log(
+                                    `RadioField ${fieldName} changed to: ${value}`
+                                );
+                            }}
                             value={
                                 typeof field.value === "string"
                                     ? field.value
@@ -48,18 +53,22 @@ export default function RadioField({ question, form }: RadioFieldProps) {
                             className="flex flex-wrap gap-2 sm:gap-3 md:gap-4"
                             disabled={question.is_disabled}
                         >
-                            {question.options?.map((option, index) => (
+                            {question.options?.map((option) => (
                                 <FormItem
-                                    key={option._id || `option-${index}`}
+                                    key={option.id} // Use option.id instead of option._id
                                     className="flex items-center space-x-2 sm:space-x-3 space-y-0"
                                 >
                                     <FormControl>
                                         <RadioGroupItem
                                             value={option.option_value}
+                                            id={`${fieldName}-${option.id}`}
                                             disabled={option.is_disabled}
                                         />
                                     </FormControl>
-                                    <FormLabel className="font-normal cursor-pointer text-xs sm:text-sm md:text-base">
+                                    <FormLabel
+                                        htmlFor={`${fieldName}-${option.id}`}
+                                        className="font-normal cursor-pointer text-xs sm:text-sm md:text-base"
+                                    >
                                         {option.option_label}
                                     </FormLabel>
                                 </FormItem>

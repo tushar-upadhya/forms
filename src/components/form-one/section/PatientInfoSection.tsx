@@ -92,7 +92,7 @@ export default function PatientInfoSection({ form }: PatientInfoSectionProps) {
                                                 (question: Question) => (
                                                     <div
                                                         key={
-                                                            question._id ||
+                                                            question.id ||
                                                             question.label
                                                         }
                                                         className={clsx(

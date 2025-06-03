@@ -1,7 +1,11 @@
 import type { UseFormReturn } from "react-hook-form";
 
+// Utility function to normalize field names (lowercase, replace spaces with underscores)
+export const getFieldName = (label?: string): string =>
+    label ? label.toLowerCase().replace(/\s+/g, "_") : "";
+
 export interface Option {
-    _id: string;
+    id: string;
     option_value: string;
     option_label: string;
     is_disabled?: boolean;
@@ -14,7 +18,7 @@ export interface Question {
     is_required?: boolean;
     is_disabled?: boolean;
     default_value?: string | string[];
-    _id?: string;
+    id?: string;
 }
 
 export interface Section {
