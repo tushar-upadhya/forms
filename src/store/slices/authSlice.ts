@@ -1,4 +1,6 @@
-import type { AuthState } from "@/lib/types";
+export interface AuthState {
+    accessToken: string | null;
+}
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: AuthState = {

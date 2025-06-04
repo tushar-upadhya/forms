@@ -26,7 +26,7 @@ export function LoginForm({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!email || !password) return;
-        loginMutation.mutate({ email, password });
+        loginMutation.mutate({ username: email, password });
     };
 
     return (
