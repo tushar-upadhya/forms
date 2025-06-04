@@ -4,11 +4,12 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+const url = `${BASE_URL}/auth/login`;
+
 interface LoginResponse {
     access_token: string;
 }
-
-const url = "https://rpcapplication.aiims.edu/form/api/v1/auth/login";
 
 export function useLogin(
     onSuccess?: (data: LoginResponse) => void,

@@ -18,8 +18,8 @@ const decodeJWT = (token: string): { [key: string]: any } | null => {
                 .join("")
         );
         return JSON.parse(jsonPayload);
-    } catch (error) {
-        console.error("Failed to decode JWT:", error);
+    } catch {
+        // console.error("Failed to decode JWT");
         return null;
     }
 };
@@ -77,7 +77,7 @@ export const useFormSchema = () => {
                           axiosError.message
                       }`
                     : `Network Error: ${axiosError.message}`;
-                console.error(errorMsg, axiosError);
+                // console.error(errorMsg, axiosError);
                 throw new Error(errorMsg);
             }
         },

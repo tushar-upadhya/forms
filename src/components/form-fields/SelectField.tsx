@@ -13,14 +13,13 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import type { FormValues, Question } from "@/lib/types";
+import { getFieldName } from "@/lib/types";
 import type { UseFormReturn } from "react-hook-form";
 
 interface SelectFieldProps {
     question: Question;
     form: UseFormReturn<FormValues>;
 }
-
-const getFieldName = (label?: string) => label ?? "";
 
 export default function SelectField({ question, form }: SelectFieldProps) {
     const fieldName = getFieldName(question.label);
@@ -42,12 +41,13 @@ export default function SelectField({ question, form }: SelectFieldProps) {
                     </FormLabel>
                     <FormControl>
                         <Select
-                            onValueChange={field.onChange}
-                            value={
-                                Array.isArray(field.value)
-                                    ? field.value[0] ?? undefined
-                                    : field.value
-                            }
+                            onValueChange={(value) => {
+                                field.onChange(value);
+                                // console.log(
+                                //     `SelectField ${fieldName} changed to: ${value}`
+                                // );
+                            }}
+                            value={field.value ? String(field.value) : ""}
                             disabled={question.is_disabled}
                         >
                             <SelectTrigger className="w-full text-xs sm:text-sm md:text-base py-2 sm:py-3">
@@ -56,13 +56,9 @@ export default function SelectField({ question, form }: SelectFieldProps) {
                                 />
                             </SelectTrigger>
                             <SelectContent>
-                                {question.options?.map((option, index) => (
+                                {question.options?.map((option) => (
                                     <SelectItem
-                                        key={
-                                            option.id
-                                                ? `${option.id}-${index}`
-                                                : `option-${index}`
-                                        }
+                                        key={option.id}
                                         value={option.option_value}
                                         disabled={option.is_disabled}
                                         className="text-xs sm:text-sm md:text-base"
