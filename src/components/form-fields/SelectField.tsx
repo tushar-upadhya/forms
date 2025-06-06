@@ -19,15 +19,20 @@ import type { UseFormReturn } from "react-hook-form";
 interface SelectFieldProps {
     question: Question;
     form: UseFormReturn<FormValues>;
+    fieldName?: string;
 }
 
-export default function SelectField({ question, form }: SelectFieldProps) {
-    const fieldName = getFieldName(question.label);
+export default function SelectField({
+    question,
+    form,
+    fieldName,
+}: SelectFieldProps) {
+    const effectiveFieldName = fieldName || getFieldName(question.label);
 
     return (
         <FormField
             control={form.control}
-            name={fieldName}
+            name={effectiveFieldName}
             render={({ field }) => (
                 <FormItem>
                     <FormLabel
@@ -41,12 +46,7 @@ export default function SelectField({ question, form }: SelectFieldProps) {
                     </FormLabel>
                     <FormControl>
                         <Select
-                            onValueChange={(value) => {
-                                field.onChange(value);
-                                // console.log(
-                                //     `SelectField ${fieldName} changed to: ${value}`
-                                // );
-                            }}
+                            onValueChange={field.onChange}
                             value={field.value ? String(field.value) : ""}
                             disabled={question.is_disabled}
                         >

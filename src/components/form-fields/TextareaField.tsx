@@ -7,25 +7,26 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import type { FormValues, Question } from "@/lib/types";
+import { getFieldName } from "@/lib/types";
 import type { UseFormReturn } from "react-hook-form";
 
 interface TextareaFieldProps {
     question: Question;
     form: UseFormReturn<FormValues>;
+    fieldName?: string;
 }
 
-const getFieldName = (label?: string) => {
-    const fieldLabel = label || "unnamed_field";
-    return fieldLabel.toLowerCase().replace(/\s+/g, "_");
-};
-
-export default function TextareaField({ question, form }: TextareaFieldProps) {
-    const fieldName = getFieldName(question.label);
+export default function TextareaField({
+    question,
+    form,
+    fieldName,
+}: TextareaFieldProps) {
+    const effectiveFieldName = fieldName || getFieldName(question.label);
 
     return (
         <FormField
             control={form.control}
-            name={fieldName}
+            name={effectiveFieldName}
             render={({ field }) => (
                 <FormItem>
                     <FormLabel

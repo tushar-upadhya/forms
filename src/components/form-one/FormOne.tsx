@@ -1,5 +1,4 @@
 /* eslint-disable react-refresh/only-export-components */
-
 import { Button } from "@/components/ui/button";
 import { useFormSchema } from "@/hooks/useFormSchema";
 import { useSubmitForm } from "@/hooks/useSubmitForm";
@@ -8,7 +7,8 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import CheckboxField from "../form-fields/CheckboxField";
 import InputField from "../form-fields/InputField";
-import RadioField from "../form-fields/RadioGroupField";
+import RadioGroupField from "../form-fields/RadioGroupField";
+import RepeatableFieldWrapper from "../form-fields/RepeatableFieldWrapper";
 import SelectField from "../form-fields/SelectField";
 import TextareaField from "../form-fields/TextareaField";
 import Error from "../skeleton/error/Error";
@@ -33,19 +33,34 @@ const generateDefaultValues = (sections: Section[]) => {
     const fields: Record<string, string | string[] | undefined> = {};
     sections.forEach((section) => {
         section.questions.forEach((question: Question) => {
-            const fieldName = getFieldName(question.label);
-            if (question.field_type === "checkbox") {
-                fields[fieldName] = question.is_required
-                    ? question.default_value
-                        ? Array.isArray(question.default_value)
+            const baseFieldName = getFieldName(question.label);
+            if (question.is_repeatable_question) {
+                // Initialize as array for first instance
+                fields[`${baseFieldName}_0`] =
+                    question.field_type === "checkbox"
+                        ? question.is_required
                             ? question.default_value
-                            : [question.default_value]
-                        : []
-                    : undefined;
+                                ? Array.isArray(question.default_value)
+                                    ? question.default_value
+                                    : [question.default_value]
+                                : []
+                            : []
+                        : question.is_required
+                        ? question.default_value || ""
+                        : "";
             } else {
-                fields[fieldName] = question.is_required
-                    ? question.default_value || ""
-                    : undefined;
+                fields[baseFieldName] =
+                    question.field_type === "checkbox"
+                        ? question.is_required
+                            ? question.default_value
+                                ? Array.isArray(question.default_value)
+                                    ? question.default_value
+                                    : [question.default_value]
+                                : []
+                            : undefined
+                        : question.is_required
+                        ? question.default_value || ""
+                        : undefined;
             }
         });
     });
@@ -56,13 +71,19 @@ const CheckboxFieldWrapper: React.FC<{
     question: Question;
     form: ReturnType<typeof useForm<FormValues>>;
 }> = ({ question, form }) => (
-    <CheckboxField
+    <RepeatableFieldWrapper
+        question={question}
         form={form}
-        fieldName={getFieldName(question.label)}
-        label={question.label}
-        options={question.options || []}
-        isRequired={question.is_required}
-        isDisabled={question.is_disabled}
+        FieldComponent={({ question, form, fieldName }) => (
+            <CheckboxField
+                form={form}
+                fieldName={fieldName || getFieldName(question.label)}
+                label={question.label}
+                options={question.options || []}
+                isRequired={question.is_required}
+                isDisabled={question.is_disabled}
+            />
+        )}
     />
 );
 
@@ -73,10 +94,34 @@ export const fieldComponents: Record<
         form: ReturnType<typeof useForm<FormValues>>;
     }>
 > = {
-    input: InputField,
-    textarea: TextareaField,
-    radio: RadioField,
-    select: SelectField,
+    input: ({ question, form }) => (
+        <RepeatableFieldWrapper
+            question={question}
+            form={form}
+            FieldComponent={InputField}
+        />
+    ),
+    textarea: ({ question, form }) => (
+        <RepeatableFieldWrapper
+            question={question}
+            form={form}
+            FieldComponent={TextareaField}
+        />
+    ),
+    radio: ({ question, form }) => (
+        <RepeatableFieldWrapper
+            question={question}
+            form={form}
+            FieldComponent={RadioGroupField}
+        />
+    ),
+    select: ({ question, form }) => (
+        <RepeatableFieldWrapper
+            question={question}
+            form={form}
+            FieldComponent={SelectField}
+        />
+    ),
     checkbox: CheckboxFieldWrapper,
 };
 
@@ -111,17 +156,37 @@ export default function FormOne() {
     }, [formSchema, form]);
 
     function onSubmit(data: FormValues) {
-        // Transform data to ensure field names are used as keys
         const transformedData: FormValues = {};
+        const repeatableFields: Record<string, (string | string[])[]> = {};
+
+        // Group repeatable fields into arrays
         Object.entries(data).forEach(([key, value]) => {
-            // Ensure only non-empty values are included
             if (
                 value !== undefined &&
                 (Array.isArray(value) ? value.length > 0 : value !== "")
             ) {
-                transformedData[key] = value;
+                const match = key.match(/^(.+)_(\d+)$/);
+                if (match) {
+                    const baseFieldName = match[1];
+                    repeatableFields[baseFieldName] =
+                        repeatableFields[baseFieldName] || [];
+                    repeatableFields[baseFieldName].push(value);
+                } else {
+                    transformedData[key] = value;
+                }
             }
         });
+
+        // Merge repeatable fields as arrays
+        Object.entries(repeatableFields).forEach(([key, values]) => {
+            const nonEmptyValues = values.filter((v) =>
+                Array.isArray(v) ? v.length > 0 : v !== ""
+            );
+            if (nonEmptyValues.length > 0) {
+                transformedData[key] = nonEmptyValues.flat();
+            }
+        });
+
         console.log("Submitting transformed data:", transformedData);
         setIsSubmitting(true);
         submitForm(transformedData);

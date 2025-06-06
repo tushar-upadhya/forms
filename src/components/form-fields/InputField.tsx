@@ -7,22 +7,26 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import type { FormValues, Question } from "@/lib/types";
+import { getFieldName } from "@/lib/types";
 import type { UseFormReturn } from "react-hook-form";
 
 interface InputFieldProps {
     question: Question;
     form: UseFormReturn<FormValues>;
+    fieldName?: string;
 }
 
-const getFieldName = (label: string) => label;
-
-export default function InputField({ question, form }: InputFieldProps) {
-    const fieldName = getFieldName(question.label);
+export default function InputField({
+    question,
+    form,
+    fieldName,
+}: InputFieldProps) {
+    const effectiveFieldName = fieldName || getFieldName(question.label);
 
     return (
         <FormField
             control={form.control}
-            name={fieldName}
+            name={effectiveFieldName}
             render={({ field }) => (
                 <FormItem>
                     <FormLabel

@@ -18,11 +18,6 @@ interface CheckboxFieldProps {
     isDisabled?: boolean;
 }
 
-// const getFieldName = (label?: string) => {
-//     const fieldLabel = label || "unnamed_field";
-//     return fieldLabel.toLowerCase().replace(/\s+/g, "_");
-// };
-
 export default function CheckboxField({
     form,
     fieldName,
@@ -50,7 +45,7 @@ export default function CheckboxField({
                         <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4">
                             {options.map((option) => (
                                 <FormItem
-                                    key={option.id} // Use option.id instead of option._id
+                                    key={option.id}
                                     className="flex items-center space-x-2 sm:space-x-3 space-y-0"
                                 >
                                     <FormControl>
@@ -77,9 +72,6 @@ export default function CheckboxField({
                                                               option.option_value
                                                       );
                                                 field.onChange(newValues);
-                                                // console.log(
-                                                //     `CheckboxField ${fieldName} changed to: ${newValues}`
-                                                // );
                                             }}
                                             id={`${fieldName}-${option.id}`}
                                             disabled={

@@ -7,25 +7,26 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { FormValues, Question } from "@/lib/types";
+import { getFieldName } from "@/lib/types";
 import type { UseFormReturn } from "react-hook-form";
 
 interface RadioFieldProps {
     question: Question;
     form: UseFormReturn<FormValues>;
+    fieldName?: string;
 }
 
-const getFieldName = (label?: string) => {
-    const fieldLabel = label || "unnamed_field";
-    return fieldLabel.toLowerCase().replace(/\s+/g, "_");
-};
-
-export default function RadioField({ question, form }: RadioFieldProps) {
-    const fieldName = getFieldName(question.label);
+export default function RadioGroupField({
+    question,
+    form,
+    fieldName,
+}: RadioFieldProps) {
+    const effectiveFieldName = fieldName || getFieldName(question.label);
 
     return (
         <FormField
             control={form.control}
-            name={fieldName}
+            name={effectiveFieldName}
             render={({ field }) => (
                 <FormItem className="space-y-2 sm:space-y-3">
                     <FormLabel
@@ -39,12 +40,7 @@ export default function RadioField({ question, form }: RadioFieldProps) {
                     </FormLabel>
                     <FormControl>
                         <RadioGroup
-                            onValueChange={(value) => {
-                                field.onChange(value);
-                                console.log(
-                                    `RadioField ${fieldName} changed to: ${value}`
-                                );
-                            }}
+                            onValueChange={field.onChange}
                             value={
                                 typeof field.value === "string"
                                     ? field.value
@@ -55,18 +51,18 @@ export default function RadioField({ question, form }: RadioFieldProps) {
                         >
                             {question.options?.map((option) => (
                                 <FormItem
-                                    key={option.id} // Use option.id instead of option._id
+                                    key={option.id}
                                     className="flex items-center space-x-2 sm:space-x-3 space-y-0"
                                 >
                                     <FormControl>
                                         <RadioGroupItem
                                             value={option.option_value}
-                                            id={`${fieldName}-${option.id}`}
+                                            id={`${effectiveFieldName}-${option.id}`}
                                             disabled={option.is_disabled}
                                         />
                                     </FormControl>
                                     <FormLabel
-                                        htmlFor={`${fieldName}-${option.id}`}
+                                        htmlFor={`${effectiveFieldName}-${option.id}`}
                                         className="font-normal cursor-pointer text-xs sm:text-sm md:text-base"
                                     >
                                         {option.option_label}

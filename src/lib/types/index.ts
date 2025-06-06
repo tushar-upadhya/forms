@@ -19,6 +19,7 @@ export interface Question {
     is_disabled?: boolean;
     default_value?: string | string[];
     id?: string;
+    is_repeatable_question?: boolean;
 }
 
 export interface Section {
