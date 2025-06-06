@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import type { FormValues, Question } from "@/lib/types";
 import { getFieldName } from "@/lib/types";
-import clsx from "clsx";
 import type { UseFormReturn } from "react-hook-form";
 
 interface SelectFieldProps {
@@ -30,18 +29,12 @@ export default function SelectField({
 }: SelectFieldProps) {
     const effectiveFieldName = fieldName || getFieldName(question.label);
 
-    const labelLength = question.label?.length || 0;
-    const gridSpanClass =
-        labelLength > 15
-            ? "col-span-1 sm:col-span-2"
-            : "col-span-1 md:col-span-2";
-
     return (
         <FormField
             control={form.control}
             name={effectiveFieldName}
             render={({ field }) => (
-                <FormItem className={clsx("grid gap-2", gridSpanClass)}>
+                <FormItem className="grid gap-2 w-full">
                     <FormLabel
                         className={
                             question.is_required
@@ -67,7 +60,7 @@ export default function SelectField({
                                     placeholder={`Select ${question.label}`}
                                 />
                             </SelectTrigger>
-                            <SelectContent className="min-w-[200px] max-h-[300px] overflow-y-auto z-[1000] p-2">
+                            <SelectContent className="min-w-[200px] max-h-[300px] overflow-y-auto z-[2000] p-2">
                                 {question.options?.map((option) => (
                                     <SelectItem
                                         key={option.id}

@@ -63,6 +63,9 @@ export default function SectionRenderer({
                                         className={clsx(
                                             question.field_type === "textarea"
                                                 ? "col-span-1 sm:col-span-2 lg:col-span-3"
+                                                : question.field_type ===
+                                                  "select"
+                                                ? "min-w-full"
                                                 : ""
                                         )}
                                     >
