@@ -1,4 +1,10 @@
-import { Card, CardContent } from "@/components/ui/card";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
+import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import type { FormValues, Question, Section } from "@/lib/types";
 import clsx from "clsx";
@@ -28,71 +34,74 @@ export default function SectionRenderer({
 
     return (
         <div className="space-y-3 sm:space-y-4">
-            <Card className="border rounded-lg overflow-hidden bg-card">
-                <div className="px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-2">
-                        <ClipboardListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                        <span className="font-medium text-sm sm:text-base">
-                            {section.title}
-                        </span>
-                    </div>
-                </div>
-
-                <CardContent className="p-2 sm:p-4 pt-1 sm:pt-2">
-                    <Form {...form}>
-                        <div
-                            className={clsx(
-                                "grid gap-4 sm:gap-6",
-                                section.ui === "flex"
-                                    ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                                    : "grid-cols-1"
-                            )}
-                        >
-                            {section.questions.map((question: Question) => {
-                                console.log(
-                                    `Rendering question in ${section.title}: ID=${question.id}, Label=${question.label}, Type=${question.field_type}`
-                                );
-                                if (!question.id) {
-                                    console.warn(
-                                        `Missing ID for question: ${question.label}`
-                                    );
-                                }
-                                return (
-                                    <div
-                                        key={question.id}
-                                        className={clsx(
-                                            question.field_type === "textarea"
-                                                ? "col-span-1 sm:col-span-2 lg:col-span-3"
-                                                : question.field_type ===
-                                                  "select"
-                                                ? "min-w-full"
-                                                : ""
-                                        )}
-                                    >
-                                        {(() => {
-                                            const FieldComponent =
-                                                fieldComponents[
-                                                    question.field_type
-                                                ];
-                                            return FieldComponent ? (
-                                                <FieldComponent
-                                                    question={question}
-                                                    form={form}
-                                                />
-                                            ) : (
-                                                <div className="text-red-500 text-sm">
-                                                    Error: Unknown field type{" "}
-                                                    {question.field_type}
-                                                </div>
-                                            );
-                                        })()}
-                                    </div>
-                                );
-                            })}
+            <Accordion
+                type="single"
+                defaultValue={`section-${index}`}
+                collapsible
+                className="border rounded-lg overflow-hidden bg-card"
+            >
+                <AccordionItem value={`section-${index}`} className="border-0">
+                    <AccordionTrigger className="px-2 sm:px-4 py-2 sm:py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
+                        <div className="flex items-center gap-2">
+                            <ClipboardListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                            <span className="font-medium text-sm sm:text-base">
+                                {section.title}
+                            </span>
                         </div>
-                    </Form>
-                </CardContent>
-            </Card>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <CardContent className="p-2 sm:p-4 pt-1 sm:pt-2">
+                            <Form {...form}>
+                                <div
+                                    className={`grid gap-4 sm:gap-6 ${
+                                        section.ui === "flex"
+                                            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                                            : "grid-cols-1"
+                                    }`}
+                                >
+                                    {section.questions.map(
+                                        (question: Question) => (
+                                            <div
+                                                key={
+                                                    question.id ||
+                                                    question.label
+                                                }
+                                                className={clsx(
+                                                    question.field_type ===
+                                                        "textarea"
+                                                        ? "col-span-1 sm:col-span-2 lg:col-span-3"
+                                                        : "col-span-1"
+                                                )}
+                                            >
+                                                {(() => {
+                                                    const FieldComponent =
+                                                        fieldComponents[
+                                                            question.field_type
+                                                        ];
+                                                    return FieldComponent ? (
+                                                        <FieldComponent
+                                                            question={question}
+                                                            form={form}
+                                                        />
+                                                    ) : (
+                                                        <div className="text-red-500 text-sm">
+                                                            Error: Unknown field
+                                                            type{" "}
+                                                            {
+                                                                question.field_type
+                                                            }
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
+                                        )
+                                    )}
+                                </div>
+                            </Form>
+                        </CardContent>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         </div>
     );
 }
