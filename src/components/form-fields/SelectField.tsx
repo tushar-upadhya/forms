@@ -30,7 +30,6 @@ export default function SelectField({
 }: SelectFieldProps) {
     const effectiveFieldName = fieldName || getFieldName(question.label);
 
-    // Determine grid span based on label length for dynamic layout
     const labelLength = question.label?.length || 0;
     const gridSpanClass =
         labelLength > 15
