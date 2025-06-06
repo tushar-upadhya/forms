@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { Button } from "@/components/ui/button";
 import { useFormSchema } from "@/hooks/useFormSchema";
 import { useSubmitForm } from "@/hooks/useSubmitForm";
@@ -10,19 +9,10 @@ import InputField from "../form-fields/InputField";
 import RadioGroupField from "../form-fields/RadioGroupField";
 import SelectField from "../form-fields/SelectField";
 import TextareaField from "../form-fields/TextareaField";
+import SectionRenderer from "../SectionRenderer";
 import Error from "../skeleton/error/Error";
 import LoadingSkeleton from "../skeleton/loading/LoadingSkeleton";
 import RepeatableQuestionWrapper from "../wrapper/RepeatableQuestionWrapper";
-import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
-import ClinicalHistorySection from "./section/ClinicalHistorySection";
-import InvestigationsSection from "./section/InvestigationsSection";
-import OtherTreatmentSection from "./section/OtherTreatmentSection";
-import PatientInfoSection from "./section/PatientInfoSection";
-import PosteriorSegmentSection from "./section/PosteriorSegmentSection";
-import ProvisionalDiagnosisSection from "./section/ProvisionalDiagnosisSection";
-import PupilAssessmentSection from "./section/PupilAssessmentSection";
-import TreatmentPlanSection from "./section/TreatmentPlanSection";
-import VisionAssessmentSection from "./section/VisionAssessmentSection";
 
 const FORM_ID = import.meta.env.VITE_FORM_ID;
 
@@ -35,7 +25,6 @@ const generateDefaultValues = (sections: Section[]) => {
         section.questions.forEach((question: Question) => {
             const baseFieldName = getFieldName(question.label);
             if (question.is_repeatable_question) {
-                // Initialize as array for first instance
                 fields[`${baseFieldName}_0`] =
                     question.field_type === "checkbox"
                         ? question.is_required
@@ -57,13 +46,14 @@ const generateDefaultValues = (sections: Section[]) => {
                                     ? question.default_value
                                     : [question.default_value]
                                 : []
-                            : undefined
+                            : []
                         : question.is_required
                         ? question.default_value || ""
-                        : undefined;
+                        : "";
             }
         });
     });
+    console.log("Generated default values:", fields);
     return fields;
 };
 
@@ -151,7 +141,11 @@ export default function FormOne() {
             formSchema.versions &&
             formSchema.versions[0]?.sections
         ) {
-            form.reset(generateDefaultValues(formSchema.versions[0].sections));
+            const defaultValues = generateDefaultValues(
+                formSchema.versions[0].sections
+            );
+            console.log("Setting form default values:", defaultValues);
+            form.reset(defaultValues);
         }
     }, [formSchema, form]);
 
@@ -159,7 +153,6 @@ export default function FormOne() {
         const transformedData: FormValues = {};
         const repeatableFields: Record<string, (string | string[])[]> = {};
 
-        // Group repeatable fields into arrays
         Object.entries(data).forEach(([key, value]) => {
             if (
                 value !== undefined &&
@@ -177,7 +170,6 @@ export default function FormOne() {
             }
         });
 
-        // Merge repeatable fields as arrays
         Object.entries(repeatableFields).forEach(([key, values]) => {
             const nonEmptyValues = values.filter((v) =>
                 Array.isArray(v) ? v.length > 0 : v !== ""
@@ -211,16 +203,16 @@ export default function FormOne() {
             >
                 {form ? (
                     <>
-                        <PatientInfoSection form={form} />
-                        <ClinicalHistorySection form={form} />
-                        <VisionAssessmentSection form={form} />
-                        <PupilAssessmentSection form={form} />
-                        <AnteriorSegmentSection form={form} />
-                        <PosteriorSegmentSection form={form} />
-                        <InvestigationsSection form={form} />
-                        <ProvisionalDiagnosisSection form={form} />
-                        <TreatmentPlanSection form={form} />
-                        <OtherTreatmentSection form={form} />
+                        {formSchema.versions[0].sections.map(
+                            (section, index) => (
+                                <SectionRenderer
+                                    key={section.title}
+                                    section={section}
+                                    form={form}
+                                    index={index}
+                                />
+                            )
+                        )}
                     </>
                 ) : (
                     <div className="text-red-500 text-xs sm:text-sm md:text-base">

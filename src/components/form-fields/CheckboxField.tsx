@@ -26,6 +26,18 @@ export default function CheckboxField({
     isRequired,
     isDisabled,
 }: CheckboxFieldProps) {
+    // Determine the maximum label length
+    const maxLabelLength = options.reduce(
+        (max, option) => Math.max(max, option.option_label.length),
+        0
+    );
+
+    // Use 2 columns for long labels (> 15 chars), 3 columns for short labels
+    const gridColsClass =
+        maxLabelLength > 15
+            ? "grid-cols-1 sm:grid-cols-2"
+            : "grid-cols-1 sm:grid-cols-3";
+
     return (
         <FormField
             control={form.control}
@@ -42,7 +54,9 @@ export default function CheckboxField({
                         {label || "Unnamed Field"}
                     </FormLabel>
                     <FormControl>
-                        <div className="flex flex-wrap gap-2 sm:gap-3 md:gap-4">
+                        <div
+                            className={`grid gap-2 sm:gap-3 md:gap-4 ${gridColsClass}`}
+                        >
                             {options.map((option) => (
                                 <FormItem
                                     key={option.id}
@@ -72,6 +86,9 @@ export default function CheckboxField({
                                                               option.option_value
                                                       );
                                                 field.onChange(newValues);
+                                                console.log(
+                                                    `CheckboxField ${fieldName} changed to: ${newValues}`
+                                                );
                                             }}
                                             id={`${fieldName}-${option.id}`}
                                             disabled={
