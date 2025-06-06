@@ -8,11 +8,11 @@ import { useForm } from "react-hook-form";
 import CheckboxField from "../form-fields/CheckboxField";
 import InputField from "../form-fields/InputField";
 import RadioGroupField from "../form-fields/RadioGroupField";
-import RepeatableFieldWrapper from "../form-fields/RepeatableFieldWrapper";
 import SelectField from "../form-fields/SelectField";
 import TextareaField from "../form-fields/TextareaField";
 import Error from "../skeleton/error/Error";
 import LoadingSkeleton from "../skeleton/loading/LoadingSkeleton";
+import RepeatableQuestionWrapper from "../wrapper/RepeatableQuestionWrapper";
 import AnteriorSegmentSection from "./section/AnteriorSegmentSection";
 import ClinicalHistorySection from "./section/ClinicalHistorySection";
 import InvestigationsSection from "./section/InvestigationsSection";
@@ -71,7 +71,7 @@ const CheckboxFieldWrapper: React.FC<{
     question: Question;
     form: ReturnType<typeof useForm<FormValues>>;
 }> = ({ question, form }) => (
-    <RepeatableFieldWrapper
+    <RepeatableQuestionWrapper
         question={question}
         form={form}
         FieldComponent={({ question, form, fieldName }) => (
@@ -95,28 +95,28 @@ export const fieldComponents: Record<
     }>
 > = {
     input: ({ question, form }) => (
-        <RepeatableFieldWrapper
+        <RepeatableQuestionWrapper
             question={question}
             form={form}
             FieldComponent={InputField}
         />
     ),
     textarea: ({ question, form }) => (
-        <RepeatableFieldWrapper
+        <RepeatableQuestionWrapper
             question={question}
             form={form}
             FieldComponent={TextareaField}
         />
     ),
     radio: ({ question, form }) => (
-        <RepeatableFieldWrapper
+        <RepeatableQuestionWrapper
             question={question}
             form={form}
             FieldComponent={RadioGroupField}
         />
     ),
     select: ({ question, form }) => (
-        <RepeatableFieldWrapper
+        <RepeatableQuestionWrapper
             question={question}
             form={form}
             FieldComponent={SelectField}
