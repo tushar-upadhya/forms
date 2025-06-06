@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import type { FormValues, Question } from "@/lib/types";
 import { getFieldName } from "@/lib/types";
+import clsx from "clsx";
 import type { UseFormReturn } from "react-hook-form";
 
 interface SelectFieldProps {
@@ -29,12 +30,19 @@ export default function SelectField({
 }: SelectFieldProps) {
     const effectiveFieldName = fieldName || getFieldName(question.label);
 
+    // Determine grid span based on label length for dynamic layout
+    const labelLength = question.label?.length || 0;
+    const gridSpanClass =
+        labelLength > 15
+            ? "col-span-1 sm:col-span-2"
+            : "col-span-1 md:col-span-2";
+
     return (
         <FormField
             control={form.control}
             name={effectiveFieldName}
             render={({ field }) => (
-                <FormItem>
+                <FormItem className={clsx("grid gap-2", gridSpanClass)}>
                     <FormLabel
                         className={
                             question.is_required
@@ -46,7 +54,12 @@ export default function SelectField({
                     </FormLabel>
                     <FormControl>
                         <Select
-                            onValueChange={field.onChange}
+                            onValueChange={(value) => {
+                                field.onChange(value);
+                                console.log(
+                                    `SelectField ${effectiveFieldName} changed to: ${value}`
+                                );
+                            }}
                             value={field.value ? String(field.value) : ""}
                             disabled={question.is_disabled}
                         >
@@ -55,13 +68,13 @@ export default function SelectField({
                                     placeholder={`Select ${question.label}`}
                                 />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="min-w-[200px] max-h-[300px] overflow-y-auto z-[1000] p-2">
                                 {question.options?.map((option) => (
                                     <SelectItem
                                         key={option.id}
                                         value={option.option_value}
                                         disabled={option.is_disabled}
-                                        className="text-xs sm:text-sm md:text-base"
+                                        className="text-xs sm:text-sm md:text-base cursor-pointer p-2 hover:bg-muted rounded"
                                     >
                                         {option.option_label}
                                     </SelectItem>
