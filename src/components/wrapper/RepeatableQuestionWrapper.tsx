@@ -224,7 +224,7 @@ const RepeatableQuestionWrapper = ({
                         variant="outline"
                         size="sm"
                         onClick={handleAddField}
-                        className="text-xs sm:text-sm capitalize flex items-center gap-1"
+                        className="text-xs sm:text-sm capitalize flex items-center gap-1 cursor-pointer"
                     >
                         <span className="lg:hidden">
                             <Plus className="w-4 h-4" />
