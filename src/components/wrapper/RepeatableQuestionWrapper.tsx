@@ -11,7 +11,7 @@ import {
 import type { FormValues, Question } from "@/lib/types";
 import { getFieldName } from "@/lib/types";
 import clsx from "clsx";
-import { Check, Edit, Plus, Trash2, X } from "lucide-react"; // added Check and X icons for Save and Cancel
+import { Check, Edit, Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 

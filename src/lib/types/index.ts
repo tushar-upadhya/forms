@@ -1,6 +1,5 @@
 import type { UseFormReturn } from "react-hook-form";
 
-// Utility function to normalize field names (lowercase, replace spaces with underscores)
 export const getFieldName = (label?: string): string =>
     label ? label.toLowerCase().replace(/\s+/g, "_") : "";
 
@@ -23,9 +22,11 @@ export interface Question {
 }
 
 export interface Section {
+    id?: string;
     title: string;
     questions: Question[];
     ui?: string;
+    is_repeatable_section?: boolean;
 }
 
 export interface FormSchema {

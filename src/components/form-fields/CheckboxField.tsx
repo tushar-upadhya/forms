@@ -26,13 +26,11 @@ export default function CheckboxField({
     isRequired,
     isDisabled,
 }: CheckboxFieldProps) {
-    // Determine the maximum label length
     const maxLabelLength = options.reduce(
         (max, option) => Math.max(max, option.option_label.length),
         0
     );
 
-    // Use 2 columns for long labels (> 15 chars), 3 columns for short labels
     const gridColsClass =
         maxLabelLength > 15
             ? "grid-cols-1 sm:grid-cols-2"

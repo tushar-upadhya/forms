@@ -131,7 +131,12 @@ export default function FormOne() {
         },
         (error) => {
             setIsSubmitting(false);
-            console.error("Submission error:", error.message);
+            form.reset({});
+            console.error(
+                "Submission error:",
+                error.message,
+                error.response?.data
+            );
         }
     );
 
@@ -154,18 +159,19 @@ export default function FormOne() {
         const repeatableFields: Record<string, (string | string[])[]> = {};
 
         Object.entries(data).forEach(([key, value]) => {
+            const normalizedKey = key.toLowerCase();
             if (
                 value !== undefined &&
                 (Array.isArray(value) ? value.length > 0 : value !== "")
             ) {
-                const match = key.match(/^(.+)_(\d+)$/);
+                const match = normalizedKey.match(/^(.+)_(\d+)$/);
                 if (match) {
                     const baseFieldName = match[1];
                     repeatableFields[baseFieldName] =
                         repeatableFields[baseFieldName] || [];
                     repeatableFields[baseFieldName].push(value);
                 } else {
-                    transformedData[key] = value;
+                    transformedData[normalizedKey] = value;
                 }
             }
         });
@@ -179,6 +185,7 @@ export default function FormOne() {
             }
         });
 
+        console.log("Raw form data:", data);
         console.log("Submitting transformed data:", transformedData);
         setIsSubmitting(true);
         submitForm(transformedData);

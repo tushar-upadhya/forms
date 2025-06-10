@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
-import { FormHeader } from "./components/form-header/FormHeader";
+import FormHeader from "./components/form-header/FormHeader";
 import FormOne from "./components/form-one/FormOne";
 import { Button } from "./components/ui/button";
 import { LoginForm } from "./components/ui/login-form";
@@ -12,7 +12,6 @@ function App() {
     );
 
     useEffect(() => {
-        // Update isLoggedIn if accessToken changes
         setIsLoggedIn(!!sessionStorage.getItem("accessToken"));
     }, []);
 
