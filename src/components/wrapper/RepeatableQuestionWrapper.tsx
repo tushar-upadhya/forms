@@ -110,7 +110,7 @@ const RepeatableQuestionWrapper = ({
                                     </TableCell>
                                     <TableCell className="text-xs sm:text-sm">
                                         {editingIndex === idx ? (
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 ">
                                                 <Input
                                                     value={editValue}
                                                     onChange={(e) =>
