@@ -1,7 +1,7 @@
 import { EyeIcon } from "lucide-react";
 import { ThemeToggle } from "../theme-toggle/ThemeToggle";
 
-const FormHeader = () => {
+const Header = () => {
     return (
         <header className="mb-8 text-center px-2 sm:px-4">
             <div className="relative flex flex-col items-center gap-2 md:flex-row md:justify-center md:gap-4 mb-2 w-full">
@@ -19,4 +19,4 @@ const FormHeader = () => {
         </header>
     );
 };
-export default FormHeader;
+export default Header;

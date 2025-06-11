@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Toaster } from "sonner";
-import FormHeader from "./components/form-header/FormHeader";
 import FormOne from "./components/form-one/FormOne";
+import Header from "./components/header/Header";
 import { Button } from "./components/ui/button";
 import { LoginForm } from "./components/ui/login-form";
 import { ThemeProvider } from "./theme-provider";
@@ -31,7 +31,7 @@ function App() {
                     ) : (
                         <div className="flex flex-col md:flex-row gap-4 sm:gap-6 md:gap-8">
                             <main className="w-full flex-1">
-                                <FormHeader />
+                                <Header />
                                 <FormOne />
                                 <Button
                                     variant="outline"
