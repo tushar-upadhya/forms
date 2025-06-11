@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+import { fieldComponents } from "@/components/form-one/FormOne";
 import {
     Accordion,
     AccordionContent,
@@ -7,10 +9,11 @@ import {
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import type { FormValues, Section } from "@/lib/types";
+import { buildVariableMap, evaluateVisibilityCondition } from "@/lib/utils";
 import clsx from "clsx";
 import { ClipboardListIcon } from "lucide-react";
 import type { UseFormReturn } from "react-hook-form";
-import { fieldComponents } from "../components/form-one/FormOne";
+import { useFormContext } from "react-hook-form";
 
 interface SectionRendererProps {
     section: Section;
@@ -31,6 +34,10 @@ export default function SectionRenderer({
             </div>
         );
     }
+
+    const { watch } = useFormContext();
+    const formValues = watch();
+    const variableMap = buildVariableMap(section.questions);
 
     const fieldTypePriority = {
         select: 1,
@@ -59,6 +66,11 @@ export default function SectionRenderer({
             !q.label.toLowerCase().includes("right eye")
     );
 
+    const gridClass =
+        section.ui === "grid-cols-2"
+            ? "grid-cols-1 md:grid-cols-2"
+            : "grid-cols-1";
+
     return (
         <div className="space-y-3 sm:space-y-4">
             <Accordion
@@ -70,8 +82,8 @@ export default function SectionRenderer({
                 <AccordionItem value={`section-${index}`} className="border-0">
                     <AccordionTrigger className="px-2 sm:px-4 py-2 sm:py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
                         <div className="flex items-center gap-2">
-                            <ClipboardListIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                            <span className="font-medium text-sm sm:text-base truncate sm:truncate-none ">
+                            <ClipboardListIcon className="w-4 h-4 sm:h-5 sm:w-5 text-primary" />
+                            <span className="font-medium text-sm sm:text-base truncate sm:truncate-none">
                                 {section.title}
                             </span>
                         </div>
@@ -79,11 +91,25 @@ export default function SectionRenderer({
                     <AccordionContent>
                         <CardContent className="p-2 sm:p-4 pt-1 sm:pt-2">
                             <Form {...form}>
-                                <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2">
+                                <div
+                                    className={clsx(
+                                        "grid gap-4 sm:gap-6",
+                                        gridClass
+                                    )}
+                                >
                                     {/* Left Eye Column */}
                                     <div className="space-y-4">
-                                        {leftEyeQuestions.length > 0 ? (
-                                            leftEyeQuestions.map((question) => (
+                                        {leftEyeQuestions.map((question) => {
+                                            if (
+                                                !evaluateVisibilityCondition(
+                                                    question.visibility_condition,
+                                                    formValues,
+                                                    variableMap
+                                                )
+                                            ) {
+                                                return null;
+                                            }
+                                            return (
                                                 <div
                                                     key={
                                                         question.id ||
@@ -121,16 +147,76 @@ export default function SectionRenderer({
                                                         );
                                                     })()}
                                                 </div>
-                                            ))
-                                        ) : (
-                                            <></>
-                                        )}
+                                            );
+                                        })}
                                     </div>
                                     {/* Right Eye Column */}
                                     <div className="space-y-4">
-                                        {rightEyeQuestions.length > 0 ? (
-                                            rightEyeQuestions.map(
-                                                (question) => (
+                                        {rightEyeQuestions.map((question) => {
+                                            if (
+                                                !evaluateVisibilityCondition(
+                                                    question.visibility_condition,
+                                                    formValues,
+                                                    variableMap
+                                                )
+                                            ) {
+                                                return null;
+                                            }
+                                            return (
+                                                <div
+                                                    key={
+                                                        question.id ||
+                                                        question.label
+                                                    }
+                                                    className={clsx(
+                                                        question.field_type ===
+                                                            "textarea" ||
+                                                            question.is_repeatable_question
+                                                            ? "col-span-1"
+                                                            : "col-span-1"
+                                                    )}
+                                                >
+                                                    {(() => {
+                                                        const FieldComponent =
+                                                            fieldComponents[
+                                                                question
+                                                                    .field_type
+                                                            ];
+                                                        return FieldComponent ? (
+                                                            <FieldComponent
+                                                                question={
+                                                                    question
+                                                                }
+                                                                form={form}
+                                                            />
+                                                        ) : (
+                                                            <div className="text-red-500 text-sm">
+                                                                Error: Unknown
+                                                                field type{" "}
+                                                                {
+                                                                    question.field_type
+                                                                }
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    {/* Other Questions (full width) */}
+                                    {otherQuestions.length > 0 && (
+                                        <div className="col-span-1 md:col-span-2 space-y-4 mt-4">
+                                            {otherQuestions.map((question) => {
+                                                if (
+                                                    !evaluateVisibilityCondition(
+                                                        question.visibility_condition,
+                                                        formValues,
+                                                        variableMap
+                                                    )
+                                                ) {
+                                                    return null;
+                                                }
+                                                return (
                                                     <div
                                                         key={
                                                             question.id ||
@@ -140,7 +226,7 @@ export default function SectionRenderer({
                                                             question.field_type ===
                                                                 "textarea" ||
                                                                 question.is_repeatable_question
-                                                                ? "col-span-1"
+                                                                ? "col-span-1 md:col-span-2"
                                                                 : "col-span-1"
                                                         )}
                                                     >
@@ -169,54 +255,8 @@ export default function SectionRenderer({
                                                             );
                                                         })()}
                                                     </div>
-                                                )
-                                            )
-                                        ) : (
-                                            <></>
-                                        )}
-                                    </div>
-                                    {/* Other Questions (full width) */}
-                                    {otherQuestions.length > 0 && (
-                                        <div className="col-span-1 md:col-span-2 space-y-4 mt-4">
-                                            {otherQuestions.map((question) => (
-                                                <div
-                                                    key={
-                                                        question.id ||
-                                                        question.label
-                                                    }
-                                                    className={clsx(
-                                                        question.field_type ===
-                                                            "textarea" ||
-                                                            question.is_repeatable_question
-                                                            ? "col-span-1 md:col-span-2"
-                                                            : "col-span-1"
-                                                    )}
-                                                >
-                                                    {(() => {
-                                                        const FieldComponent =
-                                                            fieldComponents[
-                                                                question
-                                                                    .field_type
-                                                            ];
-                                                        return FieldComponent ? (
-                                                            <FieldComponent
-                                                                question={
-                                                                    question
-                                                                }
-                                                                form={form}
-                                                            />
-                                                        ) : (
-                                                            <div className="text-red-500 text-sm">
-                                                                Error: Unknown
-                                                                field type{" "}
-                                                                {
-                                                                    question.field_type
-                                                                }
-                                                            </div>
-                                                        );
-                                                    })()}
-                                                </div>
-                                            ))}
+                                                );
+                                            })}
                                         </div>
                                     )}
                                 </div>

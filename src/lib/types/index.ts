@@ -1,7 +1,12 @@
 import type { UseFormReturn } from "react-hook-form";
 
 export const getFieldName = (label?: string): string =>
-    label ? label.toLowerCase().replace(/\s+/g, "_") : "";
+    label
+        ? label
+              .toLowerCase()
+              .replace(/\s+/g, "_")
+              .replace(/[^a-z0-9_]/g, "")
+        : "";
 
 export interface Option {
     id: string;
@@ -19,6 +24,10 @@ export interface Question {
     default_value?: string | string[];
     id?: string;
     is_repeatable_question?: boolean;
+    visibility_condition?: string | null;
+    meta_data?: {
+        variable_name?: string;
+    };
 }
 
 export interface Section {
