@@ -123,17 +123,17 @@ export default function FormOne() {
             dispatch(
                 setFormSubmissionStatus({
                     status: "success",
-                    responseId: data.responseId ?? undefined,
                     message: data.message,
                 })
             );
         },
         (error) => {
             setIsSubmitting(false);
+            methods.reset();
             dispatch(
                 setFormSubmissionStatus({
                     status: "error",
-                    message: error.message || "Submission failed",
+                    message: error.response?.data?.message || error.message,
                 })
             );
         }
@@ -145,22 +145,7 @@ export default function FormOne() {
             formSchema.versions &&
             formSchema.versions[0]?.sections
         ) {
-            // Log schema details
-            formSchema.versions[0].sections.forEach((section) => {
-                section.questions.forEach((question) => {
-                    if (question.options?.length) {
-                        console.log(
-                            `Section ${section.id}, Question ${question.label} (ID: ${question.id}):`,
-                            question.options
-                        );
-                        if (question.options.some((o) => o.id === "HMCF")) {
-                            console.error(
-                                `HMCF found in ${question.label} (ID: ${question.id})`
-                            );
-                        }
-                    }
-                });
-            });
+            console.log("Form schema:", formSchema.versions[0].sections);
             const defaultValues = generateDefaultValues(
                 formSchema.versions[0].sections
             );

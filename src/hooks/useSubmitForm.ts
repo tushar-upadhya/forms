@@ -10,23 +10,23 @@ const DEFAULT_FORM_ID = import.meta.env.VITE_FORM_ID;
 
 interface SubmitFormResponse {
     message: string;
-    responseId?: string;
     data?: any;
 }
 
 const transformPayload = (
     data: FormValues,
     schema: FormSchema | null
-): { data: Record<string, any> } => {
+): { data: Record<string, any> } | { error: string } => {
     if (!schema || !schema.versions || !schema.versions[0]?.sections) {
         console.error("Invalid schema provided");
-        return { data: {} };
+        return { error: "Invalid schema provided" };
     }
 
     const questionIdMap: Record<string, { id: string; sectionId: string }> = {};
     const requiredQuestions: Set<string> = new Set();
     const sectionMap: Record<string, { is_repeatable_section: boolean }> = {};
 
+    // Build question ID and section map
     schema.versions[0].sections.forEach((section) => {
         if (!section.id) {
             console.warn("Section missing ID:", section);
@@ -45,9 +45,6 @@ const transformPayload = (
                 return;
             }
             const fieldName = getFieldName(question.label);
-            if (!section.id) {
-                throw new Error("Section ID is undefined");
-            }
             questionIdMap[fieldName] = {
                 id: question.id,
                 sectionId: section.id as string,
@@ -72,6 +69,7 @@ const transformPayload = (
 
     const dataPayload: Record<string, any> = {};
 
+    // Group data by section
     Object.entries(data).forEach(([key, value]) => {
         if (
             value === undefined ||
@@ -104,6 +102,7 @@ const transformPayload = (
             return;
         }
 
+        // Initialize section in payload
         if (!dataPayload[sectionId]) {
             dataPayload[sectionId] = section.is_repeatable_section ? [] : {};
         }
@@ -111,6 +110,7 @@ const transformPayload = (
         const finalValue = fieldName.includes("age") ? Number(value) : value;
 
         if (section.is_repeatable_section) {
+            // Ensure array index exists
             while (dataPayload[sectionId].length <= (index ?? 0)) {
                 dataPayload[sectionId].push({});
             }
@@ -121,12 +121,14 @@ const transformPayload = (
                 ? finalValue
                 : finalValue;
         } else {
+            // Non-repeatable section
             dataPayload[sectionId][questionId] = Array.isArray(finalValue)
                 ? finalValue
                 : finalValue;
         }
     });
 
+    // Validate required fields
     const missingRequired: string[] = [];
     Array.from(requiredQuestions).forEach((qId) => {
         let isPresent = false;
@@ -149,17 +151,18 @@ const transformPayload = (
                 isPresent = true;
             }
         });
-        if (!isPresent) missingRequired.push(qId);
+        if (!isPresent) {
+            missingRequired.push(qId);
+        }
     });
 
     if (missingRequired.length > 0) {
         console.error("Missing required fields:", missingRequired.join(", "));
-        throw new Error(
-            `Missing required fields: ${missingRequired.join(", ")}`
-        );
+        return {
+            error: `Missing required fields: ${missingRequired.join(", ")}`,
+        };
     }
 
-    console.log("Transformed Payload:", JSON.stringify(dataPayload, null, 2));
     return { data: dataPayload };
 };
 
@@ -179,6 +182,11 @@ export function useSubmitForm(
 
             const apiUrl = `${BASE_URL}/form/api/v1/form/${formId}/responses`;
             const transformedData = transformPayload(data, schema);
+
+            if ("error" in transformedData) {
+                throw new Error(transformedData.error);
+            }
+
             console.log("Submitting transformedData:", transformedData);
 
             const response = await axios.post(apiUrl, transformedData, {
