@@ -74,15 +74,11 @@ const RepeatableSectionWrapper = ({
 
         if (Object.keys(entry).length > 0) {
             setCommittedEntries((prev) => [...prev, entry]);
-            console.log(`Added section entry for ${section.title}:`, entry);
         }
     };
 
     const handleDeleteEntry = (idx: number) => {
         setCommittedEntries((prev) => prev.filter((_, i) => i !== idx));
-        console.log(
-            `Deleted section entry at index ${idx} for ${section.title}`
-        );
     };
 
     const handleEditEntry = (
@@ -97,10 +93,6 @@ const RepeatableSectionWrapper = ({
                 : value || "";
         });
         setEditValues(editData);
-        console.log(
-            `Editing section entry at index ${idx} for ${section.title}:`,
-            editData
-        );
     };
 
     const handleSaveEdit = (idx: number) => {
@@ -114,16 +106,11 @@ const RepeatableSectionWrapper = ({
         });
         setEditingIndex(null);
         setEditValues({});
-        console.log(
-            `Saved section entry at index ${idx} for ${section.title}:`,
-            editValues
-        );
     };
 
     const handleCancelEdit = () => {
         setEditingIndex(null);
         setEditValues({});
-        console.log(`Cancelled edit for section ${section.title}`);
     };
 
     if (!isRepeatable) {
@@ -153,7 +140,10 @@ const RepeatableSectionWrapper = ({
                                     )
                                     .map((question) => (
                                         <TableHead
-                                            key={question.id || question.label}
+                                            key={
+                                                question.id ||
+                                                `${section.id}-${question.label}`
+                                            }
                                             className="text-xs sm:text-sm whitespace-nowrap truncate max-w-[150px] bg-muted/50"
                                             title={question.label}
                                         >
@@ -167,7 +157,7 @@ const RepeatableSectionWrapper = ({
                         </TableHeader>
                         <TableBody>
                             {committedEntries.map((entry, idx) => (
-                                <TableRow key={idx}>
+                                <TableRow key={`${section.id}-entry-${idx}`}>
                                     <TableCell className="text-xs sm:text-sm text-center">
                                         {idx + 1}
                                     </TableCell>
@@ -186,10 +176,10 @@ const RepeatableSectionWrapper = ({
                                             const value = entry[fieldName];
                                             return (
                                                 <TableCell
-                                                    key={
+                                                    key={`${section.id}-${
                                                         question.id ||
                                                         question.label
-                                                    }
+                                                    }`}
                                                     className="text-xs sm:text-sm truncate max-w-[150px]"
                                                     title={
                                                         Array.isArray(value)
@@ -329,7 +319,11 @@ const RepeatableSectionWrapper = ({
                         questions: section.questions.map((q) => ({
                             ...q,
                             label: `${q.label}_${committedEntries.length}`,
-                            id: `${q.id || q.label}_${committedEntries.length}`,
+                            id:
+                                q.id ||
+                                `${section.id}-${getFieldName(q.label)}-${
+                                    committedEntries.length
+                                }`,
                         })),
                     }}
                     form={form}

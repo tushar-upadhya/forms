@@ -23,6 +23,26 @@ export default function RadioGroupField({
 }: RadioFieldProps) {
     const effectiveFieldName = fieldName || getFieldName(question.label);
 
+    // Ensure unique options with fallback IDs
+    const uniqueOptions = (question.options || [])
+        .map((option, index) => ({
+            ...option,
+            id: option.id || `${effectiveFieldName}-option-${index}`, // Fallback ID
+        }))
+        .filter(
+            (option, index, self) =>
+                index === self.findIndex((o) => o.id === option.id)
+        );
+
+    // Debug: Log options to check for duplicates
+    if (question.options && question.options.length !== uniqueOptions.length) {
+        console.warn(
+            `Duplicate option IDs detected in ${effectiveFieldName}:`,
+            question.options
+        );
+        console.log("Unique options:", uniqueOptions);
+    }
+
     return (
         <FormField
             control={form.control}
@@ -49,7 +69,7 @@ export default function RadioGroupField({
                             className="flex flex-wrap gap-2 sm:gap-3 md:gap-4"
                             disabled={question.is_disabled}
                         >
-                            {question.options?.map((option) => (
+                            {uniqueOptions.map((option) => (
                                 <FormItem
                                     key={option.id}
                                     className="flex items-center space-x-2 sm:space-x-3 space-y-0"

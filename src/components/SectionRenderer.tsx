@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { fieldComponents } from "@/components/form-one/FormOne";
 import {
     Accordion,
@@ -8,7 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import type { FormValues, Section } from "@/lib/types";
+import { getFieldName, type FormValues, type Section } from "@/lib/types";
 import { buildVariableMap, evaluateVisibilityCondition } from "@/lib/utils";
 import clsx from "clsx";
 import { ClipboardListIcon } from "lucide-react";
@@ -26,6 +25,8 @@ export default function SectionRenderer({
     form,
     index,
 }: SectionRendererProps) {
+    const { watch } = useFormContext();
+
     if (!form || !form.control) {
         console.error(`Form prop is invalid in Section: ${section.title}`);
         return (
@@ -35,7 +36,6 @@ export default function SectionRenderer({
         );
     }
 
-    const { watch } = useFormContext();
     const formValues = watch();
     const variableMap = buildVariableMap(section.questions);
 
@@ -113,7 +113,11 @@ export default function SectionRenderer({
                                                 <div
                                                     key={
                                                         question.id ||
-                                                        question.label
+                                                        `${
+                                                            section.id
+                                                        }-${getFieldName(
+                                                            question.label
+                                                        )}`
                                                     }
                                                     className={clsx(
                                                         question.field_type ===
@@ -166,7 +170,11 @@ export default function SectionRenderer({
                                                 <div
                                                     key={
                                                         question.id ||
-                                                        question.label
+                                                        `${
+                                                            section.id
+                                                        }-${getFieldName(
+                                                            question.label
+                                                        )}`
                                                     }
                                                     className={clsx(
                                                         question.field_type ===
@@ -220,7 +228,11 @@ export default function SectionRenderer({
                                                     <div
                                                         key={
                                                             question.id ||
-                                                            question.label
+                                                            `${
+                                                                section.id
+                                                            }-${getFieldName(
+                                                                question.label
+                                                            )}`
                                                         }
                                                         className={clsx(
                                                             question.field_type ===

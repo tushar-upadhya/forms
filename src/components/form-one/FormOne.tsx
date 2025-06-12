@@ -46,7 +46,7 @@ const generateDefaultValues = (sections: Section[]) => {
                     : "";
         });
     });
-    console.log("Generated default values:", fields);
+    // console.log("Generated default values:", fields);
     return fields;
 };
 
@@ -117,19 +117,19 @@ export default function FormOne() {
 
     const { mutate } = useSubmitForm(
         FORM_ID,
-        (data) => {
+        () => {
             setIsSubmitting(false);
             methods.reset();
-            console.log("Form submitted successfully:", data);
+            // console.log("Form submitted successfully");
         },
-        (error) => {
+        () => {
             setIsSubmitting(false);
             methods.reset();
-            console.error(
-                "Submission error:",
-                error.message,
-                error.response?.data
-            );
+            // console.error(
+            //     "Submission error:",
+            //     error.message,
+            //     error.response?.data
+            // );
         }
     );
 
@@ -142,7 +142,7 @@ export default function FormOne() {
             const defaultValues = generateDefaultValues(
                 formSchema.versions[0].sections
             );
-            console.log("Setting form default values:", defaultValues);
+            // console.log("Setting form default values:", defaultValues);
             methods.reset(defaultValues);
         }
     }, [formSchema, methods]);
@@ -178,7 +178,7 @@ export default function FormOne() {
             }
         });
 
-        console.log("Raw form data:", data);
+        // console.log("Raw form data:", data);
         console.log("Submitting transformed data:", transformedData);
         setIsSubmitting(true);
         mutate(transformedData);

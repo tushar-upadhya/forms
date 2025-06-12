@@ -104,13 +104,17 @@ const RepeatableQuestionWrapper = ({
                         </TableHeader>
                         <TableBody>
                             {committedValues.map((value, idx) => (
-                                <TableRow key={idx}>
+                                <TableRow
+                                    key={`${
+                                        question.id || baseFieldName
+                                    }-value-${idx}`}
+                                >
                                     <TableCell className="text-xs sm:text-sm text-center">
                                         {idx + 1}
                                     </TableCell>
                                     <TableCell className="text-xs sm:text-sm">
                                         {editingIndex === idx ? (
-                                            <div className="flex items-center gap-2 ">
+                                            <div className="flex items-center gap-2">
                                                 <Input
                                                     value={editValue}
                                                     onChange={(e) =>

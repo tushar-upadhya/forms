@@ -5,7 +5,7 @@ const Header = () => {
     return (
         <header className="mb-8 text-center px-2 sm:px-4">
             <div className="relative flex flex-col items-center gap-2 md:flex-row md:justify-center md:gap-4 mb-2 w-full">
-                <EyeIcon className="h-8 w-8 text-primary " />0
+                <EyeIcon className="h-8 w-8 text-primary " />
                 <h1 className="text-lg xs:text-xl sm:text-2xl md:text-3xl text-muted-foreground font-bold tracking-tight break-words max-w-[90vw] md:max-w-none">
                     Patient Ophthalmic Evaluation
                 </h1>

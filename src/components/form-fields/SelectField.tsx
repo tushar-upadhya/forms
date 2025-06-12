@@ -29,9 +29,27 @@ export default function SelectField({
 }: SelectFieldProps) {
     const effectiveFieldName = fieldName || getFieldName(question.label);
 
-    // Determine the number of options
-    const optionCount = (question.options || []).length;
-    // Use 2 columns for even number of options on sm+, 1 column for odd or small screens
+    // Ensure unique options with fallback IDs
+    const uniqueOptions = (question.options || [])
+        .map((option, index) => ({
+            ...option,
+            id: option.id || `${effectiveFieldName}-option-${index}`, // Fallback ID
+        }))
+        .filter(
+            (option, index, self) =>
+                index === self.findIndex((o) => o.id === option.id)
+        );
+
+    // Debug: Log options to check for duplicates
+    if (question.options && question.options.length !== uniqueOptions.length) {
+        console.warn(
+            `Duplicate option IDs detected in ${effectiveFieldName}:`,
+            question.options
+        );
+        console.log("Unique options:", uniqueOptions);
+    }
+
+    const optionCount = uniqueOptions.length;
     const gridColsClass =
         optionCount % 2 === 0 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1";
 
@@ -54,9 +72,6 @@ export default function SelectField({
                         <Select
                             onValueChange={(value) => {
                                 field.onChange(value);
-                                console.log(
-                                    `SelectField ${effectiveFieldName} changed to: ${value}`
-                                );
                             }}
                             value={field.value ? String(field.value) : ""}
                             disabled={question.is_disabled}
@@ -69,7 +84,7 @@ export default function SelectField({
                             <SelectContent
                                 className={`w-full min-w-[200px] max-h-[300px] overflow-y-auto z-[2000] p-2 bg-card/95 border-border/50 shadow-lg rounded-lg grid ${gridColsClass} gap-1`}
                             >
-                                {question.options?.map((option) => (
+                                {uniqueOptions.map((option) => (
                                     <SelectItem
                                         key={option.id}
                                         value={option.option_value}

@@ -26,7 +26,24 @@ export default function CheckboxField({
     isRequired,
     isDisabled,
 }: CheckboxFieldProps) {
-    const maxLabelLength = options.reduce(
+    // Deduplicate options with fallback IDs
+    const uniqueOptions = options
+        .map((option, index) => ({
+            ...option,
+            id: option.id || `${fieldName}-option-${index}`,
+        }))
+        .filter(
+            (option, index, self) =>
+                index === self.findIndex((o) => o.id === option.id)
+        );
+
+    // Log duplicates
+    if (options.length !== uniqueOptions.length) {
+        console.error(`Duplicate option IDs in ${fieldName}:`, options);
+        console.log("Unique options:", uniqueOptions);
+    }
+
+    const maxLabelLength = uniqueOptions.reduce(
         (max, option) => Math.max(max, option.option_label.length),
         0
     );
@@ -55,7 +72,7 @@ export default function CheckboxField({
                         <div
                             className={`grid gap-2 sm:gap-3 md:gap-4 ${gridColsClass}`}
                         >
-                            {options.map((option) => (
+                            {uniqueOptions.map((option) => (
                                 <FormItem
                                     key={option.id}
                                     className="flex items-center space-x-2 sm:space-x-3 space-y-0"
@@ -84,9 +101,6 @@ export default function CheckboxField({
                                                               option.option_value
                                                       );
                                                 field.onChange(newValues);
-                                                console.log(
-                                                    `CheckboxField ${fieldName} changed to: ${newValues}`
-                                                );
                                             }}
                                             id={`${fieldName}-${option.id}`}
                                             disabled={
