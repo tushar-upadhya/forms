@@ -122,7 +122,7 @@ const RepeatableQuestionWrapper = ({
                                                             e.target.value
                                                         )
                                                     }
-                                                    className="text-xs sm:text-sm h-8"
+                                                    className="text-xs sm:text-sm h-8 w-full max-w-[300px]"
                                                     onKeyDown={(e) => {
                                                         if (e.key === "Enter")
                                                             handleSaveEdit(idx);

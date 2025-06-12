@@ -5,20 +5,22 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSelector } from "react-redux";
 
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 const DEFAULT_FORM_ID = import.meta.env.VITE_FORM_ID;
 
 interface SubmitFormResponse {
     message: string;
+    responseId?: string;
     data?: any;
 }
 
 const transformPayload = (
     data: FormValues,
     schema: FormSchema | null
-): { data: Record<string, any> } | { error: string } => {
+): { data: Record<string, any> } => {
     if (!schema || !schema.versions || !schema.versions[0]?.sections) {
         console.error("Invalid schema provided");
-        return { error: "Invalid schema provided" };
+        return { data: {} };
     }
 
     const questionIdMap: Record<string, { id: string; sectionId: string }> = {};
@@ -43,13 +45,16 @@ const transformPayload = (
                 return;
             }
             const fieldName = getFieldName(question.label);
+            if (!section.id) {
+                throw new Error("Section ID is undefined");
+            }
             questionIdMap[fieldName] = {
                 id: question.id,
-                sectionId: section.id,
+                sectionId: section.id as string,
             };
             questionIdMap[question.id] = {
                 id: question.id,
-                sectionId: section.id,
+                sectionId: section.id as string,
             };
             const normalizedLabel = fieldName.replace(
                 /patient_|^patient/gi,
@@ -57,7 +62,7 @@ const transformPayload = (
             );
             questionIdMap[normalizedLabel] = {
                 id: question.id,
-                sectionId: section.id,
+                sectionId: section.id as string,
             };
             if (question.is_required) {
                 requiredQuestions.add(question.id);
@@ -144,18 +149,17 @@ const transformPayload = (
                 isPresent = true;
             }
         });
-        if (!isPresent) {
-            missingRequired.push(qId);
-        }
+        if (!isPresent) missingRequired.push(qId);
     });
 
     if (missingRequired.length > 0) {
         console.error("Missing required fields:", missingRequired.join(", "));
-        return {
-            error: `Missing required fields: ${missingRequired.join(", ")}`,
-        };
+        throw new Error(
+            `Missing required fields: ${missingRequired.join(", ")}`
+        );
     }
 
+    console.log("Transformed Payload:", JSON.stringify(dataPayload, null, 2));
     return { data: dataPayload };
 };
 
@@ -173,28 +177,17 @@ export function useSubmitForm(
                 throw new Error("No access token found.");
             }
 
-            const apiUrl = `/form/api/v1/form/${formId}/responses`; // Use relative URL for proxy
+            const apiUrl = `${BASE_URL}/form/api/v1/form/${formId}/responses`;
             const transformedData = transformPayload(data, schema);
-
-            if ("error" in transformedData) {
-                throw new Error(transformedData.error);
-            }
-
             console.log("Submitting transformedData:", transformedData);
-            console.log("Access Token:", accessToken);
 
-            try {
-                const response = await axios.post(apiUrl, transformedData, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        "Content-Type": "application/json",
-                    },
-                });
-                return response.data;
-            } catch (error) {
-                console.error("Submission error:", error);
-                throw error;
-            }
+            const response = await axios.post(apiUrl, transformedData, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            return response.data;
         },
         onSuccess,
         onError,

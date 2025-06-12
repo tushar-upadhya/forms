@@ -7,8 +7,10 @@ import {
     type Question,
     type Section,
 } from "@/lib/types";
+import { setFormSubmissionStatus } from "@/store/slices/formSchemaSlice";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import CheckboxField from "../form-fields/CheckboxField";
 import InputField from "../form-fields/InputField";
 import RadioGroupField from "../form-fields/RadioGroupField";
@@ -46,7 +48,6 @@ const generateDefaultValues = (sections: Section[]) => {
                     : "";
         });
     });
-    // console.log("Generated default values:", fields);
     return fields;
 };
 
@@ -111,25 +112,30 @@ export const fieldComponents: Record<
 export default function FormOne() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { data: formSchema, isLoading, error } = useFormSchema();
-    const methods = useForm<FormValues>({
-        defaultValues: {},
-    });
+    const methods = useForm<FormValues>({ defaultValues: {} });
+    const dispatch = useDispatch();
 
     const { mutate } = useSubmitForm(
         FORM_ID,
-        () => {
+        (data) => {
             setIsSubmitting(false);
             methods.reset();
-            // console.log("Form submitted successfully");
+            dispatch(
+                setFormSubmissionStatus({
+                    status: "success",
+                    responseId: data.responseId ?? undefined,
+                    message: data.message,
+                })
+            );
         },
-        () => {
+        (error) => {
             setIsSubmitting(false);
-            methods.reset();
-            // console.error(
-            //     "Submission error:",
-            //     error.message,
-            //     error.response?.data
-            // );
+            dispatch(
+                setFormSubmissionStatus({
+                    status: "error",
+                    message: error.message || "Submission failed",
+                })
+            );
         }
     );
 
@@ -139,10 +145,25 @@ export default function FormOne() {
             formSchema.versions &&
             formSchema.versions[0]?.sections
         ) {
+            // Log schema details
+            formSchema.versions[0].sections.forEach((section) => {
+                section.questions.forEach((question) => {
+                    if (question.options?.length) {
+                        console.log(
+                            `Section ${section.id}, Question ${question.label} (ID: ${question.id}):`,
+                            question.options
+                        );
+                        if (question.options.some((o) => o.id === "HMCF")) {
+                            console.error(
+                                `HMCF found in ${question.label} (ID: ${question.id})`
+                            );
+                        }
+                    }
+                });
+            });
             const defaultValues = generateDefaultValues(
                 formSchema.versions[0].sections
             );
-            // console.log("Setting form default values:", defaultValues);
             methods.reset(defaultValues);
         }
     }, [formSchema, methods]);
@@ -178,7 +199,6 @@ export default function FormOne() {
             }
         });
 
-        // console.log("Raw form data:", data);
         console.log("Submitting transformed data:", transformedData);
         setIsSubmitting(true);
         mutate(transformedData);
@@ -205,22 +225,26 @@ export default function FormOne() {
                     {methods ? (
                         <>
                             {formSchema.versions[0].sections.map(
-                                (section, idx) =>
-                                    section.is_repeatable_section ? (
-                                        <RepeatableSectionWrapper
-                                            key={section.id || section.title}
-                                            section={section}
-                                            form={methods}
-                                            index={idx}
-                                        />
-                                    ) : (
-                                        <SectionRenderer
-                                            key={section.id || section.title}
-                                            section={section}
-                                            form={methods}
-                                            index={idx}
-                                        />
-                                    )
+                                (section, idx) => (
+                                    <div
+                                        key={section.id || `section-${idx}`}
+                                        className="section-wrapper"
+                                    >
+                                        {section.is_repeatable_section ? (
+                                            <RepeatableSectionWrapper
+                                                section={section}
+                                                form={methods}
+                                                index={idx}
+                                            />
+                                        ) : (
+                                            <SectionRenderer
+                                                section={section}
+                                                form={methods}
+                                                index={idx}
+                                            />
+                                        )}
+                                    </div>
+                                )
                             )}
                         </>
                     ) : (

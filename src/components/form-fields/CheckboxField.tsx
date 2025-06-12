@@ -26,22 +26,20 @@ export default function CheckboxField({
     isRequired,
     isDisabled,
 }: CheckboxFieldProps) {
-    // Deduplicate options with fallback IDs
+    // Deduplicate options
     const uniqueOptions = options
         .map((option, index) => ({
             ...option,
-            id: option.id || `${fieldName}-option-${index}`,
+            id: `${fieldName}-${option.id || "option"}-${index}-${
+                option.option_value
+            }`,
         }))
-        .filter(
-            (option, index, self) =>
-                index === self.findIndex((o) => o.id === option.id)
-        );
-
-    // Log duplicates
-    if (options.length !== uniqueOptions.length) {
-        console.error(`Duplicate option IDs in ${fieldName}:`, options);
-        console.log("Unique options:", uniqueOptions);
-    }
+        .reduce((acc, option) => {
+            if (!acc.find((o) => o.id === option.id)) {
+                acc.push(option);
+            }
+            return acc;
+        }, [] as typeof options);
 
     const maxLabelLength = uniqueOptions.reduce(
         (max, option) => Math.max(max, option.option_label.length),

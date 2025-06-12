@@ -142,7 +142,9 @@ const RepeatableSectionWrapper = ({
                                         <TableHead
                                             key={
                                                 question.id ||
-                                                `${section.id}-${question.label}`
+                                                `${section.id}-${getFieldName(
+                                                    question.label
+                                                )}`
                                             }
                                             className="text-xs sm:text-sm whitespace-nowrap truncate max-w-[150px] bg-muted/50"
                                             title={question.label}
@@ -157,7 +159,11 @@ const RepeatableSectionWrapper = ({
                         </TableHeader>
                         <TableBody>
                             {committedEntries.map((entry, idx) => (
-                                <TableRow key={`${section.id}-entry-${idx}`}>
+                                <TableRow
+                                    key={`${
+                                        section.id || "section"
+                                    }-entry-${idx}`}
+                                >
                                     <TableCell className="text-xs sm:text-sm text-center">
                                         {idx + 1}
                                     </TableCell>
@@ -176,11 +182,15 @@ const RepeatableSectionWrapper = ({
                                             const value = entry[fieldName];
                                             return (
                                                 <TableCell
-                                                    key={`${section.id}-${
+                                                    key={`${
+                                                        section.id || "section"
+                                                    }-${
                                                         question.id ||
-                                                        question.label
+                                                        getFieldName(
+                                                            question.label
+                                                        )
                                                     }`}
-                                                    className="text-xs sm:text-sm truncate max-w-[150px]"
+                                                    className="text-xs sm:text-sm truncate max-w-[150px] min-w-[100px]"
                                                     title={
                                                         Array.isArray(value)
                                                             ? value.join(", ")
@@ -205,7 +215,7 @@ const RepeatableSectionWrapper = ({
                                                                     })
                                                                 )
                                                             }
-                                                            className="text-xs sm:text-sm h-8 w-full rounded-md"
+                                                            className="text-xs sm:text-sm h-8 w-full max-w-[300px] rounded-md"
                                                             onKeyDown={(e) => {
                                                                 if (
                                                                     e.key ===
@@ -316,14 +326,14 @@ const RepeatableSectionWrapper = ({
                 <SectionRenderer
                     section={{
                         ...section,
-                        questions: section.questions.map((q) => ({
+                        questions: section.questions.map((q, qIdx) => ({
                             ...q,
                             label: `${q.label}_${committedEntries.length}`,
                             id:
                                 q.id ||
-                                `${section.id}-${getFieldName(q.label)}-${
-                                    committedEntries.length
-                                }`,
+                                `${section.id || "section"}-${getFieldName(
+                                    q.label
+                                )}-${committedEntries.length}-${qIdx}`,
                         })),
                     }}
                     form={form}
