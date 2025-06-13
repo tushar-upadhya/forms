@@ -30,11 +30,11 @@ export default function InputField({
             render={({ field }) => (
                 <FormItem>
                     <FormLabel
-                        className={
+                        className={`${
                             question.is_required
-                                ? "required after:content-['*'] after:text-red-500 text-xs sm:text-sm md:text-base"
-                                : "text-xs sm:text-sm md:text-base"
-                        }
+                                ? "required after:content-['*'] after:text-red-500"
+                                : ""
+                        } text-xs sm:text-sm md:text-base`}
                     >
                         {question.label}
                     </FormLabel>

@@ -23,26 +23,27 @@ export default function RadioGroupField({
 }: RadioFieldProps) {
     const effectiveFieldName = fieldName || getFieldName(question.label);
 
-    // Deduplicate options with robust fallback IDs
+    // Generate unique options using backend-provided id
     const uniqueOptions = (question.options || [])
         .map((option, index) => ({
             ...option,
-            id: option.id
-                ? `${option.id}-${index}`
-                : `${effectiveFieldName}-option-${index}`,
+            id: option.id || `${effectiveFieldName}-option-${index}`,
         }))
-        .filter(
-            (option, index, self) =>
-                index === self.findIndex((o) => o.id === option.id)
-        );
+        .reduce((acc: NonNullable<typeof question.options>, option) => {
+            if (!acc.find((o) => o.id === option.id)) {
+                acc.push(option);
+            } else {
+                // console.warn(
+                //     `Duplicate option ID in ${effectiveFieldName}:`,
+                //     option
+                // );
+            }
+            return acc;
+        }, []);
 
-    // Log duplicates
-    if (question.options && question.options.length !== uniqueOptions.length) {
-        console.error(
-            `Duplicate option IDs in ${effectiveFieldName}:`,
-            question.options
-        );
-        console.log("Unique options:", uniqueOptions);
+    // Log HMCF occurrences
+    if (uniqueOptions?.some((o) => o.option_value === "HMCF")) {
+        // console.log(`HMCF options in ${effectiveFieldName}:`, uniqueOptions);
     }
 
     return (
@@ -52,11 +53,11 @@ export default function RadioGroupField({
             render={({ field }) => (
                 <FormItem className="space-y-2 sm:space-y-3">
                     <FormLabel
-                        className={
+                        className={`${
                             question.is_required
-                                ? "required after:content-['*'] after:text-red-500 text-xs sm:text-sm md:text-base"
-                                : "text-xs sm:text-sm md:text-base"
-                        }
+                                ? "required after:content-['*'] after:text-red-500"
+                                : ""
+                        } text-xs sm:text-sm md:text-base`}
                     >
                         {question.label || "Unnamed Field"}
                     </FormLabel>
@@ -71,7 +72,7 @@ export default function RadioGroupField({
                             className="flex flex-wrap gap-2 sm:gap-3 md:gap-4"
                             disabled={question.is_disabled}
                         >
-                            {uniqueOptions.map((option) => (
+                            {uniqueOptions?.map((option) => (
                                 <FormItem
                                     key={option.id}
                                     className="flex items-center space-x-2 sm:space-x-3 space-y-0"

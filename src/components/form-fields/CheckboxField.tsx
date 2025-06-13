@@ -23,29 +23,34 @@ export default function CheckboxField({
     fieldName,
     label,
     options,
-    isRequired,
-    isDisabled,
+    isRequired = false,
+    isDisabled = false,
 }: CheckboxFieldProps) {
-    // Deduplicate options
+    // Generate unique options using backend-provided id
     const uniqueOptions = options
         .map((option, index) => ({
             ...option,
-            id: `${fieldName}-${option.id || "option"}-${index}-${
-                option.option_value
-            }`,
+            id: option.id || `${fieldName}-option-${index}`,
         }))
         .reduce((acc, option) => {
             if (!acc.find((o) => o.id === option.id)) {
                 acc.push(option);
+            } else {
+                // console.warn(`Duplicate option ID in ${fieldName}:`, option);
             }
             return acc;
-        }, [] as typeof options);
+        }, [] as Option[]);
 
+    // Log HMCF occurrences
+    if (uniqueOptions.some((o) => o.option_value === "HMCF")) {
+        // console.log(`HMCF options in ${fieldName}:`, uniqueOptions);
+    }
+
+    // Dynamic grid column class based on label size
     const maxLabelLength = uniqueOptions.reduce(
         (max, option) => Math.max(max, option.option_label.length),
         0
     );
-
     const gridColsClass =
         maxLabelLength > 15
             ? "grid-cols-1 sm:grid-cols-2"
@@ -58,11 +63,11 @@ export default function CheckboxField({
             render={({ field }) => (
                 <FormItem className="space-y-2 sm:space-y-3">
                     <FormLabel
-                        className={
+                        className={`${
                             isRequired
-                                ? "required after:content-['*'] after:text-red-500 text-xs sm:text-sm md:text-base"
-                                : "text-xs sm:text-sm md:text-base"
-                        }
+                                ? "required after:content-['*'] after:text-red-500"
+                                : ""
+                        } text-xs sm:text-sm md:text-base`}
                     >
                         {label || "Unnamed Field"}
                     </FormLabel>
@@ -77,6 +82,7 @@ export default function CheckboxField({
                                 >
                                     <FormControl>
                                         <Checkbox
+                                            id={`${fieldName}-${option.id}`}
                                             checked={
                                                 Array.isArray(field.value) &&
                                                 field.value.includes(
@@ -100,7 +106,6 @@ export default function CheckboxField({
                                                       );
                                                 field.onChange(newValues);
                                             }}
-                                            id={`${fieldName}-${option.id}`}
                                             disabled={
                                                 option.is_disabled || isDisabled
                                             }

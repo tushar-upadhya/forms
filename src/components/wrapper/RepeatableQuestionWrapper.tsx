@@ -37,6 +37,13 @@ const RepeatableQuestionWrapper = ({
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [editValue, setEditValue] = useState<string>("");
 
+    // Log field type for Chief Complaint
+    if (question.id === "dc05ed5d-00a8-433c-a276-fd6e2021a20a") {
+        // console.log(
+        //     `Rendering Chief Complaint (dc05ed5d-...) with field_type: ${question.field_type}, repeatable: ${question.is_repeatable_question}`
+        // );
+    }
+
     const handleAddField = () => {
         const inputName = `${baseFieldName}_0`;
         const rawValue = form.getValues(inputName);

@@ -29,8 +29,31 @@ export default function SelectField({
 }: SelectFieldProps) {
     const effectiveFieldName = fieldName || getFieldName(question.label);
 
+    const uniqueOptions =
+        (question.options || [])
+            .map((option, index) => ({
+                ...option,
+                id: option.id || `${effectiveFieldName}-option-${index}`,
+            }))
+            .reduce((acc, option) => {
+                if (!acc.find((o) => o.id === option.id)) {
+                    acc.push(option);
+                } else {
+                    // console.warn(
+                    //     `Duplicate option ID in ${effectiveFieldName}:`,
+                    //     option
+                    // );
+                }
+                return acc;
+            }, [] as NonNullable<typeof question.options>) || [];
+
+    // Log HMCF occurrences
+    if (uniqueOptions.some((o) => o.option_value === "HMCF")) {
+        // console.log(`HMCF options in ${effectiveFieldName}:`, uniqueOptions);
+    }
+
     // Determine the number of options
-    const optionCount = (question.options || []).length;
+    const optionCount = uniqueOptions.length;
     // Use 2 columns for even number of options on sm+, 1 column for odd or small screens
     const gridColsClass =
         optionCount % 2 === 0 ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1";
@@ -54,9 +77,9 @@ export default function SelectField({
                         <Select
                             onValueChange={(value) => {
                                 field.onChange(value);
-                                console.log(
-                                    `SelectField ${effectiveFieldName} changed to: ${value}`
-                                );
+                                // console.log(
+                                //     `SelectField ${effectiveFieldName} changed to: ${value}`
+                                // );
                             }}
                             value={field.value ? String(field.value) : ""}
                             disabled={question.is_disabled}
@@ -69,9 +92,9 @@ export default function SelectField({
                             <SelectContent
                                 className={`w-full min-w-[200px] max-h-[300px] overflow-y-auto z-[2000] p-2 bg-card/95 border-border/50 shadow-lg rounded-lg grid ${gridColsClass} gap-1`}
                             >
-                                {question.options?.map((option) => (
+                                {uniqueOptions?.map((option) => (
                                     <SelectItem
-                                        key={`${question.id}-${option.id}`} // ✅ Ensures unique key
+                                        key={option.id}
                                         value={option.option_value}
                                         disabled={option.is_disabled}
                                         className="text-sm sm:text-base cursor-pointer p-2 hover:bg-muted/50 rounded-md transition-colors"

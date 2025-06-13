@@ -46,6 +46,16 @@ const generateDefaultValues = (sections: Section[]) => {
                     : question.is_required
                     ? question.default_value || ""
                     : "";
+            // Log field type mismatches
+            if (
+                question.id === "dc05ed5d-00a8-433c-a276-fd6e2021a20a" &&
+                question.field_type !== "textarea"
+            ) {
+                console.error(
+                    `Field type mismatch for Chief Complaint (dc05ed5d-...): Expected textarea, got ${question.field_type}`,
+                    question
+                );
+            }
         });
     });
     return fields;
@@ -145,7 +155,7 @@ export default function FormOne() {
             formSchema.versions &&
             formSchema.versions[0]?.sections
         ) {
-            console.log("Form schema:", formSchema.versions[0].sections);
+            // console.log("Form schema loaded:", formSchema.versions[0].sections);
             const defaultValues = generateDefaultValues(
                 formSchema.versions[0].sections
             );
@@ -184,7 +194,7 @@ export default function FormOne() {
             }
         });
 
-        console.log("Submitting transformed data:", transformedData);
+        // console.log("Submitting transformed data:", transformedData);
         setIsSubmitting(true);
         mutate(transformedData);
     }

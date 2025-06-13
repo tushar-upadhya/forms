@@ -36,6 +36,16 @@ export default function SectionRenderer({
         );
     }
 
+    // Validate schema for HMCF
+    section.questions.forEach((question) => {
+        if (question.options?.some((option) => option.id === "HMCF")) {
+            console.error(
+                `HMCF found in section ${section.id} (${section.title}), question ${question.id} (${question.label}):`,
+                question.options
+            );
+        }
+    });
+
     const formValues = watch();
     const variableMap = buildVariableMap(section.questions);
 
@@ -69,6 +79,8 @@ export default function SectionRenderer({
     const gridClass =
         section.ui === "grid-cols-2"
             ? "grid-cols-1 md:grid-cols-2"
+            : section.ui === "flex"
+            ? "grid-cols-1"
             : "grid-cols-1";
 
     return (
