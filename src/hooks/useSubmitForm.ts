@@ -180,7 +180,7 @@ export function useSubmitForm(
                 throw new Error("No access token found.");
             }
 
-            const apiUrl = `${BASE_URL}/form/api/v1/form/${formId}/responses`;
+            const apiUrl = `/form/api/v1/form/${formId}/responses`;
             const transformedData = transformPayload(data, schema);
 
             if ("error" in transformedData) {

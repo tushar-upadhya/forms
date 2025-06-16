@@ -10,14 +10,14 @@ export default defineConfig({
             "@": path.resolve(__dirname, "./src"),
         },
     },
-    server: {
-        proxy: {
-            "/form/api": {
-                target: "https://rpcapplication.aiims.edu",
-                changeOrigin: true,
-                secure: false,
-                rewrite: (path) => path.replace(/^\/form\/api/, "/form/api"),
-            },
-        },
-    },
+    // server: {
+    //     proxy: {
+    //         "/form/api": {
+    //             target: "https://rpcapplication.aiims.edu",
+    //             changeOrigin: true,
+    //             secure: false,
+    //             rewrite: (path) => path.replace(/^\/form\/api/, "/form/api"),
+    //         },
+    //     },
+    // },
 });
