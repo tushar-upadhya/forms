@@ -5,7 +5,6 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSelector } from "react-redux";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL;
 const DEFAULT_FORM_ID = import.meta.env.VITE_FORM_ID;
 
 interface SubmitFormResponse {
@@ -13,28 +12,39 @@ interface SubmitFormResponse {
     data?: any;
 }
 
+interface QuestionInfo {
+    id: string;
+    sectionId: string;
+    is_repeatable_question: boolean;
+}
+
+interface SectionInfo {
+    is_repeatable_section: boolean;
+}
+
 const transformPayload = (
     data: FormValues,
     schema: FormSchema | null
 ): { data: Record<string, any> } | { error: string } => {
-    if (!schema || !schema.versions || !schema.versions[0]?.sections) {
-        console.error("Invalid schema provided");
-        return { error: "Invalid schema provided" };
+    if (!schema || !schema.versions?.[0]?.sections?.length) {
+        console.error("Invalid or empty schema provided");
+        return { error: "Invalid or empty schema provided" };
     }
 
-    const questionIdMap: Record<string, { id: string; sectionId: string }> = {};
+    const questionIdMap: Record<string, QuestionInfo> = {};
     const requiredQuestions: Set<string> = new Set();
-    const sectionMap: Record<string, { is_repeatable_section: boolean }> = {};
+    const sectionMap: Record<string, SectionInfo> = {};
 
-    // Build question ID and section map
     schema.versions[0].sections.forEach((section) => {
         if (!section.id) {
             console.warn("Section missing ID:", section);
             return;
         }
+
         sectionMap[section.id] = {
             is_repeatable_section: section.is_repeatable_section ?? false,
         };
+
         section.questions.forEach((question) => {
             if (!question.id) {
                 console.warn(
@@ -44,23 +54,24 @@ const transformPayload = (
                 );
                 return;
             }
+
             const fieldName = getFieldName(question.label);
-            questionIdMap[fieldName] = {
-                id: question.id,
-                sectionId: section.id as string,
-            };
-            questionIdMap[question.id] = {
-                id: question.id,
-                sectionId: section.id as string,
-            };
             const normalizedLabel = fieldName.replace(
                 /patient_|^patient/gi,
                 ""
             );
-            questionIdMap[normalizedLabel] = {
+
+            const questionInfo: QuestionInfo = {
                 id: question.id,
-                sectionId: section.id as string,
+                sectionId: section.id!,
+                is_repeatable_question:
+                    question.is_repeatable_question ?? false,
             };
+
+            questionIdMap[fieldName] = questionInfo;
+            questionIdMap[question.id] = questionInfo;
+            questionIdMap[normalizedLabel] = questionInfo;
+
             if (question.is_required) {
                 requiredQuestions.add(question.id);
             }
@@ -69,7 +80,6 @@ const transformPayload = (
 
     const dataPayload: Record<string, any> = {};
 
-    // Group data by section
     Object.entries(data).forEach(([key, value]) => {
         if (
             value === undefined ||
@@ -94,7 +104,11 @@ const transformPayload = (
             return;
         }
 
-        const { id: questionId, sectionId } = questionInfo;
+        const {
+            id: questionId,
+            sectionId,
+            is_repeatable_question,
+        } = questionInfo;
         const section = sectionMap[sectionId];
 
         if (!section) {
@@ -102,33 +116,37 @@ const transformPayload = (
             return;
         }
 
-        // Initialize section in payload
         if (!dataPayload[sectionId]) {
             dataPayload[sectionId] = section.is_repeatable_section ? [] : {};
         }
 
-        const finalValue = fieldName.includes("age") ? Number(value) : value;
+        const finalValue =
+            questionId === "dc05ed5d-00a8-433c-a276-fd6e2021a20a"
+                ? Array.isArray(value)
+                    ? value
+                    : [value]
+                : fieldName.includes("age")
+                ? Number(value)
+                : is_repeatable_question
+                ? Array.isArray(value)
+                    ? value
+                    : [value]
+                : value;
 
         if (section.is_repeatable_section) {
-            // Ensure array index exists
             while (dataPayload[sectionId].length <= (index ?? 0)) {
                 dataPayload[sectionId].push({});
             }
             const targetIndex = index ?? 0;
-            dataPayload[sectionId][targetIndex][questionId] = Array.isArray(
-                finalValue
-            )
-                ? finalValue
-                : finalValue;
+            if (!dataPayload[sectionId][targetIndex]) {
+                dataPayload[sectionId][targetIndex] = {};
+            }
+            dataPayload[sectionId][targetIndex][questionId] = finalValue;
         } else {
-            // Non-repeatable section
-            dataPayload[sectionId][questionId] = Array.isArray(finalValue)
-                ? finalValue
-                : finalValue;
+            dataPayload[sectionId][questionId] = finalValue;
         }
     });
 
-    // Validate required fields
     const missingRequired: string[] = [];
     Array.from(requiredQuestions).forEach((qId) => {
         let isPresent = false;
@@ -138,7 +156,8 @@ const transformPayload = (
                     if (
                         qId in entry &&
                         entry[qId] !== undefined &&
-                        entry[qId] !== ""
+                        entry[qId] !== "" &&
+                        !(Array.isArray(entry[qId]) && entry[qId].length === 0)
                     ) {
                         isPresent = true;
                     }
@@ -146,7 +165,11 @@ const transformPayload = (
             } else if (
                 qId in sectionData &&
                 sectionData[qId] !== undefined &&
-                sectionData[qId] !== ""
+                sectionData[qId] !== "" &&
+                !(
+                    Array.isArray(sectionData[qId]) &&
+                    sectionData[qId].length === 0
+                )
             ) {
                 isPresent = true;
             }
@@ -175,6 +198,10 @@ export function useSubmitForm(
 
     return useMutation<SubmitFormResponse, AxiosError<any>, FormValues>({
         mutationFn: async (data: FormValues) => {
+            if (!schema || !schema.versions?.[0]?.sections?.length) {
+                throw new Error("Invalid or empty form schema");
+            }
+
             const accessToken = sessionStorage.getItem("accessToken");
             if (!accessToken) {
                 throw new Error("No access token found.");
@@ -187,15 +214,47 @@ export function useSubmitForm(
                 throw new Error(transformedData.error);
             }
 
-            console.log("Submitting transformedData:", transformedData);
+            console.log(
+                "📤 Transformed Payload:",
+                JSON.stringify(transformedData, null, 2)
+            );
 
-            const response = await axios.post(apiUrl, transformedData, {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            return response.data;
+            if ("data" in transformedData) {
+                const sectionIds = Object.keys(transformedData.data);
+                console.log("✅ Section IDs in payload:", sectionIds);
+                sectionIds.forEach((sec) => {
+                    console.log(
+                        `➡ Section ${sec} content:`,
+                        transformedData.data[sec]
+                    );
+                });
+            }
+
+            try {
+                const response = await axios.post(apiUrl, transformedData, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+                // console.log("✅ API response:", response.data);
+                return response.data;
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    // console.error(
+                    //     "❌ Axios Error Response:",
+                    //     error.response?.data || "No response data"
+                    // );
+                    // console.error("❌ Axios Status:", error.response?.status);
+                    // console.error("❌ Axios Headers:", error.response?.headers);
+                    throw new Error(
+                        error.response?.data?.message || "Server error occurred"
+                    );
+                } else {
+                    // console.error("❌ Unknown Submission Error:", error);
+                    throw new Error("Unknown error occurred");
+                }
+            }
         },
         onSuccess,
         onError,

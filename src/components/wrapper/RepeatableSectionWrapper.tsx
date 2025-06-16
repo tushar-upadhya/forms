@@ -11,7 +11,7 @@ import {
 import { getFieldName, type FormValues, type Section } from "@/lib/types";
 import { buildVariableMap, evaluateVisibilityCondition } from "@/lib/utils";
 import { Check, Edit, Plus, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { useFormContext } from "react-hook-form";
 import SectionRenderer from "../SectionRenderer";
@@ -37,22 +37,64 @@ const RepeatableSectionWrapper = ({
     const formValues = watch();
     const variableMap = buildVariableMap(section.questions);
 
-    const isRepeatable = section.is_repeatable_section ?? false;
+    // Initialize form state and sync committed entries
+    useEffect(() => {
+        section.questions.forEach((question) => {
+            const fieldName = getFieldName(question.label);
+            const inputName = `${fieldName}_${committedEntries.length}`;
+            if (question.is_required) {
+                form.setValue(
+                    inputName,
+                    question.field_type === "checkbox"
+                        ? []
+                        : question.is_repeatable_question &&
+                          question.field_type === "textarea"
+                        ? [""]
+                        : ""
+                );
+            }
+        });
+        committedEntries.forEach((entry, idx) => {
+            Object.entries(entry).forEach(([fieldName, value]) => {
+                const question = section.questions.find(
+                    (q) => getFieldName(q.label) === fieldName
+                );
+                form.setValue(
+                    `${fieldName}_${idx + 1}`,
+                    value !== null
+                        ? value
+                        : question?.is_required
+                        ? question.field_type === "checkbox"
+                            ? []
+                            : question.is_repeatable_question &&
+                              question.field_type === "textarea"
+                            ? [""]
+                            : ""
+                        : undefined
+                );
+            });
+        });
+    }, [committedEntries, form, section.questions]);
 
     const handleAddEntry = () => {
         const entry: Record<string, string | string[] | null> = {};
+        let hasValidValue = false;
+        const errors: Record<string, string> = {};
+
         section.questions.forEach((question) => {
+            const fieldName = getFieldName(question.label);
+            const inputName = `${fieldName}_${committedEntries.length}`;
             if (
                 !evaluateVisibilityCondition(
                     question.visibility_condition,
                     formValues,
                     variableMap
-                )
+                ) &&
+                !question.is_required
             ) {
                 return;
             }
-            const fieldName = getFieldName(question.label);
-            const inputName = `${fieldName}_${committedEntries.length}`;
+
             const rawValue = form.getValues(inputName);
             const value =
                 typeof rawValue === "string"
@@ -60,20 +102,51 @@ const RepeatableSectionWrapper = ({
                     : Array.isArray(rawValue)
                     ? rawValue
                     : null;
+
             if (
-                value &&
-                (Array.isArray(value) ? value.length > 0 : value !== "")
+                question.is_required &&
+                (!value ||
+                    (typeof value === "string" && value === "") ||
+                    (Array.isArray(value) && value.length === 0))
             ) {
+                errors[inputName] = `${question.label} is required`;
+            } else if (value) {
+                hasValidValue = true;
                 entry[fieldName] = value;
-                form.setValue(
-                    inputName,
-                    question.field_type === "checkbox" ? [] : ""
-                );
+            } else {
+                entry[fieldName] = question.is_required
+                    ? question.field_type === "checkbox"
+                        ? []
+                        : question.is_repeatable_question &&
+                          question.field_type === "textarea"
+                        ? [""]
+                        : ""
+                    : null;
             }
+
+            form.setValue(
+                inputName,
+                question.field_type === "checkbox"
+                    ? []
+                    : question.is_repeatable_question &&
+                      question.field_type === "textarea"
+                    ? [""]
+                    : ""
+            );
         });
 
-        if (Object.keys(entry).length > 0) {
+        // Set errors if any
+        Object.entries(errors).forEach(([field, message]) => {
+            form.setError(field, { type: "required", message });
+        });
+
+        if (Object.keys(errors).length > 0) {
+            return;
+        }
+
+        if (hasValidValue || section.questions.some((q) => q.is_required)) {
             setCommittedEntries((prev) => [...prev, entry]);
+            Object.keys(errors).forEach((field) => form.clearErrors(field));
         }
     };
 
@@ -96,16 +169,51 @@ const RepeatableSectionWrapper = ({
     };
 
     const handleSaveEdit = (idx: number) => {
+        const errors: Record<string, string> = {};
+        section.questions.forEach((question) => {
+            const fieldName = getFieldName(question.label);
+            if (
+                question.is_required &&
+                (!editValues[fieldName] || editValues[fieldName].trim() === "")
+            ) {
+                errors[fieldName] = `${question.label} cannot be empty`;
+            }
+        });
+
+        if (Object.keys(errors).length > 0) {
+            Object.entries(errors).forEach(([field, message]) => {
+                form.setError(`${field}_${idx + 1}`, {
+                    type: "required",
+                    message,
+                });
+            });
+            return;
+        }
+
         setCommittedEntries((prev) => {
             const updated = [...prev];
             updated[idx] = {};
-            Object.entries(editValues).forEach(([key, value]) => {
-                updated[idx][key] = value.trim() || null;
+            section.questions.forEach((question) => {
+                const fieldName = getFieldName(question.label);
+                updated[idx][fieldName] =
+                    editValues[fieldName]?.trim() ||
+                    (question.is_required
+                        ? question.field_type === "checkbox"
+                            ? []
+                            : question.is_repeatable_question &&
+                              question.field_type === "textarea"
+                            ? [""]
+                            : ""
+                        : null);
             });
             return updated;
         });
         setEditingIndex(null);
         setEditValues({});
+        section.questions.forEach((question) => {
+            const fieldName = getFieldName(question.label);
+            form.clearErrors(`${fieldName}_${idx + 1}`);
+        });
     };
 
     const handleCancelEdit = () => {
@@ -113,7 +221,7 @@ const RepeatableSectionWrapper = ({
         setEditValues({});
     };
 
-    if (!isRepeatable) {
+    if (!section.is_repeatable_section) {
         return <SectionRenderer section={section} form={form} index={index} />;
     }
 
@@ -131,12 +239,13 @@ const RepeatableSectionWrapper = ({
                                     Serial No
                                 </TableHead>
                                 {section.questions
-                                    .filter((question) =>
-                                        evaluateVisibilityCondition(
-                                            question.visibility_condition,
-                                            formValues,
-                                            variableMap
-                                        )
+                                    .filter(
+                                        (question) =>
+                                            evaluateVisibilityCondition(
+                                                question.visibility_condition,
+                                                formValues,
+                                                variableMap
+                                            ) || question.is_required
                                     )
                                     .map((question) => (
                                         <TableHead
@@ -168,12 +277,13 @@ const RepeatableSectionWrapper = ({
                                         {idx + 1}
                                     </TableCell>
                                     {section.questions
-                                        .filter((question) =>
-                                            evaluateVisibilityCondition(
-                                                question.visibility_condition,
-                                                formValues,
-                                                variableMap
-                                            )
+                                        .filter(
+                                            (question) =>
+                                                evaluateVisibilityCondition(
+                                                    question.visibility_condition,
+                                                    formValues,
+                                                    variableMap
+                                                ) || question.is_required
                                         )
                                         .map((question) => {
                                             const fieldName = getFieldName(

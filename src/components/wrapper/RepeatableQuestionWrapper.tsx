@@ -8,11 +8,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import type { FormValues, Question } from "@/lib/types";
-import { getFieldName } from "@/lib/types";
+import { getFieldName, type FormValues, type Question } from "@/lib/types";
 import clsx from "clsx";
 import { Check, Edit, Plus, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 
 interface RepeatableFieldWrapperProps {
@@ -37,12 +36,34 @@ const RepeatableQuestionWrapper = ({
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [editValue, setEditValue] = useState<string>("");
 
-    // Log field type for Chief Complaint
-    if (question.id === "dc05ed5d-00a8-433c-a276-fd6e2021a20a") {
-        // console.log(
-        //     `Rendering Chief Complaint (dc05ed5d-...) with field_type: ${question.field_type}, repeatable: ${question.is_repeatable_question}`
-        // );
-    }
+    // Initialize form state and sync committed values
+    useEffect(() => {
+        if (question.is_required && !form.getValues(`${baseFieldName}_0`)) {
+            form.setValue(
+                `${baseFieldName}_0`,
+                question.field_type === "checkbox"
+                    ? []
+                    : question.is_repeatable_question &&
+                      question.field_type === "textarea"
+                    ? [""]
+                    : ""
+            );
+        }
+        committedValues.forEach((value, idx) => {
+            form.setValue(
+                `${baseFieldName}_${idx + 1}`,
+                value !== null
+                    ? value
+                    : question.is_required
+                    ? question.field_type === "checkbox"
+                        ? []
+                        : question.field_type === "textarea"
+                        ? [""]
+                        : ""
+                    : undefined
+            );
+        });
+    }, [committedValues, form, baseFieldName, question]);
 
     const handleAddField = () => {
         const inputName = `${baseFieldName}_0`;
@@ -54,10 +75,27 @@ const RepeatableQuestionWrapper = ({
                 ? rawValue.join(", ").trim()
                 : "";
 
-        if (!value) return;
+        if (!value && question.is_required) {
+            form.setError(inputName, {
+                type: "required",
+                message: `${question.label} is required`,
+            });
+            return;
+        }
 
-        setCommittedValues((prev) => [...prev, value]);
-        form.setValue(inputName, "");
+        if (value) {
+            setCommittedValues((prev) => [...prev, value]);
+        }
+        form.setValue(
+            inputName,
+            question.field_type === "checkbox"
+                ? []
+                : question.is_repeatable_question &&
+                  question.field_type === "textarea"
+                ? [""]
+                : ""
+        );
+        form.clearErrors(inputName);
     };
 
     const handleDeleteField = (index: number) => {
@@ -70,6 +108,13 @@ const RepeatableQuestionWrapper = ({
     };
 
     const handleSaveEdit = (index: number) => {
+        if (!editValue.trim() && question.is_required) {
+            form.setError(`${baseFieldName}_${index + 1}`, {
+                type: "required",
+                message: `${question.label} cannot be empty`,
+            });
+            return;
+        }
         setCommittedValues((prev) => {
             const updated = [...prev];
             updated[index] = editValue.trim() || null;
@@ -77,6 +122,7 @@ const RepeatableQuestionWrapper = ({
         });
         setEditingIndex(null);
         setEditValue("");
+        form.clearErrors(`${baseFieldName}_${index + 1}`);
     };
 
     const handleCancelEdit = () => {
