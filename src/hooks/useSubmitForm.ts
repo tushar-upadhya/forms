@@ -5,6 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useSelector } from "react-redux";
 
+// const BASE_URL = import.meta.env.VITE_BASE_URL;
 const DEFAULT_FORM_ID = import.meta.env.VITE_FORM_ID;
 
 interface SubmitFormResponse {
@@ -12,39 +13,28 @@ interface SubmitFormResponse {
     data?: any;
 }
 
-interface QuestionInfo {
-    id: string;
-    sectionId: string;
-    is_repeatable_question: boolean;
-}
-
-interface SectionInfo {
-    is_repeatable_section: boolean;
-}
-
 const transformPayload = (
     data: FormValues,
     schema: FormSchema | null
 ): { data: Record<string, any> } | { error: string } => {
-    if (!schema || !schema.versions?.[0]?.sections?.length) {
-        console.error("Invalid or empty schema provided");
-        return { error: "Invalid or empty schema provided" };
+    if (!schema || !schema.versions || !schema.versions[0]?.sections) {
+        console.error("Invalid schema provided");
+        return { error: "Invalid schema provided" };
     }
 
-    const questionIdMap: Record<string, QuestionInfo> = {};
+    const questionIdMap: Record<string, { id: string; sectionId: string }> = {};
     const requiredQuestions: Set<string> = new Set();
-    const sectionMap: Record<string, SectionInfo> = {};
+    const sectionMap: Record<string, { is_repeatable_section: boolean }> = {};
 
+    // Build question ID and section map
     schema.versions[0].sections.forEach((section) => {
         if (!section.id) {
             console.warn("Section missing ID:", section);
             return;
         }
-
         sectionMap[section.id] = {
             is_repeatable_section: section.is_repeatable_section ?? false,
         };
-
         section.questions.forEach((question) => {
             if (!question.id) {
                 console.warn(
@@ -54,24 +44,23 @@ const transformPayload = (
                 );
                 return;
             }
-
             const fieldName = getFieldName(question.label);
+            questionIdMap[fieldName] = {
+                id: question.id,
+                sectionId: section.id as string,
+            };
+            questionIdMap[question.id] = {
+                id: question.id,
+                sectionId: section.id as string,
+            };
             const normalizedLabel = fieldName.replace(
                 /patient_|^patient/gi,
                 ""
             );
-
-            const questionInfo: QuestionInfo = {
+            questionIdMap[normalizedLabel] = {
                 id: question.id,
-                sectionId: section.id!,
-                is_repeatable_question:
-                    question.is_repeatable_question ?? false,
+                sectionId: section.id as string,
             };
-
-            questionIdMap[fieldName] = questionInfo;
-            questionIdMap[question.id] = questionInfo;
-            questionIdMap[normalizedLabel] = questionInfo;
-
             if (question.is_required) {
                 requiredQuestions.add(question.id);
             }
@@ -80,6 +69,7 @@ const transformPayload = (
 
     const dataPayload: Record<string, any> = {};
 
+    // Group data by section
     Object.entries(data).forEach(([key, value]) => {
         if (
             value === undefined ||
@@ -104,11 +94,7 @@ const transformPayload = (
             return;
         }
 
-        const {
-            id: questionId,
-            sectionId,
-            is_repeatable_question,
-        } = questionInfo;
+        const { id: questionId, sectionId } = questionInfo;
         const section = sectionMap[sectionId];
 
         if (!section) {
@@ -116,37 +102,48 @@ const transformPayload = (
             return;
         }
 
+        // Initialize section in payload
         if (!dataPayload[sectionId]) {
             dataPayload[sectionId] = section.is_repeatable_section ? [] : {};
         }
 
-        const finalValue =
-            questionId === "dc05ed5d-00a8-433c-a276-fd6e2021a20a"
-                ? Array.isArray(value)
-                    ? value
-                    : [value]
-                : fieldName.includes("age")
-                ? Number(value)
-                : is_repeatable_question
-                ? Array.isArray(value)
-                    ? value
-                    : [value]
-                : value;
+        const finalValue = fieldName.includes("age") ? Number(value) : value;
 
         if (section.is_repeatable_section) {
+            // Ensure array index exists
             while (dataPayload[sectionId].length <= (index ?? 0)) {
                 dataPayload[sectionId].push({});
             }
             const targetIndex = index ?? 0;
-            if (!dataPayload[sectionId][targetIndex]) {
-                dataPayload[sectionId][targetIndex] = {};
-            }
-            dataPayload[sectionId][targetIndex][questionId] = finalValue;
+            dataPayload[sectionId][targetIndex][questionId] = Array.isArray(
+                finalValue
+            )
+                ? finalValue
+                : finalValue;
         } else {
-            dataPayload[sectionId][questionId] = finalValue;
+            // Non-repeatable section
+            if (questionIdMap[fieldName]?.id && index !== null) {
+                // Handle repeatable questions
+                if (!dataPayload[sectionId][questionId]) {
+                    dataPayload[sectionId][questionId] = [];
+                }
+                while (dataPayload[sectionId][questionId].length <= index) {
+                    dataPayload[sectionId][questionId].push(null);
+                }
+                dataPayload[sectionId][questionId][index] = Array.isArray(
+                    finalValue
+                )
+                    ? finalValue
+                    : finalValue;
+            } else {
+                dataPayload[sectionId][questionId] = Array.isArray(finalValue)
+                    ? finalValue
+                    : finalValue;
+            }
         }
     });
 
+    // Validate required fields
     const missingRequired: string[] = [];
     Array.from(requiredQuestions).forEach((qId) => {
         let isPresent = false;
@@ -157,7 +154,7 @@ const transformPayload = (
                         qId in entry &&
                         entry[qId] !== undefined &&
                         entry[qId] !== "" &&
-                        !(Array.isArray(entry[qId]) && entry[qId].length === 0)
+                        (!Array.isArray(entry[qId]) || entry[qId].length > 0)
                     ) {
                         isPresent = true;
                     }
@@ -166,10 +163,8 @@ const transformPayload = (
                 qId in sectionData &&
                 sectionData[qId] !== undefined &&
                 sectionData[qId] !== "" &&
-                !(
-                    Array.isArray(sectionData[qId]) &&
-                    sectionData[qId].length === 0
-                )
+                (!Array.isArray(sectionData[qId]) ||
+                    sectionData[qId].length > 0)
             ) {
                 isPresent = true;
             }
@@ -198,37 +193,25 @@ export function useSubmitForm(
 
     return useMutation<SubmitFormResponse, AxiosError<any>, FormValues>({
         mutationFn: async (data: FormValues) => {
-            if (!schema || !schema.versions?.[0]?.sections?.length) {
-                throw new Error("Invalid or empty form schema");
-            }
-
             const accessToken = sessionStorage.getItem("accessToken");
             if (!accessToken) {
                 throw new Error("No access token found.");
             }
+            // Optional: Validate token format (e.g., JWT)
+            if (!accessToken.match(/^[\w-]+\.[\w-]+\.[\w-]+$/)) {
+                console.warn("Invalid token format");
+                throw new Error("Invalid access token format.");
+            }
 
             const apiUrl = `/form/api/v1/form/${formId}/responses`;
+            console.log("Schema:", schema); // Debug schema
             const transformedData = transformPayload(data, schema);
 
             if ("error" in transformedData) {
                 throw new Error(transformedData.error);
             }
 
-            console.log(
-                "📤 Transformed Payload:",
-                JSON.stringify(transformedData, null, 2)
-            );
-
-            if ("data" in transformedData) {
-                const sectionIds = Object.keys(transformedData.data);
-                console.log("✅ Section IDs in payload:", sectionIds);
-                sectionIds.forEach((sec) => {
-                    console.log(
-                        `➡ Section ${sec} content:`,
-                        transformedData.data[sec]
-                    );
-                });
-            }
+            console.log("Submitting transformedData:", transformedData);
 
             try {
                 const response = await axios.post(apiUrl, transformedData, {
@@ -237,26 +220,25 @@ export function useSubmitForm(
                         "Content-Type": "application/json",
                     },
                 });
-                // console.log("✅ API response:", response.data);
                 return response.data;
             } catch (error) {
                 if (axios.isAxiosError(error)) {
-                    // console.error(
-                    //     "❌ Axios Error Response:",
-                    //     error.response?.data || "No response data"
-                    // );
-                    // console.error("❌ Axios Status:", error.response?.status);
-                    // console.error("❌ Axios Headers:", error.response?.headers);
-                    throw new Error(
-                        error.response?.data?.message || "Server error occurred"
+                    console.error(
+                        "Server error response:",
+                        error.response?.data
                     );
-                } else {
-                    // console.error("❌ Unknown Submission Error:", error);
-                    throw new Error("Unknown error occurred");
+                    throw error;
                 }
+                throw error;
             }
         },
         onSuccess,
-        onError,
+        onError: (error) => {
+            console.error(
+                "Submission error:",
+                error.response?.data || error.message
+            );
+            if (onError) onError(error);
+        },
     });
 }

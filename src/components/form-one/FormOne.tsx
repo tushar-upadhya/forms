@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { useFormSchema } from "@/hooks/useFormSchema";
 import { useSubmitForm } from "@/hooks/useSubmitForm";
@@ -26,34 +25,36 @@ import RepeatableSectionWrapper from "../wrapper/RepeatableSectionWrapper";
 const FORM_ID = import.meta.env.VITE_FORM_ID;
 
 const generateDefaultValues = (sections: Section[]) => {
-    const fields: Record<string, any> = {};
+    const fields: Record<string, string | string[] | undefined> = {};
     sections.forEach((section) => {
         section.questions.forEach((question: Question) => {
             const baseFieldName = getFieldName(question.label);
-            const fieldName =
-                section.is_repeatable_section || question.is_repeatable_question
-                    ? `${baseFieldName}_0`
-                    : baseFieldName;
-
-            if (question.field_type === "checkbox") {
-                fields[fieldName] = question.is_required
-                    ? question.default_value
-                        ? Array.isArray(question.default_value)
-                            ? question.default_value
-                            : [question.default_value]
+            const fieldName = section.is_repeatable_section
+                ? `${baseFieldName}_0`
+                : question.is_repeatable_question
+                ? `${baseFieldName}_0`
+                : baseFieldName;
+            fields[fieldName] =
+                question.field_type === "checkbox"
+                    ? question.is_required
+                        ? question.default_value
+                            ? Array.isArray(question.default_value)
+                                ? question.default_value
+                                : [question.default_value]
+                            : []
                         : []
-                    : [];
-            } else if (
-                question.field_type === "textarea" &&
-                question.id === "dc05ed5d-00a8-433c-a276-fd6e2021a20a"
-            ) {
-                fields[fieldName] = question.is_required
-                    ? question.default_value || [""]
-                    : [""];
-            } else {
-                fields[fieldName] = question.is_required
+                    : question.is_required
                     ? question.default_value || ""
                     : "";
+            // Log field type mismatches
+            if (
+                question.id === "dc05ed5d-00a8-433c-a276-fd6e2021a20a" &&
+                question.field_type !== "textarea"
+            ) {
+                console.error(
+                    `Field type mismatch for Chief Complaint (dc05ed5d-...): Expected textarea, got ${question.field_type}`,
+                    question
+                );
             }
         });
     });
@@ -124,11 +125,7 @@ export default function FormOne() {
     const methods = useForm<FormValues>({ defaultValues: {} });
     const dispatch = useDispatch();
 
-    const {
-        mutate,
-        isError: isSubmitError,
-        error: submitError,
-    } = useSubmitForm(
+    const { mutate } = useSubmitForm(
         FORM_ID,
         (data) => {
             setIsSubmitting(false);
@@ -142,13 +139,11 @@ export default function FormOne() {
         },
         (error) => {
             setIsSubmitting(false);
+            methods.reset();
             dispatch(
                 setFormSubmissionStatus({
                     status: "error",
-                    message:
-                        error.response?.data?.message ||
-                        error.message ||
-                        "Failed to submit form.",
+                    message: error.response?.data?.message || error.message,
                 })
             );
         }
@@ -168,126 +163,45 @@ export default function FormOne() {
     }, [formSchema, methods]);
 
     function onSubmit(data: FormValues) {
-        const transformedData: Record<string, any> = {};
-        const repeatableSections: Record<string, any[]> = {};
+        const transformedData: FormValues = {};
+        const repeatableFields: Record<string, (string | string[])[]> = {};
 
-        // Collect all values for each question
-        formSchema?.versions?.[0]?.sections.forEach((section) => {
-            section.questions.forEach((question) => {
-                const baseFieldName = getFieldName(question.label);
-                const values: any[] = [];
-
-                // Collect current input value (e.g., chief_complaint_0)
-                const currentInput = data[`${baseFieldName}_0`];
-                if (
-                    currentInput !== undefined &&
-                    (typeof currentInput === "string"
-                        ? currentInput.trim() !== ""
-                        : Array.isArray(currentInput)
-                        ? currentInput.length > 0
-                        : true)
-                ) {
-                    values.push(currentInput);
-                }
-
-                // Collect committed values (e.g., chief_complaint_1, chief_complaint_2, ...)
-                let idx = 1;
-                while (true) {
-                    const committedValue = data[`${baseFieldName}_${idx}`];
-                    if (
-                        committedValue === undefined ||
-                        committedValue === null
-                    ) {
-                        break;
-                    }
-                    if (
-                        typeof committedValue === "string"
-                            ? committedValue.trim() !== ""
-                            : Array.isArray(committedValue)
-                            ? committedValue.length > 0
-                            : true
-                    ) {
-                        values.push(committedValue);
-                    }
-                    idx++;
-                }
-
-                if (values.length === 0) return;
-
-                const finalValue =
-                    question.field_type === "textarea" &&
-                    question.id === "dc05ed5d-00a8-433c-a276-fd6e2021a20a"
-                        ? values.flatMap((v) => (Array.isArray(v) ? v : [v]))
-                        : question.is_repeatable_question
-                        ? values.flatMap((v) => (Array.isArray(v) ? v : [v]))
-                        : values[0]; // Non-repeatable takes first value
-
-                if (section.is_repeatable_section) {
-                    if (section.id && question.id) {
-                        if (!repeatableSections[section.id]) {
-                            repeatableSections[section.id] = [];
-                        }
-                        values.forEach((value, valueIdx) => {
-                            if (section.id) {
-                                while (
-                                    repeatableSections[section.id].length <=
-                                    valueIdx
-                                ) {
-                                    repeatableSections[section.id].push({});
-                                }
-                                repeatableSections[section.id][valueIdx][
-                                    question.id as string
-                                ] = value;
-                            }
-                        });
-                    } else {
-                        console.warn(
-                            "Section ID or Question ID is undefined, skipping entry for repeatable section."
-                        );
-                    }
-                } else {
-                    if (section.id && question.id) {
-                        if (!transformedData[section.id]) {
-                            transformedData[section.id] = {};
-                        }
-                        transformedData[section.id][question.id] = finalValue;
-                    } else {
-                        console.warn(
-                            "Section ID or Question ID is undefined, skipping entry for non-repeatable section."
-                        );
-                    }
-                }
-            });
-        });
-
-        // Merge repeatable section entries
-        Object.entries(repeatableSections).forEach(([sectionId, entries]) => {
-            transformedData[sectionId] = entries.filter((entry) =>
-                Object.values(entry).some(
-                    (v) =>
-                        v !== undefined &&
-                        v !== "" &&
-                        !(Array.isArray(v) && v.length === 0)
-                )
-            );
-        });
-
-        // Remove empty sections
-        Object.keys(transformedData).forEach((sectionId) => {
+        Object.entries(data).forEach(([key, value]) => {
             if (
-                (Array.isArray(transformedData[sectionId]) &&
-                    transformedData[sectionId].length === 0) ||
-                (typeof transformedData[sectionId] === "object" &&
-                    Object.keys(transformedData[sectionId]).length === 0)
+                value !== undefined &&
+                (Array.isArray(value) ? value.length > 0 : value !== "")
             ) {
-                delete transformedData[sectionId];
+                const match = key.match(/^(.+)_(\d+)$/);
+                if (match) {
+                    const baseFieldName = match[1];
+                    const index = parseInt(match[2], 10);
+                    repeatableFields[baseFieldName] =
+                        repeatableFields[baseFieldName] || [];
+                    while (repeatableFields[baseFieldName].length <= index) {
+                        repeatableFields[baseFieldName].push("");
+                    }
+                    repeatableFields[baseFieldName][index] = value;
+                } else {
+                    transformedData[key] = value;
+                }
             }
         });
 
-        console.log(
-            "📤 Form Data Before Submission:",
-            JSON.stringify(transformedData, null, 2)
-        );
+        Object.entries(repeatableFields).forEach(([key, values]) => {
+            const nonEmptyValues = values.filter(
+                (v) =>
+                    v !== null && (Array.isArray(v) ? v.length > 0 : v !== "")
+            );
+            if (nonEmptyValues.length > 0) {
+                // Flatten if any value is an array, otherwise keep as string[]
+                if (nonEmptyValues.some((v) => Array.isArray(v))) {
+                    transformedData[key] = nonEmptyValues.flat() as string[];
+                } else {
+                    transformedData[key] = nonEmptyValues as string[];
+                }
+            }
+        });
+
         setIsSubmitting(true);
         mutate(transformedData);
     }
@@ -305,36 +219,41 @@ export default function FormOne() {
 
     return (
         <div className="w-full max-w-full sm:max-w-3xl lg:max-w-5xl mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
-            {isSubmitError && (
-                <div className="text-red-500 text-sm mb-4">
-                    Submission failed: {submitError?.message || "Unknown error"}
-                </div>
-            )}
             <FormProvider {...methods}>
                 <form
                     onSubmit={methods.handleSubmit(onSubmit)}
                     className="space-y-4 sm:space-y-6 md:space-y-8"
                 >
-                    {formSchema.versions[0].sections.map((section, idx) => (
-                        <div
-                            key={section.id || `section-${idx}`}
-                            className="section-wrapper"
-                        >
-                            {section.is_repeatable_section ? (
-                                <RepeatableSectionWrapper
-                                    section={section}
-                                    form={methods}
-                                    index={idx}
-                                />
-                            ) : (
-                                <SectionRenderer
-                                    section={section}
-                                    form={methods}
-                                    index={idx}
-                                />
+                    {methods ? (
+                        <>
+                            {formSchema.versions[0].sections.map(
+                                (section, idx) => (
+                                    <div
+                                        key={section.id || `section-${idx}`}
+                                        className="section-wrapper"
+                                    >
+                                        {section.is_repeatable_section ? (
+                                            <RepeatableSectionWrapper
+                                                section={section}
+                                                form={methods}
+                                                index={idx}
+                                            />
+                                        ) : (
+                                            <SectionRenderer
+                                                section={section}
+                                                form={methods}
+                                                index={idx}
+                                            />
+                                        )}
+                                    </div>
+                                )
                             )}
+                        </>
+                    ) : (
+                        <div className="text-red-500 text-xs sm:text-sm md:text-base">
+                            Error: Form not initialized
                         </div>
-                    ))}
+                    )}
                     <div className="pt-4 sm:pt-6 flex justify-end">
                         <Button
                             type="submit"

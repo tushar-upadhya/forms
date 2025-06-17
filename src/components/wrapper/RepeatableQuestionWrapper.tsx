@@ -75,6 +75,7 @@ const RepeatableQuestionWrapper = ({
                 ? rawValue.join(", ").trim()
                 : "";
 
+        // Allow empty values to be committed if not required
         if (!value && question.is_required) {
             form.setError(inputName, {
                 type: "required",
@@ -83,9 +84,7 @@ const RepeatableQuestionWrapper = ({
             return;
         }
 
-        if (value) {
-            setCommittedValues((prev) => [...prev, value]);
-        }
+        setCommittedValues((prev) => [...prev, value || null]);
         form.setValue(
             inputName,
             question.field_type === "checkbox"
